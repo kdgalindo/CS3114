@@ -129,8 +129,8 @@ public class Section {
         if (bst.size() != 0) {
             while (i.hasNext()) {
                 Record r = i.next();
-                if (r.getName().getFirst().equalsIgnoreCase(n) || r.getName()
-                    .getLast().equalsIgnoreCase(n)) {
+                if (r.getName().getFirstName().equalsIgnoreCase(n) || r.getName()
+                    .getLastName().equalsIgnoreCase(n)) {
                     l.add(r);
                 }
             }

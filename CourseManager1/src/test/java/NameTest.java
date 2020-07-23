@@ -13,57 +13,41 @@ import project1.Name;
  */
 public class NameTest {
     private Name n1;
-    private Name n2;
 
     @Before
     public void setUp() {
-        n1 = new Name();
-        n2 = new Name("Kyle", "Galindo");
+        n1 = new Name("Kyle", "Galindo");
     }
 
     @Test
     public void testGetFirst() {
-        String f = n2.getFirst();
-        assertEquals(f, "Kyle");
+        String firstName = n1.getFirstName();
+        assertEquals(firstName, "Kyle");
     }
 
     @Test
     public void testGetLast() {
-        String l = n2.getLast();
-        assertEquals(l, "Galindo");
-    }
-
-    @Test
-    public void testSetFirst() {
-        String f = n1.setFirst("Angel");
-        assertEquals(f, "Angel");
-    }
-
-    @Test
-    public void testSetLast() {
-        String l = n1.setLast("Isiadinso");
-        assertEquals(l, "Isiadinso");
+        String lastName = n1.getLastName();
+        assertEquals(lastName, "Galindo");
     }
 
     @Test
     public void testCompareTo() {
-        n1.setFirst("Angel");
-        n1.setLast("Isiadinso");
-        int i = n1.compareTo(n2);
-        assertTrue(i > 0);
-        n1.setFirst("Kyle");
-        n1.setLast("Galindo");
-        i = n1.compareTo(n2);
-        assertEquals(i, 0);
-        n1.setFirst("Young");
-        n1.setLast("Cao");
-        i = n1.compareTo(n2);
-        assertTrue(i < 0);
+    	Name n2 = new Name("Angel", "Isiadinso");
+        int result = n1.compareTo(n2);
+        assertTrue(result < 0);
+        
+        result = n1.compareTo(n1);
+        assertEquals(result, 0);
+        
+        Name n3 = new Name("Young", "Cao");
+        result = n1.compareTo(n3);
+        assertTrue(result > 0);
     }
 
     @Test
     public void testToString() {
-        String s = n2.toString();
-        assertEquals(s, "Kyle Galindo");
+        String fullName = n1.toString();
+        assertEquals(fullName, "Kyle Galindo");
     }
 }
