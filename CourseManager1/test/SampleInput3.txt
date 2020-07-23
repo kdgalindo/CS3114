@@ -1,0 +1,51 @@
+dumpsection
+
+insert   John Obi
+  score 88
+insert Susan Obi
+score 15
+insert susan    oBI
+score 27
+              insert Susan Ibrahim
+insert Nancy Henry
+score 71   
+dumpsection
+ score 7   
+ 
+
+section 2
+search X Y
+section 1 
+
+search susan OBI
+search A B
+search Eva
+search Susa
+search Susan
+score 55
+search john
+score 98
+remove Virtual student
+insert virtual student
+score 77
+remove John Obi
+remove virtual Student
+
+section 2
+insert David Moses
+score 85
+insert Sarah Moses
+score 93
+insert susan obi
+search David Moses
+score 66
+search David Moses
+score 666
+dumpsection
+removesection 3
+removesection
+
+section 1
+findpair 30
+findpair
+grade
