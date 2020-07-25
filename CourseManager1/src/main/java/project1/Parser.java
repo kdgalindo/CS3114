@@ -7,16 +7,14 @@ import java.util.StringTokenizer;
 
 /**
  * Parser Class
- * Parser used to implement Coursemanager1
  *
- * @author ati Angel Isiadinso
  * @author kyleg997 Kyle Galindo
- * @version 2019-09-19
+ * @version 2020-07-25
  */
 public class Parser {
     private Section[] sections; // Array of 3 Sections
     private Section section; // Current Section
-    private Record record; // Current Record
+    private Student record; // Current Record
     private boolean scoreCMDNext; // Can a score op be
                                   // performed next
 
@@ -281,7 +279,7 @@ public class Parser {
      */
     public boolean fuzzysearchhelp(String n) {
         boolean retVal = false;
-        ArrayList<Record> list = new ArrayList<Record>();
+        ArrayList<Student> list = new ArrayList<Student>();
         System.out.println("search results for " + n + ":");
         list = section.search(n);
         for (int i = 0; i < list.size(); i++) {

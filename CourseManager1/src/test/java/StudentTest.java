@@ -3,24 +3,24 @@ import org.junit.Before;
 import org.junit.Test;
 
 import project1.Name;
-import project1.Record;
+import project1.Student;
 
 /**
- * RecordTest Class
- * @author ati Angel Isiadinso
+ * StudentTest Class
+ * 
  * @author kyleg997 Kyle Galindo
- * @version 2019-09-18
+ * @version 2020-07-25
  */
-public class RecordTest {
-    private Record r1;
-    private Record r2;
-    private Record r3;
+public class StudentTest {
+    private Student r1;
+    private Student r2;
+    private Student r3;
 
     @Before
     public void setUp() {
-        r1 = new Record();
-        r2 = new Record(new Name("Kyle", "Galindo"), "010002");
-        r3 = new Record(new Name("Angel", "Isiadinso"), "010003", 95);
+        r1 = new Student();
+        r2 = new Student(new Name("Kyle", "Galindo"), "010002");
+        r3 = new Student(new Name("Angel", "Isiadinso"), "010003", 95);
     }
 
     @Test

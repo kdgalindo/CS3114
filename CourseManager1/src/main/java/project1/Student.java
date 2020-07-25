@@ -1,15 +1,13 @@
 package project1;
 
 /**
- * Record Class
- * Student record information
+ * Student Class
  * 
- * @author ati Angel Isiadinso
- * @author kylegg7 Kyle Galindo
- * @version 2019-09-18
+ * @author kyleg997 Kyle Galindo
+ * @version 2020-07-25
  */
-public class Record {
-    private Name name; // Student Name
+public class Student {
+    private Name name;
     private String id; // Student ID
     private int score; // Student score
 
@@ -17,7 +15,7 @@ public class Record {
     /**
      * Record default constructor
      */
-    public Record() {
+    public Student() {
         name = null;
         id = "010001";
         score = 0;
@@ -30,7 +28,7 @@ public class Record {
      * @param n Student name
      * @param i Student ID
      */
-    public Record(Name n, String i) {
+    public Student(Name n, String i) {
         name = n;
         id = i;
         score = 0;
@@ -44,7 +42,7 @@ public class Record {
      * @param i Student ID
      * @param s Student score
      */
-    public Record(Name n, String i, int s) {
+    public Student(Name n, String i, int s) {
         name = n;
         id = i;
         score = s;

@@ -7,9 +7,8 @@ import project1.Name;
 /**
  * NameTest Class
  * 
- * @author ati Angel Isiadinso
  * @author kyleg997 Kyle Galindo
- * @version 2019-09-18
+ * @version 2020-07-25
  */
 public class NameTest {
     private Name n1;

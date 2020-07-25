@@ -5,15 +5,12 @@ import java.util.Iterator;
 
 /** 
  * Section Class
- * Holds Student Name, Records key, value pairs
- * and performs operations on these pairs
  *
- * @author ati Angel Isiadinso
  * @author kyleg997 Kyle Galindo
- * @version 2019-09-19
+ * @version 2020-07-25
  */
 public class Section {
-    private BST<Name, Record> bst; // BST storing Name, Record pairs
+    private BST<Name, Student> bst;
     private int number; // Section number
     private int order; // Order that Record was inserted
 
@@ -21,7 +18,7 @@ public class Section {
      * Section default constructor
      */
     public Section() {
-        bst = new BST<Name, Record>();
+        bst = new BST<Name, Student>();
         number = 1;
         order = 1;
     }
@@ -32,7 +29,7 @@ public class Section {
      * @param n section number
      */
     public Section(int n) {
-        bst = new BST<Name, Record>();
+        bst = new BST<Name, Student>();
         number = n;
         order = 1;
     }
@@ -53,9 +50,9 @@ public class Section {
      * @param l last name
      * @return record found 
      */
-    public Record insert(String f, String l) {
+    public Student insert(String f, String l) {
         Name n = new Name(f, l);
-        bst.insert(n, new Record(n, newID()));
+        bst.insert(n, new Student(n, newID()));
         order++;
         return bst.find(n);
     }
@@ -78,7 +75,7 @@ public class Section {
      * @param l last name
      * @return Record value associated with Name key
      */
-    public Record search(String f, String l) {
+    public Student search(String f, String l) {
         return bst.find(new Name(f, l));
     }
 
@@ -88,7 +85,7 @@ public class Section {
      * @param n score
      * @param r Record
      */
-    public void score(int n, Record r) {
+    public void score(int n, Student r) {
         r.setScore(n);
     }
 
@@ -100,7 +97,7 @@ public class Section {
      * @param l last name
      * @return Record value associated with Name key
      */
-    public Record remove(String f, String l) {
+    public Student remove(String f, String l) {
         return bst.remove(new Name(f, l));
     }
 
@@ -123,12 +120,12 @@ public class Section {
      * @return ArrayList of Records where n matches
      *         the first or last name of the Record
      */
-    public ArrayList<Record> search(String n) {
-        ArrayList<Record> l = new ArrayList<Record>();
-        Iterator<Record> i = bst.iterator();
+    public ArrayList<Student> search(String n) {
+        ArrayList<Student> l = new ArrayList<Student>();
+        Iterator<Student> i = bst.iterator();
         if (bst.size() != 0) {
             while (i.hasNext()) {
-                Record r = i.next();
+                Student r = i.next();
                 if (r.getName().getFirstName().equalsIgnoreCase(n) || r.getName()
                     .getLastName().equalsIgnoreCase(n)) {
                     l.add(r);
@@ -158,10 +155,10 @@ public class Section {
         int[] numbers = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         String[] letters = { "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+",
             "D", "D-", "F" };
-        Iterator<Record> i = bst.iterator();
+        Iterator<Student> i = bst.iterator();
         if (bst.size() != 0) {
             while (i.hasNext()) {
-                Record r = i.next();
+                Student r = i.next();
                 int j = gradehelper(r.getScore());
                 numbers[j]++;
             }
@@ -203,10 +200,10 @@ public class Section {
      * @return Number of Record pairs
      */
     public int findPair(int s) {
-        Iterator<Record> i1 = bst.iterator();
-        Iterator<Record> i2;
-        Record r1;
-        Record r2;
+        Iterator<Student> i1 = bst.iterator();
+        Iterator<Student> i2;
+        Student r1;
+        Student r2;
         int i = 0;
         int retVal = 0;
         System.out.println("Students with score difference less than or equal "
