@@ -9,7 +9,7 @@ import java.util.StringTokenizer;
  * CmdInterpreter Class
  *
  * @author kyleg997 Kyle Galindo
- * @version 2020-07-28
+ * @version 2020-08-04
  */
 public class CmdInterpreter {
 	private CourseManager courseManager;
@@ -45,11 +45,11 @@ public class CmdInterpreter {
                         	if (tokens.countTokens() == 2) {
                             	String firstName = tokens.nextToken();
                             	String lastName = tokens.nextToken();
-                            	evalSimpleSearch(firstName, lastName);
+                            	evalSearch(firstName, lastName);
                         	}
                         	else if (tokens.countTokens() == 1) {
                             	String name = tokens.nextToken();
-                            	evalFuzzySearch(name);
+                            	evalSearch(name);
                         	}
                     	}
                         break;
@@ -136,7 +136,7 @@ public class CmdInterpreter {
         return result;
     }
 
-    public boolean evalSimpleSearch(String firstName, String lastName) {
+    public boolean evalSearch(String firstName, String lastName) {
         boolean result = false;
         Student student = courseManager.findStudent(firstName, lastName);
         if (student != null) {
@@ -151,6 +151,20 @@ public class CmdInterpreter {
         }
         return result;
     }
+    
+    public boolean evalSearch(String name) {
+        boolean result = false;
+        System.out.println("search results for " + name + ":");
+        Student[] students = courseManager.findStudents(name);
+        for (int i = 0; i < students.length; i++) {
+            System.out.println(students[i]);
+            result = true;
+        }
+        System.out.println(name + " was found in "
+        	+ students.length + " records in section "
+        	+ courseManager.getCurrentSection());
+        return result;
+    }
 
     public boolean evalScore(int scorePercent) {
         boolean result = false;
@@ -158,7 +172,7 @@ public class CmdInterpreter {
             if (CourseManager.isValidScorePercent(scorePercent)) {
                 Student student = courseManager.scoreStudent(scorePercent);
                 System.out.println("Update "
-                	+ student.getName()
+                	+ student.getFullName()
                     + " record, score = "
                 	+ student.getScore());
                 result = true;
@@ -214,31 +228,29 @@ public class CmdInterpreter {
     	return result;
     }
 
-    public boolean evalFuzzySearch(String name) {
-        boolean result = false;
-        ArrayList<Student> students = new ArrayList<Student>();
-        System.out.println("search results for " + name + ":");
-        students = courseManager.findStudents(name);
-        for (int i = 0; i < students.size(); i++) {
-            System.out.println(students.get(i));
-            result = true;
-        }
-        System.out.println(name + " was found in "
-        	+ students.size() + " records in section "
-        	+ courseManager.getCurrentSection());
-        return result;
-    }
-
     public void evalDumpSection() {
         System.out.println("Section " + courseManager.getCurrentSection() + " dump:");
         System.out.println("Size = " + courseManager.dumpCurrentSection());
     }
 
     public void evalGrade() {
-        courseManager.gradeCurrentSection();
+        int[] numbers = courseManager.gradeCurrentSection();
+        System.out.println("grading completed:");
+        for (int i = 0; i < numbers.length; i++) {
+            int n = numbers[i];
+            if (n != 0) {
+                System.out.println(n + " students with grade " + Grader.GRADE_LETTERS[i]);
+            }
+        }
     }
 
     public void evalFindPair(int scorePercentDiff) {
-        courseManager.findStudentPairs(scorePercentDiff);
+        System.out.println("Students with score difference less than or equal "
+        	+ scorePercentDiff + ":");
+        StudentPair[] studentPairs = courseManager.findStudentPairs(scorePercentDiff);
+        for (int i = 0; i < studentPairs.length; i++) {
+        	System.out.println(studentPairs[i]);
+        }
+        System.out.println("found " + studentPairs.length + " pairs");
     }
 }

@@ -7,54 +7,35 @@ import java.util.Iterator;
  * Section Class
  *
  * @author kyleg997 Kyle Galindo
- * @version 2020-07-25
+ * @version 2020-07-29
  */
 public class Section {
-    private BST<Name, Student> bst;
-    private int number; // Section number
+    private BST<FullName, Student> studentDB;
+    private int number;
     private int order; // Order that Record was inserted
 
-    /**
-     * Section default constructor
-     */
     public Section() {
-        bst = new BST<Name, Student>();
+    	studentDB = new BST<FullName, Student>();
         number = 1;
         order = 1;
     }
 
-    /**
-     * Section number constructor
-     * 
-     * @param n section number
-     */
     public Section(int n) {
-        bst = new BST<Name, Student>();
+    	studentDB = new BST<FullName, Student>();
         number = n;
         order = 1;
     }
 
-    /**
-     * Returns the section number
-     * 
-     * @return section number
-     */
     public int getNumber() {
         return number;
     }
 
-
-    /**
-     * 
-     * @param f first name
-     * @param l last name
-     * @return record found 
-     */
-    public Student insert(String f, String l) {
-        Name n = new Name(f, l);
-        bst.insert(n, new Student(n, newID()));
+    public Student insert(String firstName, String lastName) {
+        FullName fullName = new FullName(firstName, lastName);
+        Student student = new Student(fullName, newID());
+        studentDB.insert(fullName, student);
         order++;
-        return bst.find(n);
+        return studentDB.find(fullName);
     }
 
     /**
@@ -67,47 +48,20 @@ public class Section {
         return String.format("%06d", id);
     }
 
-    /**
-     * Finds the Record value associated with the
-     * Name key and returns the Record value
-     * 
-     * @param f first name
-     * @param l last name
-     * @return Record value associated with Name key
-     */
-    public Student search(String f, String l) {
-        return bst.find(new Name(f, l));
+    public Student search(String firstName, String lastName) {
+        return studentDB.find(new FullName(firstName, lastName));
     }
 
-    /**
-     * Sets the score of a Record
-     * 
-     * @param n score
-     * @param r Record
-     */
-    public void score(int n, Student r) {
-        r.setScore(n);
+    public void score(Student student, int scorePercent) {
+        student.setScore(scorePercent);
     }
 
-    /**
-     * Deletes the Record value associated with the
-     * Name key and returns the Record value
-     * 
-     * @param f first name
-     * @param l last name
-     * @return Record value associated with Name key
-     */
-    public Student remove(String f, String l) {
-        return bst.remove(new Name(f, l));
+    public Student remove(String firstName, String lastName) {
+        return studentDB.remove(new FullName(firstName, lastName));
     }
 
-    /**
-     * Clears all of the Record values in the 
-     * Section and sets the order of the Section
-     * back to 1
-     */
     public void removeSection() {
-        bst.clear();
+    	studentDB.clear();
         order = 1;
     }
 
@@ -120,19 +74,19 @@ public class Section {
      * @return ArrayList of Records where n matches
      *         the first or last name of the Record
      */
-    public ArrayList<Student> search(String n) {
-        ArrayList<Student> l = new ArrayList<Student>();
-        Iterator<Student> i = bst.iterator();
-        if (bst.size() != 0) {
+    public ArrayList<Student> search(String name) {
+        ArrayList<Student> students = new ArrayList<Student>();
+        Iterator<Student> i = studentDB.iterator();
+        if (studentDB.size() != 0) {
             while (i.hasNext()) {
-                Student r = i.next();
-                if (r.getName().getFirstName().equalsIgnoreCase(n) || r.getName()
-                    .getLastName().equalsIgnoreCase(n)) {
-                    l.add(r);
+                Student student = i.next();
+                if (student.getFullName().getFirstName().equalsIgnoreCase(name)
+                	|| student.getFullName().getLastName().equalsIgnoreCase(name)) {
+                    students.add(student);
                 }
             }
         }
-        return l;
+        return students;
     }
 
     /**
@@ -141,8 +95,8 @@ public class Section {
      * @return Size of the Section
      */
     public int dumpSection() {
-        bst.inorder();
-        return bst.size();
+    	studentDB.inorder();
+        return studentDB.size();
     }
 
     /**
@@ -155,8 +109,8 @@ public class Section {
         int[] numbers = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         String[] letters = { "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+",
             "D", "D-", "F" };
-        Iterator<Student> i = bst.iterator();
-        if (bst.size() != 0) {
+        Iterator<Student> i = studentDB.iterator();
+        if (studentDB.size() != 0) {
             while (i.hasNext()) {
                 Student r = i.next();
                 int j = gradehelper(r.getScore());
@@ -200,7 +154,7 @@ public class Section {
      * @return Number of Record pairs
      */
     public int findPair(int s) {
-        Iterator<Student> i1 = bst.iterator();
+        Iterator<Student> i1 = studentDB.iterator();
         Iterator<Student> i2;
         Student r1;
         Student r2;
@@ -208,10 +162,10 @@ public class Section {
         int retVal = 0;
         System.out.println("Students with score difference less than or equal "
             + s + ":");
-        if (bst.size() != 0) {
+        if (studentDB.size() != 0) {
             while (i1.hasNext()) {
                 r1 = i1.next();
-                i2 = bst.iterator();
+                i2 = studentDB.iterator();
                 for (int j = 0; j < i; j++) {
                     i2.next();
                 }
@@ -219,7 +173,7 @@ public class Section {
                     r2 = i2.next();
                     int diff = Math.abs(r1.getScore() - r2.getScore());
                     if ((diff <= s) && (r1 != r2)) {
-                        System.out.println(r1.getName() + ", " + r2.getName());
+                        System.out.println(r1.getFullName() + ", " + r2.getFullName());
                         retVal++;
                     }
                 }

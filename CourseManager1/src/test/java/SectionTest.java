@@ -11,7 +11,7 @@ import project1.Section;
  * SectionTest Class
  *
  * @author kyleg997 Kyle Galindo
- * @version 2020-07-25
+ * @version 2020-07-29
  */
 public class SectionTest {
     private Section s1;
@@ -34,7 +34,7 @@ public class SectionTest {
     @Test
     public void testInsert() {
         Student r1 = s1.insert("Kyle", "Galindo");
-        assertEquals(r1.getName().toString(), "Kyle Galindo");
+        assertEquals(r1.getFullName().toString(), "Kyle Galindo");
         Student r2 = s1.insert("Angel", "Isiadinso");
         assertEquals(r2.getID(), "010002");
         Student r3 = s1.insert("Young", "Cao");
@@ -47,7 +47,7 @@ public class SectionTest {
         s1.insert("Angel", "Isiadinso");
         s1.insert("Young", "Cao");
         Student r1 = s1.search("Kyle", "Galindo");
-        assertEquals(r1.getName().toString(), "Kyle Galindo");
+        assertEquals(r1.getFullName().toString(), "Kyle Galindo");
         Student r2 = s1.search("John", "Smith");
         assertNull(r2);
     }
@@ -55,10 +55,10 @@ public class SectionTest {
     @Test
     public void testScore() {
         Student r1 = s1.insert("Kyle", "Galindo");
-        s1.score(75, r1);
+        s1.score(r1, 75);
         assertEquals(r1.getScore(), 75);
         Student r2 = s1.insert("Angel", "Isiadinso");
-        s1.score(100, r2);
+        s1.score(r2, 100);
         assertEquals(r2.getScore(), 100);
     }
 
@@ -70,7 +70,7 @@ public class SectionTest {
         s1.insert("John", "Smith");
         s1.insert("A", "B");
         Student r1 = s1.remove("John", "Smith");
-        assertEquals(r1.getName().toString(), "John Smith");
+        assertEquals(r1.getFullName().toString(), "John Smith");
         Student r2 = s1.remove("X", "Y");
         assertNull(r2);
     }
@@ -83,9 +83,9 @@ public class SectionTest {
         s1.insert("Nancy", "Henry");
         s1.insert("Virtual", "Student");
         Student r1 = s1.remove("John", "Obi");
-        assertEquals(r1.getName().toString(), "John Obi");
+        assertEquals(r1.getFullName().toString(), "John Obi");
         Student r2 = s1.remove("Virtual", "Student");
-        assertEquals(r2.getName().toString(), "Virtual Student");
+        assertEquals(r2.getFullName().toString(), "Virtual Student");
         Student r3 = s1.remove("X", "Y");
         assertNull(r3);
     }
@@ -131,29 +131,29 @@ public class SectionTest {
     @Test
     public void testGrade() {
         Student r1 = s1.insert("Kyle", "Galindo");
-        s1.score(90, r1);
+        s1.score(r1, 90);
         Student r2 = s1.insert("Angel", "Isiadinso");
-        s1.score(85, r2);
+        s1.score(r2, 85);
         Student r3 = s1.insert("Young", "Cao");
-        s1.score(80, r3);
+        s1.score(r3, 80);
         Student r4 = s1.insert("John", "Smith");
-        s1.score(75, r4);
+        s1.score(r4, 75);
         Student r5 = s1.insert("A", "B");
-        s1.score(70, r5);
+        s1.score(r5, 70);
         Student r6 = s1.insert("C", "D");
-        s1.score(65, r6);
+        s1.score(r6, 65);
         Student r7 = s1.insert("E", "F");
-        s1.score(60, r7);
+        s1.score(r7, 60);
         Student r8 = s1.insert("G", "H");
-        s1.score(58, r8);
+        s1.score(r8, 58);
         Student r9 = s1.insert("I", "J");
-        s1.score(55, r9);
+        s1.score(r9, 55);
         Student r10 = s1.insert("K", "L");
-        s1.score(53, r10);
+        s1.score(r10, 53);
         Student r11 = s1.insert("M", "N");
-        s1.score(50, r11);
+        s1.score(r11, 50);
         Student r12 = s1.insert("X", "Y");
-        s1.score(25, r12);
+        s1.score(r12, 25);
         s1.grade();
         int size = s1.dumpSection();
         assertEquals(size, 12);
@@ -165,29 +165,29 @@ public class SectionTest {
     @Test
     public void testFindPair() {
         Student r1 = s1.insert("Kyle", "Galindo");
-        s1.score(90, r1);
+        s1.score(r1, 90);
         Student r2 = s1.insert("Angel", "Isiadinso");
-        s1.score(85, r2);
+        s1.score(r2, 85);
         Student r3 = s1.insert("Young", "Cao");
-        s1.score(80, r3);
+        s1.score(r3, 80);
         Student r4 = s1.insert("John", "Smith");
-        s1.score(75, r4);
+        s1.score(r4, 75);
         Student r5 = s1.insert("A", "B");
-        s1.score(70, r5);
+        s1.score(r5, 70);
         Student r6 = s1.insert("C", "D");
-        s1.score(65, r6);
+        s1.score(r6, 65);
         Student r7 = s1.insert("E", "F");
-        s1.score(60, r7);
+        s1.score(r7, 60);
         Student r8 = s1.insert("G", "H");
-        s1.score(58, r8);
+        s1.score(r8, 58);
         Student r9 = s1.insert("I", "J");
-        s1.score(55, r9);
+        s1.score(r9, 55);
         Student r10 = s1.insert("K", "L");
-        s1.score(53, r10);
+        s1.score(r10, 53);
         Student r11 = s1.insert("M", "N");
-        s1.score(50, r11);
+        s1.score(r11, 50);
         Student r12 = s1.insert("X", "Y");
-        s1.score(25, r12);
+        s1.score(r12, 25);
         int pairs = s1.findPair(3);
         assertEquals(pairs, 4);
         pairs = s1.findPair(5);

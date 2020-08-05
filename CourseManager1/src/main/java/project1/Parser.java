@@ -9,7 +9,7 @@ import java.util.StringTokenizer;
  * Parser Class
  *
  * @author kyleg997 Kyle Galindo
- * @version 2020-07-25
+ * @version 2020-07-29
  */
 public class Parser {
     private Section[] sections; // Array of 3 Sections
@@ -162,7 +162,7 @@ public class Parser {
         record = section.search(f, l);
         if (record == null) {
             record = section.insert(f, l);
-            System.out.println(record.getName() + " inserted");
+            System.out.println(record.getFullName() + " inserted");
             retVal = true;
         }
         else { // Error
@@ -209,8 +209,8 @@ public class Parser {
         boolean retVal = false;
         if (scoreCMDNext) {
             if ((n >= 0) && (n <= 100)) {
-                section.score(n, record);
-                System.out.println("Update " + record.getName()
+                section.score(record, n);
+                System.out.println("Update " + record.getFullName()
                     + " record, score = " + record.getScore());
                 retVal = true;
             }

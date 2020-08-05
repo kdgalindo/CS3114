@@ -2,51 +2,51 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import project1.Name;
+import project1.FullName;
 
 /**
- * NameTest Class
+ * FullNameTest Class
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-07-25
+ * @version 2020-08-04
  */
-public class NameTest {
-    private Name n1;
+public class FullNameTest {
+    private FullName fn1;
 
     @Before
     public void setUp() {
-        n1 = new Name("Kyle", "Galindo");
+    	fn1 = new FullName("Kyle", "Galindo");
     }
 
     @Test
     public void testGetFirst() {
-        String firstName = n1.getFirstName();
+        String firstName = fn1.getFirstName();
         assertEquals(firstName, "Kyle");
     }
 
     @Test
     public void testGetLast() {
-        String lastName = n1.getLastName();
+        String lastName = fn1.getLastName();
         assertEquals(lastName, "Galindo");
     }
 
     @Test
     public void testCompareTo() {
-    	Name n2 = new Name("Angel", "Isiadinso");
-        int result = n1.compareTo(n2);
+    	FullName fn2 = new FullName("Angel", "Isiadinso");
+        int result = fn1.compareTo(fn2);
         assertTrue(result < 0);
         
-        result = n1.compareTo(n1);
+        result = fn1.compareTo(fn1);
         assertEquals(result, 0);
         
-        Name n3 = new Name("Young", "Cao");
-        result = n1.compareTo(n3);
+        FullName fn3 = new FullName("Young", "Cao");
+        result = fn1.compareTo(fn3);
         assertTrue(result > 0);
     }
 
     @Test
     public void testToString() {
-        String fullName = n1.toString();
+        String fullName = fn1.toString();
         assertEquals(fullName, "Kyle Galindo");
     }
 }

@@ -1,16 +1,16 @@
 package project1;
 
 /**
- * Name Class
+ * FullName Class
  * 
  * @author kyleg997 Kyle Galindo
  * @version 2020-07-23
  */
-public class Name implements Comparable<Name> {
+public class FullName implements Comparable<FullName> {
     private final String firstName;
     private final String lastName;
 
-    public Name(String firstName, String lastName) {
+    public FullName(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
     }
@@ -24,7 +24,7 @@ public class Name implements Comparable<Name> {
     }
 
     @Override
-    public int compareTo(Name name) {
+    public int compareTo(FullName name) {
         int result = lastName.toLowerCase().compareTo(name.getLastName().toLowerCase());
         if (result == 0) {
             return firstName.toLowerCase().compareTo(name.getFirstName().toLowerCase());
@@ -36,6 +36,6 @@ public class Name implements Comparable<Name> {
 
     @Override
     public String toString() {
-        return String.format(firstName + " " + lastName);
+        return firstName + " " + lastName;
     }
 }

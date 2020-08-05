@@ -6,9 +6,8 @@ import java.util.Stack;
 /**
  * BST Class
  * 
- * @author ati Angel Isiadinso
  * @author kyleg997 Kyle Galindo
- * @version 2019-09-19
+ * @version 2020-07-29
  * 
  * @param <K> Key
  * @param <E> Value
@@ -221,33 +220,19 @@ public class BST<K extends Comparable<? super K>, E> implements Iterable<E> {
     }
 
     /**
-     * Private Iterator Class
-     * Iterator for the BST
+     * BSTIterator Class
      * 
-     * @author aisiadinso Angel Isiadinso
      * @author kyleg997 Kyle Galindo
-     * @version 2019-09-19
+     * @version 2020-07-29
      */
     private class BSTIterator implements Iterator<E> {
-        private Stack<BSTNode<K, E>> stack; // stack used to iterate
-                                            // over a BST
+        private Stack<BSTNode<K, E>> stack;
 
-        /**
-         * Initializes the iterator and starts an inorder traversal
-         */
         public BSTIterator() {
-            if (root != null) {
-                stack = new Stack<BSTNode<K, E>>();
-                goLeftFrom(root);
-            }
+        	stack = new Stack<BSTNode<K, E>>();
+        	goLeftFrom(root);
         }
 
-        /**
-         * In order traveral implementation and pushes values into a stack for
-         * later access
-         * 
-         * @param rt node
-         */
         private void goLeftFrom(BSTNode<K, E> rt) {
             while (rt != null) {
                 stack.push(rt);
@@ -255,21 +240,11 @@ public class BST<K extends Comparable<? super K>, E> implements Iterable<E> {
             }
         }
 
-        /**
-         * Checks if stack is empty
-         * 
-         * @return true or false
-         */
         @Override
         public boolean hasNext() {
             return !stack.isEmpty();
         }
 
-        /**
-         * Gets the next element in the BST
-         * 
-         * @return node element
-         */
         @Override
         public E next() {
             BSTNode<K, E> current = stack.peek();

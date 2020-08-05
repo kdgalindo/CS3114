@@ -6,22 +6,20 @@ import java.util.ArrayList;
  * CourseManager Class
  *
  * @author kyleg997 Kyle Galindo
- * @version 2020-07-28
+ * @version 2020-08-04
  */
 public class CourseManager {
 	private final int MAX_SECTION_NUMBER = 3;
-	
-    private Section[] sections;
-    private Section currentSection;
-    
+    private CourseSection[] sections;
+    private CourseSection currentSection;
     private Student currentStudent;
     private boolean studentScorable;
     
     public CourseManager() {
-        sections = new Section[MAX_SECTION_NUMBER];
+        sections = new CourseSection[MAX_SECTION_NUMBER];
         for (int i = 0; i < MAX_SECTION_NUMBER; i++) {
         	int sectionNumber = i + 1;
-            sections[i] = new Section(sectionNumber);
+            sections[i] = new CourseSection(sectionNumber);
         }
         currentSection = sections[0];
         currentStudent = null;
@@ -33,10 +31,10 @@ public class CourseManager {
     }
     
     public void setCurrentSection(int sectionNumber) {
+    	clearStudentScorable();
     	if (isValidSectionNumber(sectionNumber)) {
     		currentSection = sections[sectionNumber - 1];
     	}
-    	clearStudentScorable();
     }
     
     private void clearStudentScorable() {
@@ -49,23 +47,23 @@ public class CourseManager {
     
     public int dumpCurrentSection() {
     	clearStudentScorable();
-    	return currentSection.dumpSection();
+    	return currentSection.dump();
     }
     
-    public void gradeCurrentSection() {
-    	currentSection.grade();
+    public int[] gradeCurrentSection() {
     	clearStudentScorable();
+    	return currentSection.gradeAllStudents();
     }
     
     public void clearSection(int sectionNumber) {
-    	if (isValidSectionNumber(sectionNumber)) {
-    		sections[sectionNumber - 1].removeSection();
-    	}
     	clearStudentScorable();
+    	if (isValidSectionNumber(sectionNumber)) {
+    		sections[sectionNumber - 1].removeAllStudents();
+    	}
     }
     
     public void insertStudent(String firstName, String lastName) {
-    	Student student = currentSection.insert(firstName, lastName);
+    	Student student = currentSection.insertStudent(firstName, lastName);
     	setStudentScorable(student);
     }
     
@@ -75,15 +73,15 @@ public class CourseManager {
     }
     
     public Student findStudent(String firstName, String lastName) {
-    	Student student = currentSection.search(firstName, lastName);
+    	Student student = currentSection.findStudent(firstName, lastName);
     	setStudentScorable(student);
     	return student;
     }
     
-    public ArrayList<Student> findStudents(String name) {
-    	ArrayList<Student> students = currentSection.search(name);
-    	if (students.size() == 1) {
-    		setStudentScorable(students.get(0));
+    public Student[] findStudents(String name) {
+    	Student[] students = currentSection.findStudents(name);
+    	if (students.length == 1) {
+    		setStudentScorable(students[0]);
     	}
     	else {
     		clearStudentScorable();
@@ -91,15 +89,15 @@ public class CourseManager {
     	return students;
     }
     
-    public void findStudentPairs(int scorePercentDiff) {
-    	currentSection.findPair(scorePercentDiff);
+    public StudentPair[] findStudentPairs(int scorePercentDiff) {
     	clearStudentScorable();
+    	return currentSection.findStudentPairs(scorePercentDiff);
     }
     
     public Student scoreStudent(int scorePercent) {
     	if (isStudentScorable()) {
     		if (isValidScorePercent(scorePercent)) {
-    			currentSection.score(scorePercent, currentStudent);
+    			currentSection.score(currentStudent, scorePercent);
     		}
     	}
     	clearStudentScorable();
@@ -116,6 +114,6 @@ public class CourseManager {
     
     public Student removeStudent(String firstName, String lastName) {
     	clearStudentScorable();
-    	return currentSection.remove(firstName, lastName);
+    	return currentSection.removeStudent(firstName, lastName);
     }
 }
