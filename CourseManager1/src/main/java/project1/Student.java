@@ -4,11 +4,11 @@ package project1;
  * Student Class
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-04
+ * @version 2020-08-05
  */
 public class Student {
-    private FullName fullName;
-    private String idNumber;
+    private final FullName fullName;
+    private final String idNumber;
     private int scorePercent;
 
     public Student(FullName fullName, String idNumber) {

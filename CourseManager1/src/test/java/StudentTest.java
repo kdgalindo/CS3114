@@ -9,7 +9,7 @@ import project1.Student;
  * StudentTest Class
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-04
+ * @version 2020-08-05
  */
 public class StudentTest {
     private Student s1;

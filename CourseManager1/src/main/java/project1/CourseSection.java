@@ -7,7 +7,7 @@ import java.util.Iterator;
  * CourseSection Class
  *
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-04
+ * @version 2020-08-05
  */
 public class CourseSection {
     private BST<FullName, Student> studentDB;
@@ -16,7 +16,7 @@ public class CourseSection {
 
     public CourseSection(int sectionNumber) {
     	studentDB = new BST<FullName, Student>();
-    	studentInsertOrder = 1;
+    	studentInsertOrder = 0;
         number = sectionNumber;
     }
 
@@ -26,20 +26,13 @@ public class CourseSection {
 
     public Student insertStudent(String firstName, String lastName) {
         FullName name = new FullName(firstName, lastName);
-        Student student = new Student(name, newID());
+        Student student = new Student(name, newStudentIDNumber());
         studentDB.insert(name, student);
-        studentInsertOrder++;
         return studentDB.find(name);
     }
 
-    /**
-     * Returns a new ID for a Record
-     * 
-     * @return id
-     */
-    private String newID() {
-        int id = (number * 10000) + studentInsertOrder;
-        return String.format("%06d", id);
+    private String newStudentIDNumber() {
+        return String.format("%02d%04d", number, ++studentInsertOrder);
     }
 
     public Student findStudent(String firstName, String lastName) {
@@ -76,7 +69,7 @@ public class CourseSection {
     
     public void removeAllStudents() {
     	studentDB.clear();
-        studentInsertOrder = 1;
+        studentInsertOrder = 0;
     }
     
     public int dump() {
@@ -90,28 +83,20 @@ public class CourseSection {
     }
     
     public StudentPair[] findStudentPairs(int scorePercentDiff) {
-        int studentsToSkip = 1;
-        
         ArrayList<StudentPair> studentsWithDiff = new ArrayList<StudentPair>();
-        
+        int studentsToSkip = 1;
         Iterator<Student> itOuter = studentDB.iterator();
         while (itOuter.hasNext()) {
         	Student first = itOuter.next();
-        	
         	Iterator<Student> itInner = studentDB.iterator();
-        	
-            skipStudents(itInner, studentsToSkip);
-            
+            skipStudents(itInner, studentsToSkip++);
             while (itInner.hasNext()) {
-            	Student second = itInner.next();
-                int diff = Math.abs(first.getScore() - second.getScore());
-                if ((diff <= scorePercentDiff)) {
-                    studentsWithDiff.add(new StudentPair(first, second));
+            	StudentPair studentPair = new StudentPair(first, itInner.next());
+                if (isWithinDifference(studentPair, scorePercentDiff)) {
+                    studentsWithDiff.add(studentPair);
                 }
             }
-            studentsToSkip++;
         }
-        
         StudentPair[] studentPairs = new StudentPair[studentsWithDiff.size()];
         studentPairs = studentsWithDiff.toArray(studentPairs);
         return studentPairs;
@@ -123,5 +108,12 @@ public class CourseSection {
     			it.next();
     		}
     	}
+    }
+    
+    private boolean isWithinDifference(StudentPair studentPair, int scorePercentDiff) {
+    	Student first = studentPair.getFirst();
+    	Student second = studentPair.getSecond();
+    	int diff = Math.abs(first.getScore() - second.getScore());
+    	return diff <= scorePercentDiff;
     }
 }

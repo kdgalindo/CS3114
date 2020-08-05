@@ -4,7 +4,7 @@ package project1;
  * FullName Class
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-07-23
+ * @version 2020-08-05
  */
 public class FullName implements Comparable<FullName> {
     private final String firstName;

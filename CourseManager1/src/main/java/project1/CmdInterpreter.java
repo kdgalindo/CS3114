@@ -9,7 +9,7 @@ import java.util.StringTokenizer;
  * CmdInterpreter Class
  *
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-04
+ * @version 2020-08-05
  */
 public class CmdInterpreter {
 	private CourseManager courseManager;
@@ -21,11 +21,8 @@ public class CmdInterpreter {
     public void eval(String fn) {
         try {
             Scanner sc = new Scanner(new File(fn));
-
             while (sc.hasNext()) {
-
                 String cmd = sc.next();
-
                 switch (cmd) {
                     case "section": {
                     		int sectionNumber = sc.nextInt();

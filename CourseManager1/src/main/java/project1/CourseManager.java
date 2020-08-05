@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * CourseManager Class
  *
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-04
+ * @version 2020-08-05
  */
 public class CourseManager {
 	private final int MAX_SECTION_NUMBER = 3;

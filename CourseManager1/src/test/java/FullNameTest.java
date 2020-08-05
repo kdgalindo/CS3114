@@ -8,7 +8,7 @@ import project1.FullName;
  * FullNameTest Class
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-04
+ * @version 2020-08-05
  */
 public class FullNameTest {
     private FullName fn1;

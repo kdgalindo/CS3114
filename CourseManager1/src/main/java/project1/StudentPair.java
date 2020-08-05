@@ -7,12 +7,20 @@ package project1;
  * @version 2020-08-05
  */
 public class StudentPair {
-	private Student first;
-	private Student second;
+	private final Student first;
+	private final Student second;
 	
 	public StudentPair(Student first, Student second) {
 		this.first = first;
 		this.second = second;
+	}
+	
+	public Student getFirst() {
+		return first;
+	}
+	
+	public Student getSecond() {
+		return second;
 	}
 	
     @Override
