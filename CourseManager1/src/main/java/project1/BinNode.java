@@ -1,53 +1,22 @@
 package project1;
 
 /**
- * BinNode interface for BSTNode
+ * BinNode Interface
  * 
- * @author ati Angel Isiadinso
  * @author kyleg997 Kyle Galindo
- * @version 2019-09-19
+ * @version 2020-08-10
  * 
- * @param <E> element
+ * @param <V> value
  */
-interface BinNode<E> {
+interface BinNode<V> {
 
-    /**
-     * Gets element value
-     * 
-     * @return element
-     */
-    public E element();
+    public V value();
 
+    public V setValue(V v);
 
-    /**
-     * Sets the element value
-     * 
-     * @param v element
-     * @return element
-     */
-    public E setElement(E v);
+    public BinNode<V> left();
 
+    public BinNode<V> right();
 
-    /**
-     * Returns the left children of the node
-     * 
-     * @return left child
-     */
-    public BinNode<E> left();
-
-
-    /**
-     * Returns the right children of the node
-     * 
-     * @return right child
-     */
-    public BinNode<E> right();
-
-
-    /**
-     * Return TRUE if a leaf node exists, FALSE otherwise
-     * 
-     * @return true or false
-     */
     public boolean isLeaf();
 }

@@ -159,7 +159,7 @@ public class CourseSection {
     	Student first = studentPair.getFirst();
     	Student second = studentPair.getSecond();
     	int diff = Math.abs(first.getScore() - second.getScore());
-    	return diff <= scorePercentDiff;
+    	return (diff <= scorePercentDiff);
     }
     
     /**

@@ -106,9 +106,9 @@ public class CmdInterpreter {
     
     public boolean evalSection(int sectionNumber) {
         boolean result = false;
-        if (courseManager.isValidSectionNumber(sectionNumber)) {
-        	courseManager.setCurrentSection(sectionNumber);
-        	int currentSectionNumber = courseManager.getCurrentSection();
+        if (courseManager.isValidSection(sectionNumber)) {
+        	courseManager.setSection(sectionNumber);
+        	int currentSectionNumber = courseManager.getSection();
         	System.out.println("switch to section " + currentSectionNumber);
         	result = true;
         }
@@ -127,7 +127,7 @@ public class CmdInterpreter {
         else {
             System.out.println(firstName + " " + lastName
             	+ " is already in section "
-            	+ courseManager.getCurrentSection());
+            	+ courseManager.getSection());
             System.out.println(student);
         }
         return result;
@@ -144,7 +144,7 @@ public class CmdInterpreter {
             System.out.println("Search failed. Student "
             	+ firstName + " " + lastName
                 + " doesn't exist in section "
-            	+ courseManager.getCurrentSection());
+            	+ courseManager.getSection());
         }
         return result;
     }
@@ -159,7 +159,7 @@ public class CmdInterpreter {
         }
         System.out.println(name + " was found in "
         	+ students.length + " records in section "
-        	+ courseManager.getCurrentSection());
+        	+ courseManager.getSection());
         return result;
     }
 
@@ -194,20 +194,20 @@ public class CmdInterpreter {
             System.out.println("Student "
             	+ firstName + " " + lastName
                 + " get removed from section "
-            	+ courseManager.getCurrentSection());
+            	+ courseManager.getSection());
             result = true;
         }
         else {
             System.out.println("Remove failed. Student "
             	+ firstName + " " + lastName
                 + " doesn't exist in section "
-                + courseManager.getCurrentSection());
+                + courseManager.getSection());
         }
         return result;
     }
     
     public boolean evalRemoveSection() {
-    	int currentSectionNumber = courseManager.getCurrentSection();
+    	int currentSectionNumber = courseManager.getSection();
     	return evalRemoveSectionHandler(currentSectionNumber);
     }
 
@@ -217,7 +217,7 @@ public class CmdInterpreter {
     
     private boolean evalRemoveSectionHandler(int sectionNumber) {
     	boolean result = false;
-    	if (courseManager.isValidSectionNumber(sectionNumber)) {
+    	if (courseManager.isValidSection(sectionNumber)) {
     		courseManager.clearSection(sectionNumber);
     		System.out.println("Section " + sectionNumber + " removed");
     		result = true;
@@ -226,12 +226,12 @@ public class CmdInterpreter {
     }
 
     public void evalDumpSection() {
-        System.out.println("Section " + courseManager.getCurrentSection() + " dump:");
-        System.out.println("Size = " + courseManager.dumpCurrentSection());
+        System.out.println("Section " + courseManager.getSection() + " dump:");
+        System.out.println("Size = " + courseManager.dumpSection());
     }
 
     public void evalGrade() {
-        courseManager.gradeCurrentSection();
+        courseManager.gradeSection();
     }
 
     public void evalFindPair(int scorePercentDiff) {

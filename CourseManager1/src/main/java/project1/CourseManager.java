@@ -26,40 +26,35 @@ public class CourseManager {
         studentScorable = false;
     }
     
-    public int getCurrentSection() {
+    /**
+     * 
+     * @return
+     */
+    public int getSection() {
     	return currentSection.getNumber();
     }
     
-    public void setCurrentSection(int sectionNumber) {
+    public void setSection(int sectionNumber) {
     	clearStudentScorable();
-    	if (isValidSectionNumber(sectionNumber)) {
+    	if (isValidSection(sectionNumber)) {
     		currentSection = sections[sectionNumber - 1];
     	}
     }
     
+    /**
+     * 
+     */
     private void clearStudentScorable() {
     	studentScorable = false;
     }
     
-    public boolean isValidSectionNumber(int sectionNumber) {
+    /**
+     * 
+     * @param sectionNumber
+     * @return
+     */
+    public boolean isValidSection(int sectionNumber) {
     	return ((sectionNumber > 0) && (sectionNumber < MAX_SECTION_NUMBER + 1));
-    }
-    
-    public int dumpCurrentSection() {
-    	clearStudentScorable();
-    	return currentSection.dump();
-    }
-    
-    public void gradeCurrentSection() {
-    	clearStudentScorable();
-    	currentSection.gradeAllStudents();
-    }
-    
-    public void clearSection(int sectionNumber) {
-    	clearStudentScorable();
-    	if (isValidSectionNumber(sectionNumber)) {
-    		sections[sectionNumber - 1].removeAllStudents();
-    	}
     }
     
     public void insertStudent(String firstName, String lastName) {
@@ -67,6 +62,10 @@ public class CourseManager {
     	setStudentScorable(student);
     }
     
+    /**
+     * 
+     * @param student
+     */
     private void setStudentScorable(Student student) {
     	currentStudent = student;
     	studentScorable = true;
@@ -89,11 +88,6 @@ public class CourseManager {
     	return students;
     }
     
-    public StudentPair[] findStudentPairs(int scorePercentDiff) {
-    	clearStudentScorable();
-    	return currentSection.findStudentPairs(scorePercentDiff);
-    }
-    
     public Student scoreStudent(int scorePercent) {
     	if (isStudentScorable()) {
     		if (isValidScorePercent(scorePercent)) {
@@ -104,10 +98,19 @@ public class CourseManager {
     	return currentStudent;
     }
     
+    /**
+     * 
+     * @return
+     */
     public boolean isStudentScorable() {
     	return studentScorable;
     }
     
+    /**
+     * 
+     * @param scorePercent
+     * @return
+     */
     public static boolean isValidScorePercent(int scorePercent) {
     	return ((scorePercent > -1) && (scorePercent < 101));
     }
@@ -115,5 +118,27 @@ public class CourseManager {
     public Student removeStudent(String firstName, String lastName) {
     	clearStudentScorable();
     	return currentSection.removeStudent(firstName, lastName);
+    }
+    
+    public void clearSection(int sectionNumber) {
+    	clearStudentScorable();
+    	if (isValidSection(sectionNumber)) {
+    		sections[sectionNumber - 1].removeAllStudents();
+    	}
+    }
+    
+    public int dumpSection() {
+    	clearStudentScorable();
+    	return currentSection.dump();
+    }
+    
+    public void gradeSection() {
+    	clearStudentScorable();
+    	currentSection.gradeAllStudents();
+    }
+    
+    public StudentPair[] findStudentPairs(int scorePercentDiff) {
+    	clearStudentScorable();
+    	return currentSection.findStudentPairs(scorePercentDiff);
     }
 }

@@ -7,36 +7,25 @@ import java.util.Stack;
  * BST Class
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-07-29
+ * @version 2020-08-10
  * 
  * @param <K> Key
- * @param <E> Value
+ * @param <V> Value
  */
-public class BST<K extends Comparable<? super K>, E> implements Iterable<E> {
-    private BSTNode<K, E> root; // Root of the BST
-    private int nodecount; // Number of nodes in the BST
+public class BST<K extends Comparable<? super K>, V> implements Iterable<V> {
+    private BSTNode<K, V> root;
+    private int nodecount;
 
-    /**
-     * BST default constructor
-     */
     public BST() {
         root = null;
         nodecount = 0;
     }
 
-    /**
-     * Clears the BST
-     */
     public void clear() {
         root = null;
         nodecount = 0;
     }
 
-    /**
-     * Returns the size of the BST
-     * 
-     * @return number of records in the dictionary
-     */
     public int size() {
         return nodecount;
     }
@@ -48,8 +37,8 @@ public class BST<K extends Comparable<? super K>, E> implements Iterable<E> {
      * @param k key
      * @param e record
      */
-    public void insert(K k, E e) {
-        root = inserthelp(root, k, e);
+    public void insert(K k, V v) {
+        root = inserthelp(root, k, v);
         nodecount++;
     }
 
@@ -61,15 +50,15 @@ public class BST<K extends Comparable<? super K>, E> implements Iterable<E> {
      * @param e value
      * @return rt
      */
-    private BSTNode<K, E> inserthelp(BSTNode<K, E> rt, K k, E e) {
+    private BSTNode<K, V> inserthelp(BSTNode<K, V> rt, K k, V v) {
         if (rt == null) {
-            return new BSTNode<K, E>(k, e);
+            return new BSTNode<K, V>(k, v);
         }
         if (rt.key().compareTo(k) > 0) {
-            rt.setLeft(inserthelp(rt.left(), k, e));
+            rt.setLeft(inserthelp(rt.left(), k, v));
         }
         else {
-            rt.setRight(inserthelp(rt.right(), k, e));
+            rt.setRight(inserthelp(rt.right(), k, v));
         }
         return rt;
     }
@@ -80,8 +69,8 @@ public class BST<K extends Comparable<? super K>, E> implements Iterable<E> {
      * @param k key to remove
      * @return the record that was removed
      */
-    public E remove(K k) {
-        E recordRemoved = findhelp(root, k);
+    public V remove(K k) {
+        V recordRemoved = findhelp(root, k);
         if (recordRemoved != null) {
             root = removehelp(root, k);
             nodecount--;
@@ -96,7 +85,7 @@ public class BST<K extends Comparable<? super K>, E> implements Iterable<E> {
      * @param k key
      * @return rt
      */
-    private BSTNode<K, E> removehelp(BSTNode<K, E> rt, K k) {
+    private BSTNode<K, V> removehelp(BSTNode<K, V> rt, K k) {
         if (rt == null) {
             return null;
         }
@@ -114,9 +103,9 @@ public class BST<K extends Comparable<? super K>, E> implements Iterable<E> {
                 return rt.left();
             }
             else {
-                BSTNode<K, E> temp = getmin(rt.right());
+                BSTNode<K, V> temp = getmin(rt.right());
                 rt.setKey(temp.key());
-                rt.setElement(temp.element());
+                rt.setValue(temp.value());
                 rt.setRight(deletemin(rt.right()));
             }
         }
@@ -129,7 +118,7 @@ public class BST<K extends Comparable<? super K>, E> implements Iterable<E> {
      * @param rt node
      * @return the smallest element
      */
-    private BSTNode<K, E> getmin(BSTNode<K, E> rt) {
+    private BSTNode<K, V> getmin(BSTNode<K, V> rt) {
         if (rt.left() == null) {
             return rt;
         }
@@ -142,7 +131,7 @@ public class BST<K extends Comparable<? super K>, E> implements Iterable<E> {
      * @param rt node
      * @return the right tree after the deletion
      */
-    private BSTNode<K, E> deletemin(BSTNode<K, E> rt) {
+    private BSTNode<K, V> deletemin(BSTNode<K, V> rt) {
         if (rt.left() == null) {
             return rt.right();
         }
@@ -158,7 +147,7 @@ public class BST<K extends Comparable<? super K>, E> implements Iterable<E> {
      * @param k key to find
      * @return element that's being sought after
      */
-    public E find(K k) {
+    public V find(K k) {
         return findhelp(root, k);
     }
 
@@ -170,7 +159,7 @@ public class BST<K extends Comparable<? super K>, E> implements Iterable<E> {
      * @param k key
      * @return element that was found
      */
-    private E findhelp(BSTNode<K, E> rt, K k) {
+    private V findhelp(BSTNode<K, V> rt, K k) {
         if (rt == null) {
             return null;
         }
@@ -178,7 +167,7 @@ public class BST<K extends Comparable<? super K>, E> implements Iterable<E> {
             return findhelp(rt.left(), k);
         }
         else if (rt.key().compareTo(k) == 0) {
-            return rt.element();
+            return rt.value();
         }
         else {
             return findhelp(rt.right(), k);
@@ -199,13 +188,13 @@ public class BST<K extends Comparable<? super K>, E> implements Iterable<E> {
      * @param rt node
      * @param level current tree level
      */
-    private void inorderhelper(BSTNode<K, E> rt, int level) {
+    private void inorderhelper(BSTNode<K, V> rt, int level) {
         if (rt == null) {
             return;
         }
         level++;
         inorderhelper(rt.left(), level);
-        System.out.println(rt.element() + ", at level " + level);
+        System.out.println(rt.value() + ", at level " + level);
         inorderhelper(rt.right(), level);
     }
 
@@ -215,7 +204,7 @@ public class BST<K extends Comparable<? super K>, E> implements Iterable<E> {
      * @return iterator for a BST
      */
     @Override
-    public Iterator<E> iterator() {
+    public Iterator<V> iterator() {
         return new BSTIterator();
     }
 
@@ -223,17 +212,17 @@ public class BST<K extends Comparable<? super K>, E> implements Iterable<E> {
      * BSTIterator Class
      * 
      * @author kyleg997 Kyle Galindo
-     * @version 2020-07-29
+     * @version 2020-08-10
      */
-    private class BSTIterator implements Iterator<E> {
-        private Stack<BSTNode<K, E>> stack;
+    private class BSTIterator implements Iterator<V> {
+        private Stack<BSTNode<K, V>> stack;
 
         public BSTIterator() {
-        	stack = new Stack<BSTNode<K, E>>();
+        	stack = new Stack<BSTNode<K, V>>();
         	goLeftFrom(root);
         }
 
-        private void goLeftFrom(BSTNode<K, E> rt) {
+        private void goLeftFrom(BSTNode<K, V> rt) {
             while (rt != null) {
                 stack.push(rt);
                 rt = rt.left();
@@ -246,13 +235,13 @@ public class BST<K extends Comparable<? super K>, E> implements Iterable<E> {
         }
 
         @Override
-        public E next() {
-            BSTNode<K, E> current = stack.peek();
+        public V next() {
+            BSTNode<K, V> current = stack.peek();
             stack.pop();
             if (current.right() != null) {
                 goLeftFrom(current.right());
             }
-            return current.element();
+            return current.value();
         }
     }
 }

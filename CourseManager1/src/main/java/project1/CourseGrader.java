@@ -40,9 +40,9 @@ public class CourseGrader {
 	private static void printGradeResults(int[] studentsWithEachGrade) {
 		System.out.println("grading completed:");
         for (int i = 0; i < studentsWithEachGrade.length; i++) {
-            int studentsWithAGrade = studentsWithEachGrade[i];
-            if (studentsWithAGrade != 0) {
-                System.out.println(studentsWithAGrade
+            int studentsWithGrade = studentsWithEachGrade[i];
+            if (studentsWithGrade != 0) {
+                System.out.println(studentsWithGrade
                 	+ " students with grade "
                 	+ LETTER_GRADES[i]);
             }
