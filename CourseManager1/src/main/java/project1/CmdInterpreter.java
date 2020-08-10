@@ -9,7 +9,7 @@ import java.util.StringTokenizer;
  * CmdInterpreter Class
  *
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-05
+ * @version 2020-08-10
  */
 public class CmdInterpreter {
 	private CourseManager courseManager;
@@ -231,14 +231,7 @@ public class CmdInterpreter {
     }
 
     public void evalGrade() {
-        int[] numbers = courseManager.gradeCurrentSection();
-        System.out.println("grading completed:");
-        for (int i = 0; i < numbers.length; i++) {
-            int n = numbers[i];
-            if (n != 0) {
-                System.out.println(n + " students with grade " + Grader.GRADE_LETTERS[i]);
-            }
-        }
+        courseManager.gradeCurrentSection();
     }
 
     public void evalFindPair(int scorePercentDiff) {

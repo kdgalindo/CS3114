@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * CourseManager Class
  *
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-05
+ * @version 2020-08-10
  */
 public class CourseManager {
 	private final int MAX_SECTION_NUMBER = 3;
@@ -50,9 +50,9 @@ public class CourseManager {
     	return currentSection.dump();
     }
     
-    public int[] gradeCurrentSection() {
+    public void gradeCurrentSection() {
     	clearStudentScorable();
-    	return currentSection.gradeAllStudents();
+    	currentSection.gradeAllStudents();
     }
     
     public void clearSection(int sectionNumber) {
