@@ -1,4 +1,4 @@
-package project1;
+package bst;
 
 import java.util.Iterator;
 import java.util.Stack;

@@ -1,8 +1,11 @@
-package project1;
+package interpreter;
 
 import java.io.File;
 import java.util.Scanner;
 import java.util.StringTokenizer;
+
+import course.CourseManager;
+import student.*;
 
 /**
  * CmdInterpreter Class

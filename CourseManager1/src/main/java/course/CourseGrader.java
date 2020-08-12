@@ -1,7 +1,9 @@
-package project1;
+package course;
 
 import java.util.Arrays;
 import java.util.Iterator;
+
+import student.Student;
 
 /** 
  * CourseGrader Class

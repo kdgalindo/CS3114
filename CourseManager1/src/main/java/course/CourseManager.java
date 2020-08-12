@@ -1,4 +1,6 @@
-package project1;
+package course;
+
+import student.*;
 
 /**
  * CourseManager Class

@@ -1,7 +1,10 @@
-package project1;
+package course;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import bst.BST;
+import student.*;
 
 /** 
  * CourseSection Class

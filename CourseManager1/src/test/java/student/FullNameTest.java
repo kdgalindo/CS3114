@@ -1,8 +1,9 @@
+package student;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import project1.FullName;
+import student.FullName;
 
 /**
  * FullNameTest Class

@@ -1,8 +1,9 @@
+package bst;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import project1.BSTNode;
+import bst.BSTNode;
 
 /**
  * BSTNodeTest Class

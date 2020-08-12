@@ -1,4 +1,4 @@
-package project1;
+import interpreter.CmdInterpreter;
 
 /**
  * Coursemanager1 Class
@@ -15,8 +15,6 @@ public class Coursemanager1 {
     public static void main(String[] args) {
     	if (args.length > 0) {
 	        String fn = args[0];
-//	        Parser p = new Parser();
-//	        p.parse(fn);
 	        CmdInterpreter cmdInterpreter = new CmdInterpreter();
 	        cmdInterpreter.eval(fn);
     	}

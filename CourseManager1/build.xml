@@ -45,7 +45,7 @@
 	</target>
 	
 	<target name="execute" depends="compile">
-		<java classname="project1.Coursemanager1"
+		<java classname="Coursemanager1"
 			classpath="${dir.build.classes.main.java}">
 		<arg line="${dir.test}/SampleInput3.txt"/>
 		</java>
