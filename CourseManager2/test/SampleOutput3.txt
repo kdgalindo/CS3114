@@ -1,0 +1,68 @@
+Section 1 dump:
+Size = 0
+John Obi inserted
+Update John Obi record, score = 88
+Susan Obi inserted
+Update Susan Obi record, score = 15
+susan oBI is already in section 1
+010002, Susan Obi, score = 15
+Update Susan Obi record, score = 27
+Susan Ibrahim inserted
+Nancy Henry inserted
+Update Nancy Henry record, score = 71
+Section 1 dump:
+010004, Nancy Henry, score = 71, [optional: at level 2]
+010003, Susan Ibrahim, score = 0, [optional: at level 1]
+010001, John Obi, score = 88, [optional: at level 0]
+010002, Susan Obi, score = 27, [optional: at level 1]
+Size = 4
+score command can only be called after an insert command or a successful search command with one exact output.
+switch to section 2
+Search failed. Student X Y doesn't exist in section 2
+switch to section 1
+Found 010002, Susan Obi, score = 27
+Search failed. Student A B doesn't exist in section 1
+search results for Eva:
+Eva was found in 0 records in section 1
+search results for Susa:
+Susa was found in 0 records in section 1
+search results for Susan:
+010003, Susan Ibrahim, score = 0
+010002, Susan Obi, score = 27
+Susan was found in 2 records in section 1
+score command can only be called after an insert command or a successful search command with one exact output.
+search results for john:
+010001, John Obi, score = 88, [optional: at level 0]
+john was found in 1 records in section 1
+Update John Obi record, score = 98
+Remove failed. Student Virtual student doesn't exist in section 1
+virtual student inserted
+Update virtual student record, score = 77
+Student John Obi get removed from section 1
+Student virtual Student get removed from section 1
+switch to section 2
+David Moses inserted
+Update David Moses record, score = 85
+Sarah Moses inserted
+Update Sarah Moses record, score = 93
+Susan Obi inserted
+Found 020001, David Moses, score = 85
+Update David Moses record, score = 66
+Found 020001, David Moses, score = 66
+Scores have to be integers in range 0 to 100.
+Section 2 dump:
+020001, David Moses, score = 66, [optional: at level 0]
+020002, Sarah Moses, score = 93, [optional: at level 1]
+020003, Susan Obi, score = 0, [optional: at level 2]
+Size = 3
+Section 3 removed
+Section 2 removed
+switch to section 1
+Students with score difference less than or equal 30:
+Susan Ibrahim, Susan Obi
+found 1 pairs
+Students with score difference less than or equal 0:
+found 0 pairs
+grading completed:
+2 students with grade F
+1 students with grade B-

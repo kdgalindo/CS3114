@@ -1,0 +1,71 @@
+<?xml version="1.0" ?> 
+<project name="CourseManager2" default="execute" basedir=".">
+
+	<property name="dir.src" value="src"/>
+	<property name="dir.src.main" value="${dir.src}/main"/>
+	<property name="dir.src.main.java" value="${dir.src.main}/java"/>
+	<property name="dir.src.test" value="${dir.src}/test"/>
+	<property name="dir.src.test.java" value="${dir.src.test}/java"/>
+	
+	<property name="dir.build" value="build"/>
+	<property name="dir.build.classes" value="${dir.build}/classes"/>
+	<property name="dir.build.classes.main" value="${dir.build.classes}/main"/>
+	<property name="dir.build.classes.main.java" value="${dir.build.classes.main}/java"/>
+	<property name="dir.build.classes.test" value="${dir.build.classes}/test"/>
+	<property name="dir.build.classes.test.java" value="${dir.build.classes.test}/java"/>
+	
+	<property name="dir.lib" value="lib"/>
+	<property name="dir.test" value="test"/>
+	
+	<path id="classpath.test">
+		<pathelement location="lib/junit-4.13.jar"/>
+	    <pathelement location="lib/hamcrest-core-1.3.jar"/>
+	    <pathelement location="${dir.build.classes.main.java}"/>
+	</path>
+	
+	<target name="init" depends="clean">
+		<mkdir dir="${dir.build}"/>
+		<mkdir dir="${dir.build.classes}"/>
+		<mkdir dir="${dir.build.classes.main}"/>
+		<mkdir dir="${dir.build.classes.main.java}"/>
+		<mkdir dir="${dir.build.classes.test}"/>
+		<mkdir dir="${dir.build.classes.test.java}"/>
+	</target>
+
+	<target name="compile" depends="init">
+		<javac srcdir="${dir.src.main.java}" 
+			destdir="${dir.build.classes.main.java}"
+			includeantruntime="false"/>
+		
+		<javac srcdir="${dir.src.test.java}"
+			destdir="${dir.build.classes.test.java}"
+			includeantruntime="false">
+		<classpath refid="classpath.test"/>
+		</javac>
+	</target>
+	
+	<target name="execute" depends="compile">
+		<java classname="project1.Coursemanager1"
+			classpath="${dir.build.classes.main.java}">
+		<arg line="${dir.test}/SampleInput3.txt"/>
+		</java>
+	</target>
+	
+	<target name="test" depends="compile">
+		<junit printsummary="on" haltonfailure="yes" fork="true">
+			<classpath>
+				<path refid="classpath.test"/>
+				<pathelement location="${dir.build.classes.test.java}"/>
+			</classpath>
+			<formatter type="brief" usefile="false" />
+			<batchtest>
+				<fileset dir="${dir.src.test.java}" includes="**/*Test.java" />
+			</batchtest>
+		</junit>
+	</target>
+	
+	<target name="clean">
+		<delete dir="${dir.build}"/>
+	</target>
+	
+</project>
