@@ -4,8 +4,9 @@ import java.io.File;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
-import course.CourseManager;
-import student.*;
+import course.SectionManager;
+import student.Student;
+import student.StudentPair;
 
 /**
  * CmdInterpreter Class
@@ -14,10 +15,10 @@ import student.*;
  * @version 2020-08-10
  */
 public class CmdInterpreter {
-	private CourseManager courseManager;
+	private SectionManager sectionManager;
 	
 	public CmdInterpreter() {
-		courseManager = new CourseManager();
+		sectionManager = new SectionManager();
 	}
 	
     public void eval(String fn) {
@@ -108,9 +109,9 @@ public class CmdInterpreter {
     
     public boolean evalSection(int sectionNumber) {
         boolean result = false;
-        if (courseManager.isValidSection(sectionNumber)) {
-        	courseManager.setSection(sectionNumber);
-        	int currentSectionNumber = courseManager.getSection();
+        if (sectionManager.isValidSection(sectionNumber)) {
+        	sectionManager.setSection(sectionNumber);
+        	int currentSectionNumber = sectionManager.getSection();
         	System.out.println("switch to section " + currentSectionNumber);
         	result = true;
         }
@@ -119,9 +120,9 @@ public class CmdInterpreter {
     
     public boolean evalInsert(String firstName, String lastName) {
         boolean result = false;
-        Student student = courseManager.findStudent(firstName, lastName);
+        Student student = sectionManager.findStudent(firstName, lastName);
         if (student == null) {
-            courseManager.insertStudent(firstName, lastName);
+            sectionManager.insertStudent(firstName, lastName);
             System.out.println(firstName + " " + lastName
             	+ " inserted");
             result = true;
@@ -129,7 +130,7 @@ public class CmdInterpreter {
         else {
             System.out.println(firstName + " " + lastName
             	+ " is already in section "
-            	+ courseManager.getSection());
+            	+ sectionManager.getSection());
             System.out.println(student);
         }
         return result;
@@ -137,7 +138,7 @@ public class CmdInterpreter {
 
     public boolean evalSearch(String firstName, String lastName) {
         boolean result = false;
-        Student student = courseManager.findStudent(firstName, lastName);
+        Student student = sectionManager.findStudent(firstName, lastName);
         if (student != null) {
             System.out.println("Found " + student);
             result = true;
@@ -146,7 +147,7 @@ public class CmdInterpreter {
             System.out.println("Search failed. Student "
             	+ firstName + " " + lastName
                 + " doesn't exist in section "
-            	+ courseManager.getSection());
+            	+ sectionManager.getSection());
         }
         return result;
     }
@@ -154,22 +155,22 @@ public class CmdInterpreter {
     public boolean evalSearch(String name) {
         boolean result = false;
         System.out.println("search results for " + name + ":");
-        Student[] students = courseManager.findStudents(name);
+        Student[] students = sectionManager.findStudents(name);
         for (int i = 0; i < students.length; i++) {
             System.out.println(students[i]);
             result = true;
         }
         System.out.println(name + " was found in "
         	+ students.length + " records in section "
-        	+ courseManager.getSection());
+        	+ sectionManager.getSection());
         return result;
     }
 
     public boolean evalScore(int scorePercent) {
         boolean result = false;
-        if (courseManager.isStudentScorable()) {
-            if (CourseManager.isValidScorePercent(scorePercent)) {
-                Student student = courseManager.scoreStudent(scorePercent);
+        if (sectionManager.isStudentScorable()) {
+            if (SectionManager.isValidScorePercent(scorePercent)) {
+                Student student = sectionManager.scoreStudent(scorePercent);
                 System.out.println("Update "
                 	+ student.getFullName()
                     + " record, score = "
@@ -191,25 +192,25 @@ public class CmdInterpreter {
 
     public boolean evalRemove(String firstName, String lastName) {
         boolean result = false;
-        Student student = courseManager.removeStudent(firstName, lastName);
+        Student student = sectionManager.removeStudent(firstName, lastName);
         if (student != null) {
             System.out.println("Student "
             	+ firstName + " " + lastName
                 + " get removed from section "
-            	+ courseManager.getSection());
+            	+ sectionManager.getSection());
             result = true;
         }
         else {
             System.out.println("Remove failed. Student "
             	+ firstName + " " + lastName
                 + " doesn't exist in section "
-                + courseManager.getSection());
+                + sectionManager.getSection());
         }
         return result;
     }
     
     public boolean evalRemoveSection() {
-    	int currentSectionNumber = courseManager.getSection();
+    	int currentSectionNumber = sectionManager.getSection();
     	return evalRemoveSectionHandler(currentSectionNumber);
     }
 
@@ -219,8 +220,8 @@ public class CmdInterpreter {
     
     private boolean evalRemoveSectionHandler(int sectionNumber) {
     	boolean result = false;
-    	if (courseManager.isValidSection(sectionNumber)) {
-    		courseManager.clearSection(sectionNumber);
+    	if (sectionManager.isValidSection(sectionNumber)) {
+    		sectionManager.clearSection(sectionNumber);
     		System.out.println("Section " + sectionNumber + " removed");
     		result = true;
     	}
@@ -228,18 +229,18 @@ public class CmdInterpreter {
     }
 
     public void evalDumpSection() {
-        System.out.println("Section " + courseManager.getSection() + " dump:");
-        System.out.println("Size = " + courseManager.dumpSection());
+        System.out.println("Section " + sectionManager.getSection() + " dump:");
+        System.out.println("Size = " + sectionManager.dumpSection());
     }
 
     public void evalGrade() {
-        courseManager.gradeSection();
+        sectionManager.gradeSection();
     }
 
     public void evalFindPair(int scorePercentDiff) {
         System.out.println("Students with score difference less than or equal "
         	+ scorePercentDiff + ":");
-        StudentPair[] studentPairs = courseManager.findStudentPairs(scorePercentDiff);
+        StudentPair[] studentPairs = sectionManager.findStudentPairs(scorePercentDiff);
         for (int i = 0; i < studentPairs.length; i++) {
         	System.out.println(studentPairs[i]);
         }

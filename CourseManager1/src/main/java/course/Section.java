@@ -12,12 +12,12 @@ import student.*;
  * @author kyleg997 Kyle Galindo
  * @version 2020-08-10
  */
-public class CourseSection {
+public class Section {
     private BST<FullName, Student> studentDB;
     private int studentInsertOrder;
     private int sectionNumber;
 
-    public CourseSection(int sectionNumber) {
+    public Section(int sectionNumber) {
     	studentDB = new BST<FullName, Student>();
     	studentInsertOrder = 0;
         this.sectionNumber = sectionNumber;
@@ -112,7 +112,7 @@ public class CourseSection {
     
     public void gradeAllStudents() {
     	Iterator<Student> it = studentDB.iterator();
-    	CourseGrader.gradeStudents(it);
+    	Grader.gradeStudents(it);
     }
     
     public StudentPair[] findStudentPairs(int scorePercentDiff) {

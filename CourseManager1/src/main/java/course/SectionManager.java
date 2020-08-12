@@ -8,18 +8,18 @@ import student.*;
  * @author kyleg997 Kyle Galindo
  * @version 2020-08-10
  */
-public class CourseManager {
+public class SectionManager {
 	private final int MAX_SECTION_NUMBER = 3;
-    private CourseSection[] sections;
-    private CourseSection currentSection;
+    private Section[] sections;
+    private Section currentSection;
     private Student currentStudent;
     private boolean studentScorable;
     
-    public CourseManager() {
-        sections = new CourseSection[MAX_SECTION_NUMBER];
+    public SectionManager() {
+        sections = new Section[MAX_SECTION_NUMBER];
         for (int i = 0; i < MAX_SECTION_NUMBER; i++) {
         	int sectionNumber = i + 1;
-            sections[i] = new CourseSection(sectionNumber);
+            sections[i] = new Section(sectionNumber);
         }
         currentSection = sections[0];
         currentStudent = null;

@@ -11,7 +11,7 @@ import student.Student;
  * @author kyleg997 Kyle Galindo
  * @version 2020-08-10
  */
-public class CourseGrader {
+public class Grader {
 	private final static String[] LETTER_GRADES = { "A", "A-", "B+", "B", "B-", "C+",
 													"C", "C-", "D+", "D", "D-", "F" };
 	private final static int[] PERCENT_GRADES_LBOUNDS = { 90, 85, 80, 75, 70, 65,
