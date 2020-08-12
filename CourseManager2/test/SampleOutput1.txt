@@ -1,0 +1,190 @@
+Course Load Failed. You have to load Student Information file first.
+students.csv successfully loaded [OR: students.data successfully loaded]
+CS3114 Course has been successfully loaded.
+switch to section 1
+section 1 dump:
+BST by ID:
+020380028, Sage Forbes, score = 4 [optional: at level 0]
+394691224, Aubrey Williamson, score = 100 [optional: at level 1]
+977159896, Naomi Cote, score = 97 [optional: at level 2]
+BST by name:
+977159896, Naomi Cote, score = 97 [optional: at level 1]
+020380028, Sage Forbes, score = 4 [optional: at level 0]
+394691224, Aubrey Williamson, score = 100 [optional: at level 1]
+BST by score:
+020380028, Sage Forbes, score = 4 [optional: at level 0]
+977159896, Naomi Cote, score = 97 [optional: at level 2]
+394691224, Aubrey Williamson, score = 100 [optional: at level 1]
+Size = 3
+Naomi Cote is already in section 1
+Sandra Duncan is already registered in a different section
+Aileen Ford insertion failed. Wrong student information. ID doesn't exist
+Caleb Foley insertion failed. Wrong student information. ID belongs to another student
+Aileen Ford inserted.
+Update Aileen Ford record, score = 91
+Found 394691224, Aubrey Williamson, score = 100
+Update Aubrey Williamson record, score = 100
+Search Failed. Couldn't find any student with ID 291935757
+score command can only be called after an insert command or a successful search command with one exact output.
+Found 239721905, Aileen Ford, score = 91
+search results for Mostafa Kamel:
+Mostafa Kamel was found in 0 records in section 1
+search results for Sage Forbes:
+020380028, Sage Forbes, score = 4
+Sage Forbes was found in 1 records in section 1
+search results for Naomi:
+977159896, Naomi Cote, score = 97
+Naomi was found in 1 records in section 1
+section 1 dump:
+BST by ID:
+020380028, Sage Forbes, score = 4 [optional: at level 0]
+239721905, Aileen Ford, score = 91 [optional: at level 2]
+394691224, Aubrey Williamson, score = 100 [optional: at level 1]
+977159896, Naomi Cote, score = 97 [optional: at level 2]
+BST by name:
+977159896, Naomi Cote, score = 97 [optional: at level 1]
+020380028, Sage Forbes, score = 4 [optional: at level 0]
+239721905, Aileen Ford, score = 91 [optional: at level 2]
+394691224, Aubrey Williamson, score = 100 [optional: at level 1]
+BST by score:
+020380028, Sage Forbes, score = 4 [optional: at level 0]
+239721905, Aileen Ford, score = 91 [optional: at level 3]
+977159896, Naomi Cote, score = 97 [optional: at level 2]
+394691224, Aubrey Williamson, score = 100 [optional: at level 1]
+Size = 4
+Remove failed. Student Mostafa Kamel doesn't exist in section 1
+Student Naomi Cote get removed from section 1
+search results for Naomi:
+Naomi was found in 0 records in section 1
+Remove failed. Student Naomi Cote doesn't exist in section 1
+switch to section 3
+Section 3 dump:
+BST by ID:
+BST by name:
+BST by score:
+Size = 0
+Gloria Chavez inserted
+Update Gloria Chavez record, score = 100
+grading completed
+switch to section 1
+grading completed
+Statistics of section 1:
+2 students with grade A
+1 students with grade F
+Sections could only be merged to an empty section. section 1 is not empty.
+switch to section 4
+All sections merged at section 4
+Command insert is not valid for merged sections
+grading completed
+Statistics of section 4:
+3 students with grade A
+1 students with grade B
+1 students with grade C+
+5 students with grade F
+Students with grade C* are:
+792704751, Leroy Sherman, score = 65, grade = C+
+Found 1 students
+switch to section 2
+Students with grade C* are:
+792704751, Leroy Sherman, score = 65, grade = C+
+Found 1 students
+Students with grade F are:
+291935757, Brynne Myers, score = 4, grade = F
+256593948, Sandra Duncan, score = 26, grade = F
+248476061, Winter Hodge, score = 31, grade = F
+317397180, Nigel Gonzales, score = 37, grade = F
+Found 4 students
+Students with grade C+ are:
+792704751, Leroy Sherman, score = 65, grade = C+
+Found 1 students
+Students with grade C- are:
+Found 0 students
+Students with grade C are:
+Found 0 students
+Student Sandra Duncan get removed from section 2
+Students with score difference less than or equal 10:
+Winter Hodge, Nigel Gonzales
+found 1 pairs
+section 2 dump:
+BST by ID:
+067964700, Fritz Hudson, score = 78 [optional: at level 0]
+248476061, Winter Hodge, score = 31 [optional: at level 1]
+291935757, Brynne Myers, score = 4 [optional: at level 2]
+317397180, Nigel Gonzales, score = 37 [optional: at level 3]
+792704751, Leroy Sherman, score = 65 [optional: at level 4]
+BST by name:
+317397180, Nigel Gonzales, score = 37 [optional: at level 2]
+248476061, Winter Hodge, score = 31 [optional: at level 1]
+067964700, Fritz Hudson, score = 78 [optional: at level 0]
+291935757, Brynne Myers, score = 4 [optional: at level 1]
+792704751, Leroy Sherman, score = 65 [optional: at level 2]
+BST by score:
+291935757, Brynne Myers, score = 4 [optional: at level 2]
+248476061, Winter Hodge, score = 31 [optional: at level 1]
+317397180, Nigel Gonzales, score = 37 [optional: at level 2]
+792704751, Leroy Sherman, score = 65 [optional: at level 3]
+067964700, Fritz Hudson, score = 78 [optional: at level 0]
+Size = 5
+switch to section 3
+Section 3 cleared
+switch to section 4
+Sections could only be merged to an empty section. Section 4 is not empty.
+switch to section 5
+All sections merged at section 5
+grading completed
+Statistics of section 5:
+2 students with grade A
+1 students with grade B
+1 students with grade C+
+4 students with grade F
+Saved all Students data to mystudents.data
+Saved all course data to cs3114course.data
+All course data cleared.
+switch to section 1
+section 1 dump:
+BST by ID:
+BST by name:
+BST by score:
+Size = 0
+cs3114course Course has been successfully loaded.
+switch to section 1
+section 1 dump:
+BST by ID:
+020380028, Sage Forbes, score = 4 [optional: at level 0]
+239721905, Aileen Ford, score = 91 [optional: at level 2]
+394691224, Aubrey Williamson, score = 100 [optional: at level 1]
+BST by name:
+020380028, Sage Forbes, score = 4 [optional: at level 0]
+239721905, Aileen Ford, score = 91 [optional: at level 2]
+394691224, Aubrey Williamson, score = 100 [optional: at level 1]
+BST by score:
+020380028, Sage Forbes, score = 4 [optional: at level 0]
+239721905, Aileen Ford, score = 91 [optional: at level 2]
+394691224, Aubrey Williamson, score = 100 [optional: at level 1]
+Size = 3
+CS3114_2 Course has been successfully loaded.
+Warning: Student Aubrey Williamson is not loaded to section 3 since he/she is already enrolled in section 1
+switch to section 2
+section 2 dump:
+BST by ID:
+067964700, Fritz Hudson, score = 78 [optional: at level 0]
+248476061, Winter Hodge, score = 31 [optional: at level 1]
+256593948, Sandra Duncan, score = 26 [optional: at level 3]
+291935757, Brynne Myers, score = 4 [optional: at level 2]
+317397180, Nigel Gonzales, score = 37 [optional: at level 3]
+792704751, Leroy Sherman, score = 65 [optional: at level 4]
+BST by name:
+256593948, Sandra Duncan, score = 26 [optional: at level 3]
+317397180, Nigel Gonzales, score = 37 [optional: at level 2]
+248476061, Winter Hodge, score = 31 [optional: at level 1]
+067964700, Fritz Hudson, score = 78 [optional: at level 0]
+291935757, Brynne Myers, score = 4 [optional: at level 1]
+792704751, Leroy Sherman, score = 65 [optional: at level 2]
+BST by score:
+291935757, Brynne Myers, score = 4 [optional: at level 2]
+256593948, Sandra Duncan, score = 26 [optional: at level 3]
+248476061, Winter Hodge, score = 31 [optional: at level 1]
+317397180, Nigel Gonzales, score = 37 [optional: at level 2]
+792704751, Leroy,Sherman, score = 65 [optional: at level 3]
+067964700, Fritz Hudson, score = 78 [optional: at level 0]
+Size = 6
