@@ -4,43 +4,43 @@ package student;
  * Student Class
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-05
+ * @version 2020-08-12
  */
 public class Student {
     private final FullName fullName;
     private final String idNumber;
-    private int scorePercent;
+    private int scorePercentage;
 
     public Student(FullName fullName, String idNumber) {
         this.fullName = fullName;
         this.idNumber = idNumber;
-        scorePercent = 0;
+        scorePercentage = 0;
     }
 
-    public Student(FullName fullName, String idNumber, int scorePercent) {
+    public Student(FullName fullName, String idNumber, int scorePercentage) {
         this.fullName = fullName;
         this.idNumber = idNumber;
-        this.scorePercent = scorePercent;
+        this.scorePercentage = scorePercentage;
     }
 
     public FullName getFullName() {
         return fullName;
     }
 
-    public String getID() {
+    public String getIDNumber() {
         return idNumber;
     }
 
-    public int getScore() {
-        return scorePercent;
+    public int getScorePercentage() {
+        return scorePercentage;
     }
 
-    public void setScore(int scorePercent) {
-        this.scorePercent = scorePercent;
+    public void setScorePercentage(int scorePercentage) {
+        this.scorePercentage = scorePercentage;
     }
 
     @Override
     public String toString() {
-        return idNumber + ", " + fullName + ", score = " + scorePercent;
+        return idNumber + ", " + fullName + ", score = " + scorePercentage;
     }
 }

@@ -4,7 +4,7 @@ package student;
  * FullName Class
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-05
+ * @version 2020-08-12
  */
 public class FullName implements Comparable<FullName> {
     private final String firstName;
@@ -21,6 +21,10 @@ public class FullName implements Comparable<FullName> {
 
     public String getLastName() {
         return lastName;
+    }
+    
+    public boolean equalsPartOfIgnoreCase(String name) {
+    	return firstName.equalsIgnoreCase(name) || lastName.equalsIgnoreCase(name);
     }
 
     @Override

@@ -174,7 +174,7 @@ public class CmdInterpreter {
                 System.out.println("Update "
                 	+ student.getFullName()
                     + " record, score = "
-                	+ student.getScore());
+                	+ student.getScorePercentage());
                 result = true;
             }
             else {

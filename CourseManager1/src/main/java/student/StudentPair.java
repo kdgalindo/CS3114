@@ -4,7 +4,7 @@ package student;
  * StudentPair Class
  *
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-05
+ * @version 2020-08-12
  */
 public class StudentPair {
 	private final Student first;
@@ -21,6 +21,10 @@ public class StudentPair {
 	
 	public Student getSecond() {
 		return second;
+	}
+	
+	public int scorePercentageDiff() {
+		return Math.abs(first.getScorePercentage() - second.getScorePercentage());
 	}
 	
     @Override

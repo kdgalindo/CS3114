@@ -6,10 +6,10 @@ import java.util.Iterator;
 import student.Student;
 
 /** 
- * CourseGrader Class
+ * Grader Class
  *
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-10
+ * @version 2020-08-12
  */
 public class Grader {
 	private final static String[] LETTER_GRADES = { "A", "A-", "B+", "B", "B-", "C+",
@@ -22,7 +22,7 @@ public class Grader {
 		Arrays.fill(studentsWithEachGrade, 0);
         while (it.hasNext()) {
             Student student = it.next();
-            int index = findGradeIndex(student.getScore());
+            int index = findGradeIndex(student.getScorePercentage());
             studentsWithEachGrade[index]++;
         }        
         printGradeResults(studentsWithEachGrade);

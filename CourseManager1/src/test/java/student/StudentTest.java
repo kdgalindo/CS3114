@@ -1,4 +1,5 @@
 package student;
+
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,7 +11,7 @@ import student.Student;
  * StudentTest Class
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-05
+ * @version 2020-08-12
  */
 public class StudentTest {
     private Student s1;
@@ -29,23 +30,23 @@ public class StudentTest {
     }
 
     @Test
-    public void testGetID() {
-        String id = s1.getID();
+    public void testGetIDNumber() {
+        String id = s1.getIDNumber();
         assertEquals(id, "010001");
     }
 
     @Test
-    public void testGetScore() {
-        int score = s1.getScore();
+    public void testGetScorePercentage() {
+        int score = s1.getScorePercentage();
         assertEquals(score, 0);
-        score = s2.getScore();
+        score = s2.getScorePercentage();
         assertEquals(score, 100);
     }
 
     @Test
-    public void testSetScore() {
-        s1.setScore(100);
-        int score = s1.getScore();
+    public void testSetScorePercentage() {
+        s1.setScorePercentage(100);
+        int score = s1.getScorePercentage();
         assertEquals(score, 100);
     }
 

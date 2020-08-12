@@ -1,4 +1,5 @@
 package student;
+
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,7 +10,7 @@ import student.FullName;
  * FullNameTest Class
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-05
+ * @version 2020-08-12
  */
 public class FullNameTest {
     private FullName fn1;

@@ -1,12 +1,13 @@
 package course;
 
-import student.*;
+import student.Student;
+import student.StudentPair;
 
 /**
  * CourseManager Class
  *
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-10
+ * @version 2020-08-12
  */
 public class SectionManager {
 	private final int MAX_SECTION_NUMBER = 3;
@@ -26,10 +27,6 @@ public class SectionManager {
         studentScorable = false;
     }
     
-    /**
-     * 
-     * @return
-     */
     public int getSection() {
     	return currentSection.getNumber();
     }
@@ -41,18 +38,10 @@ public class SectionManager {
     	}
     }
     
-    /**
-     * 
-     */
     private void clearStudentScorable() {
     	studentScorable = false;
     }
     
-    /**
-     * 
-     * @param sectionNumber
-     * @return
-     */
     public boolean isValidSection(int sectionNumber) {
     	return ((sectionNumber > 0) && (sectionNumber < MAX_SECTION_NUMBER + 1));
     }
@@ -62,10 +51,6 @@ public class SectionManager {
     	setStudentScorable(student);
     }
     
-    /**
-     * 
-     * @param student
-     */
     private void setStudentScorable(Student student) {
     	currentStudent = student;
     	studentScorable = true;
@@ -88,31 +73,22 @@ public class SectionManager {
     	return students;
     }
     
-    public Student scoreStudent(int scorePercent) {
+    public Student scoreStudent(int scorePercentage) {
     	if (isStudentScorable()) {
-    		if (isValidScorePercent(scorePercent)) {
-    			currentSection.score(currentStudent, scorePercent);
+    		if (isValidScorePercent(scorePercentage)) {
+    			currentSection.score(currentStudent, scorePercentage);
     		}
     	}
     	clearStudentScorable();
     	return currentStudent;
     }
     
-    /**
-     * 
-     * @return
-     */
     public boolean isStudentScorable() {
     	return studentScorable;
     }
     
-    /**
-     * 
-     * @param scorePercent
-     * @return
-     */
-    public static boolean isValidScorePercent(int scorePercent) {
-    	return ((scorePercent > -1) && (scorePercent < 101));
+    public static boolean isValidScorePercent(int scorePercentage) {
+    	return ((scorePercentage > -1) && (scorePercentage < 101));
     }
     
     public Student removeStudent(String firstName, String lastName) {
@@ -137,8 +113,8 @@ public class SectionManager {
     	currentSection.gradeAllStudents();
     }
     
-    public StudentPair[] findStudentPairs(int scorePercentDiff) {
+    public StudentPair[] findStudentPairs(int scorePercentageDiff) {
     	clearStudentScorable();
-    	return currentSection.findStudentPairs(scorePercentDiff);
+    	return currentSection.findStudentPairs(scorePercentageDiff);
     }
 }
