@@ -14,69 +14,30 @@ import student.Student;
  * @version 2020-08-13
  */
 public class Section {
-    private BST<Long, Integer> pbst; // BST w/ PID key & Index value
-    private BST<FullName, Integer> nbst; // BST w/ Name key & Index value
-    private BST<Integer, Integer> sbst; // BST w/ Score key & Index value
-    private int number; // Section Number
+    private BST<Long, Integer> personalIDDB; // Index value
+    private BST<FullName, Integer> fullNameDB; // Index value
+    private BST<Integer, Integer> scorePercentageDB; // Index value
+    private int number;
     private boolean active; // Active State
     
-    /**
-     * Section default constructor
-     */
-    Section() {
-        pbst = new BST<Long, Integer>();
-        nbst = new BST<FullName, Integer>();
-        sbst = new BST<Integer, Integer>();
-        number = 1;
+    Section(int sectionNumber) {
+        personalIDDB = new BST<Long, Integer>();
+        fullNameDB = new BST<FullName, Integer>();
+        scorePercentageDB = new BST<Integer, Integer>();
+        number = sectionNumber;
         active = true;
     }
     
-    /**
-     * Section number constructor
-     * 
-     * @param n number
-     */
-    Section(int n) {
-        pbst = new BST<Long, Integer>();
-        nbst = new BST<FullName, Integer>();
-        sbst = new BST<Integer, Integer>();
-        number = n;
-        active = true;
-    }
-    
-    /**
-     * Returns the Section Number
-     * 
-     * @return Section Number
-     */
-    public int number() {
+    public int getNumber() {
         return number;
     }
     
-    /**
-     * Check if the Section is
-     * Active; Section is Active 
-     * if it is not a Merged Section
-     * 
-     * @return TRUE if the Section
-     * is Active, FALSE otherwise;
-     */
     public boolean isActive() {
         return active;
     }
     
-    /**
-     * Set or Reset Active state
-     * of the Section;
-     * Section is Active if it is
-     * not a Merged Section
-     * 
-     * @param a Active
-     * @return active
-     */
-    public boolean setActive(boolean a) {
-        active = a;
-        return active;
+    public void setActive(boolean active) {
+        this.active = active;
     }
     
     /**
@@ -85,7 +46,7 @@ public class Section {
      * @return size
      */
     public int size() {
-        return pbst.size();
+        return personalIDDB.size();
     }
     
     /**
@@ -95,7 +56,7 @@ public class Section {
      * is empty, FALSE otherwise
      */
     public boolean isEmpty() {
-        return (pbst.size() == 0);
+        return (personalIDDB.size() == 0);
     }
     
     /**
@@ -106,20 +67,13 @@ public class Section {
      * @param i StudentRecord Index
      */
     public void insertStudent(Student st, int sc, int i) {
-        pbst.insert(st.getPersonalID(), i);
-        nbst.insert(st.getFullName(), i);
-        sbst.insert(sc, i);
+        personalIDDB.insert(st.getPersonalID(), i);
+        fullNameDB.insert(st.getFullName(), i);
+        scorePercentageDB.insert(sc, i);
     }
     
-    /**
-     * Searches for a StudentRecord Index
-     * in the Section given a PID
-     * 
-     * @param p PID
-     * @return StudentRecord Index
-     */
-    public Integer searchByPID(long p) {
-        return pbst.find(p);
+    public Integer findStudent(long personalID) {
+        return personalIDDB.find(personalID);
     }
     
     /**
@@ -130,7 +84,7 @@ public class Section {
      * @return StudentRecord Index
      */
     public ArrayList<Integer> searchByName(FullName n) {
-        return nbst.findall(n);
+        return fullNameDB.findall(n);
     }
     
     /**
@@ -143,8 +97,8 @@ public class Section {
      * @param i StudentRecord Index
      */
     public void updateStudentScore(int cs, int ns, int i) {
-        sbst.remove(cs, i);
-        sbst.insert(ns, i);
+        scorePercentageDB.remove(cs, i);
+        scorePercentageDB.insert(ns, i);
     }
     
     /**
@@ -154,7 +108,7 @@ public class Section {
      * @return StudentRecord Index
      */
     public Integer removeStudentPID(long p) {
-        return pbst.remove(p);
+        return personalIDDB.remove(p);
     }
     
     /**
@@ -164,7 +118,7 @@ public class Section {
      * @return StudentRecord Index
      */
     public Integer removeStudentName(FullName n) {
-        return nbst.remove(n);
+        return fullNameDB.remove(n);
     }
     
     /**
@@ -174,7 +128,7 @@ public class Section {
      * @param i StudentRecord Index
      */
     public void removeStudentName(FullName n, int i) {
-        nbst.remove(n, i);
+        fullNameDB.remove(n, i);
     }
     
     /**
@@ -184,7 +138,7 @@ public class Section {
      * @param i StudentRecord Index
      */
     public void removeStudentScore(int s, int i) {
-        sbst.remove(s, i);
+        scorePercentageDB.remove(s, i);
     }
     
     /**
@@ -192,9 +146,9 @@ public class Section {
      * Section
      */
     public void clear() {
-        pbst.clear();
-        nbst.clear();
-        sbst.clear();
+        personalIDDB.clear();
+        fullNameDB.clear();
+        scorePercentageDB.clear();
         active = true;
     }
     
@@ -208,7 +162,7 @@ public class Section {
      * @return StudentRecord Indices
      */
     public ArrayList<Integer> searchForScoresInRange(int s1, int s2) {
-        return sbst.findrange(s1, s2);
+        return scorePercentageDB.findrange(s1, s2);
     }
     
     /**
@@ -219,7 +173,7 @@ public class Section {
      * @return PID Iterator
      */
     public Iterator<Integer> iterateByPID() {
-        return pbst.iterator();
+        return personalIDDB.iterator();
     }
     
     /**
@@ -230,7 +184,7 @@ public class Section {
      * @return Name Iterator
      */
     public Iterator<Integer> iterateByName() {
-        return nbst.iterator();
+        return fullNameDB.iterator();
     }
     
     /**
@@ -241,6 +195,6 @@ public class Section {
      * @return Score Iterator
      */
     public Iterator<Integer> iterateByScore() {
-        return sbst.iterator();
+        return scorePercentageDB.iterator();
     }
 }

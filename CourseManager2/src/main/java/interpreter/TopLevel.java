@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 import bin.BinFileHelper;
 import course.CourseManager;
+import course.StudentManager;
 import student.*;
 
 /**
@@ -262,9 +263,9 @@ public class TopLevel {
      * @param n section number
      */
     public void section(int n) {
-        cmanager.section(n);
+        cmanager.setSection(n);
         System.out.println("switch to section "
-            + cmanager.currentSectionNumber());
+            + cmanager.getSection());
     }
 
     /**
@@ -287,9 +288,9 @@ public class TopLevel {
                     }
                     else {
                         if (cmanager.searchForSectionByPID(p) == cmanager
-                            .currentSectionNumber()) {
+                            .getSection()) {
                             System.out.println(n + " is already in section "
-                                + cmanager.currentSectionNumber());
+                                + cmanager.getSection());
                         }
                         else {
                             System.out.println(n
@@ -354,7 +355,7 @@ public class TopLevel {
                 System.out.println(srl.get(i));
             }
             System.out.println(n + " was found in " + srl.size()
-                + " records in section " + cmanager.currentSectionNumber());
+                + " records in section " + cmanager.getSection());
         }
         else {
             System.out.println(
@@ -375,7 +376,7 @@ public class TopLevel {
                 System.out.println(srl.get(i));
             }
             System.out.println(n + " was found in " + srl.size()
-                + " records in section " + cmanager.currentSectionNumber());
+                + " records in section " + cmanager.getSection());
         }
         else {
             System.out.println(
@@ -426,7 +427,7 @@ public class TopLevel {
                 if (sr != null) {
                     System.out.println("Student " + sr.getName()
                         + " get removed from section " + cmanager
-                            .currentSectionNumber());
+                            .getSection());
                 }
                 else {
                     System.out.println(
@@ -457,12 +458,12 @@ public class TopLevel {
             StudentRecord sr = cmanager.remove(n);
             if (sr != null) {
                 System.out.println("Student " + n + " get removed from section "
-                    + cmanager.currentSectionNumber());
+                    + cmanager.getSection());
             }
             else {
                 System.out.println("Remove failed. Student " + n
                     + " doesn't exist in section " + cmanager
-                        .currentSectionNumber());
+                        .getSection());
             }
         }
         else {
@@ -477,7 +478,7 @@ public class TopLevel {
     public void clearsection() {
         cmanager.clearsection();
         System.out.println("Section "
-            + cmanager.currentSectionNumber()
+            + cmanager.getSection()
             + " cleared");
     }
 
@@ -485,7 +486,7 @@ public class TopLevel {
      * dumpsection command
      */
     public void dumpsection() {
-        System.out.println("section " + cmanager.currentSectionNumber()
+        System.out.println("section " + cmanager.getSection()
             + " dump:");
         System.out.println("BST by ID:");
         int i = cmanager.dumpPIDs();
@@ -511,7 +512,7 @@ public class TopLevel {
         String[] letters = { "A ", "A-", "B+", "B ", "B-", "C+", "C ", "C-",
             "D+", "D ", "D-", "F " };
         System.out.println("Statistics of section " + cmanager
-            .currentSectionNumber() + ":");
+            .getSection() + ":");
         int[] numbers = cmanager.stat();
         for (int i = 0; i < numbers.length; i++) {
             int number = numbers[i];
@@ -558,12 +559,12 @@ public class TopLevel {
     public void merge() {
         if (cmanager.merge()) {
             System.out.println("All sections merged at section " + cmanager
-                .currentSectionNumber());
+                .getSection());
         }
         else {
             System.out.println(
                 "Sections could only be merged to an empty section. Section "
-                    + cmanager.currentSectionNumber() + " is not empty.");
+                    + cmanager.getSection() + " is not empty.");
         }
     }
 

@@ -1,8 +1,9 @@
-package student;
+package course;
 
 import java.util.Iterator;
 
 import bst.BST;
+import student.Student;
 
 /**
  * StudentManager Class
