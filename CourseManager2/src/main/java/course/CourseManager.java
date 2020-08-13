@@ -12,11 +12,9 @@ import student.StudentRecord;
 
 /**
  * CourseManager Class
- * CourseManager Info
  * 
- * @author ati Angel Isiadinso
- * @author kylegg7 Kyle Galindo
- * @version 2019-10-20
+ * @author kyleg997 Kyle Galindo
+ * @version 2020-08-13
  */
 public class CourseManager {
     private Section[] sections; // sections 1-21
@@ -171,7 +169,7 @@ public class CourseManager {
     public StudentRecord insert(Student s) {
         gindex = null;
         StudentRecord nsr = null;
-        long p = s.getPID(); // student pid
+        long p = s.getPersonalID(); // student pid
         Integer sn = pbst.find(p); // section number
         if (sn == null) { // Check if in section
             nsr = new StudentRecord(s);

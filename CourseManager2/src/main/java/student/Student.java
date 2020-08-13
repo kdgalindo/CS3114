@@ -7,86 +7,41 @@ package student;
  * @version 2020-08-13
  */
 public class Student implements Comparable<Student> {
-    private long pid;
-    private FullName name;
+    private final long personalID;
+    private final FullName fullName;
 
-    /**
-     * Student id, Name constructor
-     * 
-     * @param p Student id
-     * @param n Student Name
-     */
-    public Student(long p, FullName n) {
-        pid = p;
-        name = n;
+    public Student(long personalID, FullName fullName) {
+    	this.personalID = personalID;
+        this.fullName = fullName;
     }
 
-    /**
-     * Get ID
-     * 
-     * @return pid
-     */
-    public long getPID() {
-        return pid;
+    public long getPersonalID() {
+        return personalID;
     }
 
-    /**
-     * Get Name
-     * 
-     * @return name
-     */
-    public FullName getName() {
-        return name;
+    public FullName getFullName() {
+        return fullName;
     }
     
-    /**
-     * Get First Name
-     * 
-     * @return first
-     */
-    public String getFirst() {
-        return name.getFirstName();
+    public String getFirstName() {
+        return fullName.getFirstName();
     }
     
-    /**
-     * Get Middle Name
-     * 
-     * @return middle
-     */
-    public String getMiddle() {
-        return name.getMiddleName();
+    public String getMiddleName() {
+        return fullName.getMiddleName();
     }
     
-    /**
-     * Get Last Name
-     * 
-     * @return last
-     */
-    public String getLast() {
-        return name.getLastName();
+    public String getLastName() {
+        return fullName.getLastName();
     }
     
-    /**
-     * compareTo override for Student Object
-     * 
-     * @param s Student
-     * @return 0 if equal, less than 0 if Student is
-     *         lexicographically less than n, greater
-     *         than 0 if Student is lexicographically
-     *         greater than n
-     */
     @Override
-    public int compareTo(Student s) {
-        return Long.compare(pid, s.getPID());
+    public int compareTo(Student student) {
+        return Long.compare(personalID, student.getPersonalID());
     }
 
-    /**
-     * toString override for Student Object
-     * 
-     * @return Student string
-     */
     @Override
     public String toString() {
-        return String.format("%09d, %s", pid, name);
+        return String.format("%09d, %s", personalID, fullName);
     }
 }

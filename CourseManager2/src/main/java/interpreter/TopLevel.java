@@ -12,11 +12,9 @@ import student.*;
 
 /**
  * TopLevel Class
- * Handles Output
  * 
- * @author ati Angel Isiadinso
- * @author kylegg7 Kyle Galindo
- * @version 2019-10-20
+ * @author kyleg997 Kyle Galindo
+ * @version 2020-08-13
  */
 public class TopLevel {
     private StudentManager smanager; // student manager
@@ -112,7 +110,7 @@ public class TopLevel {
      * @param s student
      */
     public void loadstudentdatahelper(Student s) {
-        smanager.insert(s.getPID(), s);
+        smanager.insert(s.getPersonalID(), s);
     }
 
     /**
@@ -235,7 +233,7 @@ public class TopLevel {
         Student s = smanager.search(p);
         if (s != null) { // Check if id exists
             FullName n = nsr.getName();
-            if (s.getName().compareTo(n) == 0) {
+            if (s.getFullName().compareTo(n) == 0) {
                 StudentRecord sr = cmanager.loadcoursedata(sn, nsr);
                 if (sr == null) { // Check if student enrolled
                     System.out.println("Warning: Student " + nsr.getName()
@@ -281,7 +279,7 @@ public class TopLevel {
             Student s = smanager.search(p);
             if (s != null) { // Check if id exists
                 FullName n = new FullName(f, l);
-                if (s.getName().compareTo(n) == 0) { // Check if name matches
+                if (s.getFullName().compareTo(n) == 0) { // Check if name matches
                     s = new Student(p, n);
                     StudentRecord sr = cmanager.insert(s);
                     if (sr != null) { // Check if student enrolled
@@ -585,15 +583,15 @@ public class TopLevel {
             if (!smanager.isEmpty()) {
                 while (itr.hasNext()) {
                     Student s = itr.next();
-                    baos.write(bfh.longToByteArray(s.getPID()));
-                    baos.write(s.getFirst().getBytes());
+                    baos.write(bfh.longToByteArray(s.getPersonalID()));
+                    baos.write(s.getFirstName().getBytes());
                     baos.write("$".getBytes());
-                    String m = s.getMiddle();
+                    String m = s.getMiddleName();
                     if (m != null) {
                         baos.write(m.getBytes());
                     }
                     baos.write("$".getBytes());
-                    baos.write(s.getLast().getBytes());
+                    baos.write(s.getLastName().getBytes());
                     baos.write("$".getBytes());
                     baos.write("GOHOKIES".getBytes());
                 }

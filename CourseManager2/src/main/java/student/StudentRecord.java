@@ -2,11 +2,9 @@ package student;
 
 /**
  * StudentRecord Class
- * Student Record Info
  * 
- * @author ati Angel Isiadinso
- * @author kylegg7 Kyle Galindo
- * @version 2019-10-20
+ * @author kyleg997 Kyle Galindo
+ * @version 2020-08-13
  */
 public class StudentRecord {
     private boolean active; // Tombstone
@@ -64,7 +62,7 @@ public class StudentRecord {
      * @return pid
      */
     public long getPID() {
-        return student.getPID();
+        return student.getPersonalID();
     }
     
     /**
@@ -73,7 +71,7 @@ public class StudentRecord {
      * @return name
      */
     public FullName getName() {
-        return student.getName();
+        return student.getFullName();
     }
     
     /**
@@ -82,7 +80,7 @@ public class StudentRecord {
      * @return first
      */
     public String getFirst() {
-        return student.getFirst();
+        return student.getFirstName();
     }
     
     /**
@@ -91,7 +89,7 @@ public class StudentRecord {
      * @return last
      */
     public String getLast() {
-        return student.getLast();
+        return student.getLastName();
     }
 
     /**

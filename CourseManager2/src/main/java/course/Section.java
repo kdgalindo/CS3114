@@ -9,11 +9,9 @@ import student.Student;
 
 /**
  * Section Class
- * Section Info
  * 
- * @author ati Angel Isiadinso
- * @author kylegg7 Kyle Galindo
- * @version 2019-10-20
+ * @author kyleg997 Kyle Galindo
+ * @version 2020-08-13
  */
 public class Section {
     private BST<Long, Integer> pbst; // BST w/ PID key & Index value
@@ -108,8 +106,8 @@ public class Section {
      * @param i StudentRecord Index
      */
     public void insertStudent(Student st, int sc, int i) {
-        pbst.insert(st.getPID(), i);
-        nbst.insert(st.getName(), i);
+        pbst.insert(st.getPersonalID(), i);
+        nbst.insert(st.getFullName(), i);
         sbst.insert(sc, i);
     }
     
