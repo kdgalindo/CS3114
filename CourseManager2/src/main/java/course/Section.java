@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import bst.BST;
-import student.Name;
+import student.FullName;
 import student.Student;
 
 /**
@@ -17,7 +17,7 @@ import student.Student;
  */
 public class Section {
     private BST<Long, Integer> pbst; // BST w/ PID key & Index value
-    private BST<Name, Integer> nbst; // BST w/ Name key & Index value
+    private BST<FullName, Integer> nbst; // BST w/ Name key & Index value
     private BST<Integer, Integer> sbst; // BST w/ Score key & Index value
     private int number; // Section Number
     private boolean active; // Active State
@@ -27,7 +27,7 @@ public class Section {
      */
     Section() {
         pbst = new BST<Long, Integer>();
-        nbst = new BST<Name, Integer>();
+        nbst = new BST<FullName, Integer>();
         sbst = new BST<Integer, Integer>();
         number = 1;
         active = true;
@@ -40,7 +40,7 @@ public class Section {
      */
     Section(int n) {
         pbst = new BST<Long, Integer>();
-        nbst = new BST<Name, Integer>();
+        nbst = new BST<FullName, Integer>();
         sbst = new BST<Integer, Integer>();
         number = n;
         active = true;
@@ -131,7 +131,7 @@ public class Section {
      * @param n Name
      * @return StudentRecord Index
      */
-    public ArrayList<Integer> searchByName(Name n) {
+    public ArrayList<Integer> searchByName(FullName n) {
         return nbst.findall(n);
     }
     
@@ -165,7 +165,7 @@ public class Section {
      * @param n Student Name
      * @return StudentRecord Index
      */
-    public Integer removeStudentName(Name n) {
+    public Integer removeStudentName(FullName n) {
         return nbst.remove(n);
     }
     
@@ -175,7 +175,7 @@ public class Section {
      * @param n Student Name
      * @param i StudentRecord Index
      */
-    public void removeStudentName(Name n, int i) {
+    public void removeStudentName(FullName n, int i) {
         nbst.remove(n, i);
     }
     

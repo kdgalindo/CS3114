@@ -2,15 +2,13 @@ package student;
 
 /**
  * Student Class
- * Student Info
  * 
- * @author ati Angel Isiadinso
- * @author kylegg7 Kyle Galindo
- * @version 2019-10-20
+ * @author kyleg997 Kyle Galindo
+ * @version 2020-08-13
  */
 public class Student implements Comparable<Student> {
     private long pid;
-    private Name name;
+    private FullName name;
 
     /**
      * Student id, Name constructor
@@ -18,7 +16,7 @@ public class Student implements Comparable<Student> {
      * @param p Student id
      * @param n Student Name
      */
-    public Student(long p, Name n) {
+    public Student(long p, FullName n) {
         pid = p;
         name = n;
     }
@@ -37,7 +35,7 @@ public class Student implements Comparable<Student> {
      * 
      * @return name
      */
-    public Name getName() {
+    public FullName getName() {
         return name;
     }
     
@@ -47,7 +45,7 @@ public class Student implements Comparable<Student> {
      * @return first
      */
     public String getFirst() {
-        return name.getFirst();
+        return name.getFirstName();
     }
     
     /**
@@ -56,7 +54,7 @@ public class Student implements Comparable<Student> {
      * @return middle
      */
     public String getMiddle() {
-        return name.getMiddle();
+        return name.getMiddleName();
     }
     
     /**
@@ -65,7 +63,7 @@ public class Student implements Comparable<Student> {
      * @return last
      */
     public String getLast() {
-        return name.getLast();
+        return name.getLastName();
     }
     
     /**

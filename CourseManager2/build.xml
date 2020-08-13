@@ -33,6 +33,14 @@
 	</target>
 
 	<target name="compile" depends="init">
+		<copy todir="${dir.build.classes}">
+		  <fileset dir="${dir.test}" excludes="**/*.java"/>
+		</copy>
+		
+		<copy todir="${dir.build.classes.main.java}">
+		  <fileset dir="${dir.test}" excludes="**/*.java"/>
+		</copy>
+		
 		<javac srcdir="${dir.src.main.java}" 
 			destdir="${dir.build.classes.main.java}"
 			includeantruntime="false"/>
@@ -45,9 +53,8 @@
 	</target>
 	
 	<target name="execute" depends="compile">
-		<java classname="Coursemanager2"
-			classpath="${dir.build.classes.main.java}">
-		<arg line="${dir.test}/SampleInput.txt"/>
+		<java classname="Coursemanager2" classpath="${dir.build.classes.main.java}" fork="true" dir="${dir.test}">
+			<arg line="SampleInput.txt"/>
 		</java>
 	</target>
 	
@@ -57,7 +64,7 @@
 				<path refid="classpath.test"/>
 				<pathelement location="${dir.build.classes.test.java}"/>
 			</classpath>
-			<formatter type="brief" usefile="false" />
+			<formatter type="brief" usefile="false"/>
 			<batchtest>
 				<fileset dir="${dir.src.test.java}" includes="**/*Test.java" />
 			</batchtest>

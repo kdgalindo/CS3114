@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 import bin.BinFileHelper;
 import bst.BST;
-import student.Name;
+import student.FullName;
 import student.Student;
 import student.StudentRecord;
 
@@ -210,7 +210,7 @@ public class CourseManager {
      * @param n name
      * @return student record list
      */
-    public ArrayList<StudentRecord> search(Name n) {
+    public ArrayList<StudentRecord> search(FullName n) {
         gindex = null;
         ArrayList<StudentRecord> nsrl = new ArrayList<StudentRecord>();
         ArrayList<Integer> il = csection.searchByName(n); // srecord indices
@@ -304,7 +304,7 @@ public class CourseManager {
      * @return student record if found,
      * null otherwise
      */
-    public StudentRecord remove(Name n) {
+    public StudentRecord remove(FullName n) {
         gindex = null;
         StudentRecord sr = null;
         ArrayList<Integer> il = csection.searchByName(n);

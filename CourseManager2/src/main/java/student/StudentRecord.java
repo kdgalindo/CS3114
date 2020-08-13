@@ -72,7 +72,7 @@ public class StudentRecord {
      * 
      * @return name
      */
-    public Name getName() {
+    public FullName getName() {
         return student.getName();
     }
     

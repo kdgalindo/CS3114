@@ -65,7 +65,7 @@ public class TopLevel {
                     String f = sc2.next(); // first name
                     String m = sc2.next(); // middle name
                     String l = sc2.next(); // last name
-                    Student s = new Student(p, new Name(f, m, l));
+                    Student s = new Student(p, new FullName(f, m, l));
                     loadstudentdatahelper(s);
                 }
                 sc2.close();
@@ -100,7 +100,7 @@ public class TopLevel {
             String l = bfh.byteArrayToName(bs, i);
             i += l.length() + 1; // last name
             i += 7;
-            Student s = new Student(p, new Name(f, m, l));
+            Student s = new Student(p, new FullName(f, m, l));
             loadstudentdatahelper(s);
         }
         sdloaded = true;
@@ -166,7 +166,7 @@ public class TopLevel {
                     else {
                         sc2.nextLine();
                     }
-                    Student ns = new Student(p, new Name(f, l));
+                    Student ns = new Student(p, new FullName(f, l));
                     StudentRecord nsr = new StudentRecord(ns, s, g);
                     loadcoursedatahelper(i, nsr);
                 }
@@ -206,7 +206,7 @@ public class TopLevel {
                 g = bfh.byteArrayToGrade(ba, i + 4);
                 i += 5; // score + grade
             }
-            Student ns = new Student(p, new Name(f, l));
+            Student ns = new Student(p, new FullName(f, l));
             StudentRecord nsr = new StudentRecord(ns, s, g);
             loadcoursedatahelper(csn, nsr);
             if (csrn == lsrn) {
@@ -234,7 +234,7 @@ public class TopLevel {
         long p = nsr.getPID();
         Student s = smanager.search(p);
         if (s != null) { // Check if id exists
-            Name n = nsr.getName();
+            FullName n = nsr.getName();
             if (s.getName().compareTo(n) == 0) {
                 StudentRecord sr = cmanager.loadcoursedata(sn, nsr);
                 if (sr == null) { // Check if student enrolled
@@ -280,7 +280,7 @@ public class TopLevel {
         if (cmanager.isCurrentSectionActive()) {
             Student s = smanager.search(p);
             if (s != null) { // Check if id exists
-                Name n = new Name(f, l);
+                FullName n = new FullName(f, l);
                 if (s.getName().compareTo(n) == 0) { // Check if name matches
                     s = new Student(p, n);
                     StudentRecord sr = cmanager.insert(s);
@@ -349,7 +349,7 @@ public class TopLevel {
      */
     public void search(String f, String l) {
         if (cmanager.isCurrentSectionActive()) {
-            Name n = new Name(f, l);
+            FullName n = new FullName(f, l);
             System.out.println("search results for " + n + ":");
             ArrayList<StudentRecord> srl = cmanager.search(n);
             for (int i = 0; i < srl.size(); i++) {
@@ -455,7 +455,7 @@ public class TopLevel {
      */
     public void remove(String f, String l) {
         if (cmanager.isCurrentSectionActive()) {
-            Name n = new Name(f, l);
+            FullName n = new FullName(f, l);
             StudentRecord sr = cmanager.remove(n);
             if (sr != null) {
                 System.out.println("Student " + n + " get removed from section "
