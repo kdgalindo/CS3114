@@ -34,6 +34,10 @@ public class FullName implements Comparable<FullName> {
     public String getLastName() {
         return lastName;
     }
+    
+    public boolean equalsPartOfIgnoreCase(String name) {
+    	return firstName.equalsIgnoreCase(name) || lastName.equalsIgnoreCase(name);
+    }
 
     @Override
     public int compareTo(FullName fullName) {

@@ -8,26 +8,26 @@ import java.util.Scanner;
 
 import bin.BinFileHelper;
 import course.CourseManager2;
-import course.StudentManager;
+import course.StudentManager2;
 import student.*;
 
 /**
  * TopLevel Class
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-13
+ * @version 2020-08-15
  */
-public class TopLevel {
-    private StudentManager smanager; // student manager
-    private CourseManager2 cmanager; // course manager
+public class CmdEvaluator {
+    private StudentManager2 studentManager;
+    private CourseManager2 courseManager;
     private boolean sdloaded; // student data loaded
 
     /**
      * TopLevel default constructor
      */
-    TopLevel() {
-        smanager = new StudentManager();
-        cmanager = new CourseManager2();
+    public CmdEvaluator() {
+        studentManager = new StudentManager2();
+        courseManager = new CourseManager2();
         sdloaded = false;
     }
 
@@ -36,14 +36,14 @@ public class TopLevel {
      * 
      * @param fn filename
      */
-    public void loadstudentdata(String fn) {
+    public void loadStudentData(String fn) {
         if (fn.endsWith(".csv")) {
             loadtxtstudentdata(fn);
         }
         else if (fn.endsWith(".data")) {
             loadbinstudentdata(fn);
         }
-        cmanager.loadstudentdata();
+        courseManager.loadstudentdata();
     }
 
     /**
@@ -111,7 +111,7 @@ public class TopLevel {
      * @param s student
      */
     public void loadstudentdatahelper(Student s) {
-        smanager.insert(s.getPersonalID(), s);
+        studentManager.insert(s.getPersonalID(), s);
     }
 
     /**
@@ -119,7 +119,7 @@ public class TopLevel {
      * 
      * @param fn filename
      */
-    public void loadcoursedata(String fn) {
+    public void loadCourseData(String fn) {
         if (sdloaded) {
             if (fn.endsWith(".csv")) {
                 System.out.println(fn.substring(0, fn.length() - 4)
@@ -231,16 +231,16 @@ public class TopLevel {
      */
     public void loadcoursedatahelper(int sn, StudentRecord nsr) {
         long p = nsr.getPID();
-        Student s = smanager.search(p);
+        Student s = studentManager.search(p);
         if (s != null) { // Check if id exists
             FullName n = nsr.getName();
             if (s.getFullName().compareTo(n) == 0) {
-                StudentRecord sr = cmanager.loadcoursedata(sn, nsr);
+                StudentRecord sr = courseManager.loadcoursedata(sn, nsr);
                 if (sr == null) { // Check if student enrolled
                     System.out.println("Warning: Student " + nsr.getName()
                         + " is not loaded to section " + sn
                         + " since he/she is already enrolled in section "
-                        + cmanager.searchForSectionByPID(nsr.getPID()));
+                        + courseManager.searchForSectionByPID(nsr.getPID()));
                 }
             }
             else {
@@ -263,9 +263,9 @@ public class TopLevel {
      * @param n section number
      */
     public void section(int n) {
-        cmanager.setSection(n);
+        courseManager.setSection(n);
         System.out.println("switch to section "
-            + cmanager.getSection());
+            + courseManager.getSection());
     }
 
     /**
@@ -276,21 +276,21 @@ public class TopLevel {
      * @param l lastname
      */
     public void insert(long p, String f, String l) {
-        if (cmanager.isCurrentSectionActive()) {
-            Student s = smanager.search(p);
+        if (courseManager.isCurrentSectionActive()) {
+            Student s = studentManager.search(p);
             if (s != null) { // Check if id exists
                 FullName n = new FullName(f, l);
                 if (s.getFullName().compareTo(n) == 0) { // Check if name matches
                     s = new Student(p, n);
-                    StudentRecord sr = cmanager.insert(s);
+                    StudentRecord sr = courseManager.insert(s);
                     if (sr != null) { // Check if student enrolled
                         System.out.println(n + " inserted.");
                     }
                     else {
-                        if (cmanager.searchForSectionByPID(p) == cmanager
+                        if (courseManager.searchForSectionByPID(p) == courseManager
                             .getSection()) {
                             System.out.println(n + " is already in section "
-                                + cmanager.getSection());
+                                + courseManager.getSection());
                         }
                         else {
                             System.out.println(n
@@ -322,9 +322,9 @@ public class TopLevel {
      * 
      * @param p pid
      */
-    public void searchid(long p) {
-        if (cmanager.isCurrentSectionActive()) {
-            StudentRecord sr = cmanager.searchid(p);
+    public void searchID(long p) {
+        if (courseManager.isCurrentSectionActive()) {
+            StudentRecord sr = courseManager.searchid(p);
             if (sr != null) {
                 System.out.println("Found " + sr);
             }
@@ -347,15 +347,15 @@ public class TopLevel {
      * @param l lastname
      */
     public void search(String f, String l) {
-        if (cmanager.isCurrentSectionActive()) {
+        if (courseManager.isCurrentSectionActive()) {
             FullName n = new FullName(f, l);
             System.out.println("search results for " + n + ":");
-            ArrayList<StudentRecord> srl = cmanager.search(n);
+            ArrayList<StudentRecord> srl = courseManager.search(n);
             for (int i = 0; i < srl.size(); i++) {
                 System.out.println(srl.get(i));
             }
             System.out.println(n + " was found in " + srl.size()
-                + " records in section " + cmanager.getSection());
+                + " records in section " + courseManager.getSection());
         }
         else {
             System.out.println(
@@ -369,14 +369,14 @@ public class TopLevel {
      * @param n name
      */
     public void search(String n) {
-        if (cmanager.isCurrentSectionActive()) {
+        if (courseManager.isCurrentSectionActive()) {
             System.out.println("search results for " + n + ":");
-            ArrayList<StudentRecord> srl = cmanager.search(n);
+            ArrayList<StudentRecord> srl = courseManager.search(n);
             for (int i = 0; i < srl.size(); i++) {
                 System.out.println(srl.get(i));
             }
             System.out.println(n + " was found in " + srl.size()
-                + " records in section " + cmanager.getSection());
+                + " records in section " + courseManager.getSection());
         }
         else {
             System.out.println(
@@ -390,10 +390,10 @@ public class TopLevel {
      * @param n number
      */
     public void score(int n) {
-        if (cmanager.isCurrentSectionActive()) {
-            if (cmanager.isAStudentGradable()) {
+        if (courseManager.isCurrentSectionActive()) {
+            if (courseManager.isAStudentGradable()) {
                 if ((n >= 0) && (n <= 100)) {
-                    StudentRecord sr = cmanager.score(n);
+                    StudentRecord sr = courseManager.score(n);
                     System.out.println("Update " + sr.getName()
                         + " record, score = " + sr.getScore());
                 }
@@ -420,13 +420,13 @@ public class TopLevel {
      * @param p pid
      */
     public void remove(long p) {
-        if (cmanager.isCurrentSectionActive()) {
-            Student s = smanager.search(p);
+        if (courseManager.isCurrentSectionActive()) {
+            Student s = studentManager.search(p);
             if (s != null) {
-                StudentRecord sr = cmanager.remove(p);
+                StudentRecord sr = courseManager.remove(p);
                 if (sr != null) {
                     System.out.println("Student " + sr.getName()
-                        + " get removed from section " + cmanager
+                        + " get removed from section " + courseManager
                             .getSection());
                 }
                 else {
@@ -453,16 +453,16 @@ public class TopLevel {
      * @param l lastname
      */
     public void remove(String f, String l) {
-        if (cmanager.isCurrentSectionActive()) {
+        if (courseManager.isCurrentSectionActive()) {
             FullName n = new FullName(f, l);
-            StudentRecord sr = cmanager.remove(n);
+            StudentRecord sr = courseManager.remove(n);
             if (sr != null) {
                 System.out.println("Student " + n + " get removed from section "
-                    + cmanager.getSection());
+                    + courseManager.getSection());
             }
             else {
                 System.out.println("Remove failed. Student " + n
-                    + " doesn't exist in section " + cmanager
+                    + " doesn't exist in section " + courseManager
                         .getSection());
             }
         }
@@ -475,25 +475,25 @@ public class TopLevel {
     /**
      * clearsection command
      */
-    public void clearsection() {
-        cmanager.clearsection();
+    public void clearSection() {
+        courseManager.clearsection();
         System.out.println("Section "
-            + cmanager.getSection()
+            + courseManager.getSection()
             + " cleared");
     }
 
     /**
      * dumpsection command
      */
-    public void dumpsection() {
-        System.out.println("section " + cmanager.getSection()
+    public void dumpSection() {
+        System.out.println("section " + courseManager.getSection()
             + " dump:");
         System.out.println("BST by ID:");
-        int i = cmanager.dumpPIDs();
+        int i = courseManager.dumpPIDs();
         System.out.println("BST by name:");
-        cmanager.dumpNames();
+        courseManager.dumpNames();
         System.out.println("BST by score:");
-        cmanager.dumpScores();
+        courseManager.dumpScores();
         System.out.println("Size = " + i);
     }
 
@@ -501,7 +501,7 @@ public class TopLevel {
      * grade command
      */
     public void grade() {
-        cmanager.grade();
+        courseManager.grade();
         System.out.println("grading completed");
     }
 
@@ -511,9 +511,9 @@ public class TopLevel {
     public void stat() {
         String[] letters = { "A ", "A-", "B+", "B ", "B-", "C+", "C ", "C-",
             "D+", "D ", "D-", "F " };
-        System.out.println("Statistics of section " + cmanager
+        System.out.println("Statistics of section " + courseManager
             .getSection() + ":");
-        int[] numbers = cmanager.stat();
+        int[] numbers = courseManager.stat();
         for (int i = 0; i < numbers.length; i++) {
             int number = numbers[i];
             if (number != 0) {
@@ -530,7 +530,7 @@ public class TopLevel {
      */
     public void list(String g) {
         System.out.println("Students with grade " + g + " are:");
-        ArrayList<StudentRecord> srl = cmanager.list(g);
+        ArrayList<StudentRecord> srl = courseManager.list(g);
         for (int i = 0; i < srl.size(); i++) {
             StudentRecord sr = srl.get(i);
             System.out.println(sr + ", grade = " + sr.getGrade());
@@ -543,10 +543,10 @@ public class TopLevel {
      * 
      * @param s score
      */
-    public void findpair(int s) {
+    public void findPair(int s) {
         System.out.println("Students with score difference less than or equal "
             + s + ":");
-        ArrayList<String> sl = cmanager.findpair(s);
+        ArrayList<String> sl = courseManager.findpair(s);
         for (int i = 0; i < sl.size(); i++) {
             System.out.println(sl.get(i));
         }
@@ -557,14 +557,14 @@ public class TopLevel {
      * merge command
      */
     public void merge() {
-        if (cmanager.merge()) {
-            System.out.println("All sections merged at section " + cmanager
+        if (courseManager.merge()) {
+            System.out.println("All sections merged at section " + courseManager
                 .getSection());
         }
         else {
             System.out.println(
                 "Sections could only be merged to an empty section. Section "
-                    + cmanager.getSection() + " is not empty.");
+                    + courseManager.getSection() + " is not empty.");
         }
     }
 
@@ -573,15 +573,15 @@ public class TopLevel {
      * 
      * @param bfn binary filename
      */
-    public void savestudentdata(String bfn) {
+    public void saveStudentData(String bfn) {
         System.out.println("Saved all Students data to " + bfn);
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             BinFileHelper bfh = new BinFileHelper();
             baos.write("VTSTUDENTS".getBytes());
-            baos.write(bfh.intToByteArray(smanager.size()));
-            Iterator<Student> itr = smanager.iterator();
-            if (!smanager.isEmpty()) {
+            baos.write(bfh.intToByteArray(studentManager.size()));
+            Iterator<Student> itr = studentManager.iterator();
+            if (!studentManager.isEmpty()) {
                 while (itr.hasNext()) {
                     Student s = itr.next();
                     baos.write(bfh.longToByteArray(s.getPersonalID()));
@@ -602,7 +602,7 @@ public class TopLevel {
         catch (Exception e) {
             e.printStackTrace();
         }
-        cmanager.loadstudentdata();
+        courseManager.loadstudentdata();
     }
 
     /**
@@ -610,18 +610,18 @@ public class TopLevel {
      * 
      * @param bfn binaryfilename
      */
-    public void savecoursedata(String bfn) {
+    public void saveCourseData(String bfn) {
         System.out.println("Saved all course data to " + bfn);
         BinFileHelper bfh = new BinFileHelper();
-        byte[] ba = cmanager.savecoursedata();
+        byte[] ba = courseManager.savecoursedata();
         bfh.byteArrayToBinFile(ba, bfn);
     }
 
     /**
      * clearcoursedata command
      */
-    public void clearcoursedata() {
+    public void clearCourseData() {
         System.out.println("All course data cleared.");
-        cmanager.clearcoursedata();
+        courseManager.clearcoursedata();
     }
 }

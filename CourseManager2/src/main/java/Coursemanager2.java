@@ -1,4 +1,5 @@
 import interpreter.Parser;
+import interpreter.CmdParser;
 
 /**
  * Coursemanager2 Class
@@ -15,7 +16,9 @@ public class Coursemanager2 {
      */
     public static void main(String[] args) {
         String fn = args[0];
-        Parser p = new Parser();
-        p.parse(fn);
+//        Parser p = new Parser();
+//        p.parse(fn);
+        CmdParser cmdParser = new CmdParser();
+        cmdParser.parse(fn);
     }
 }
