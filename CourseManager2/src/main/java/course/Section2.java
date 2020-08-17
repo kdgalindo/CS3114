@@ -11,19 +11,19 @@ import student.Student;
  * Section Class
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-14
+ * @version 2020-08-17
  */
 public class Section2 {
-    private BST<Long, Integer> studentPIDDB; // Index value
-    private BST<FullName, Integer> studentFNDB; // Index value
-    private BST<Integer, Integer> studentPGDB; // Index value
+    private BST<Long, Integer> pidIndexDB; // Index value
+    private BST<FullName, Integer> fnIndexDB; // Index value
+    private BST<Integer, Integer> pgIndexDB; // Index value
     private int number;
     private boolean active; // Active State
     
     Section2(int sectionNumber) {
-        studentPIDDB = new BST<Long, Integer>();
-        studentFNDB = new BST<FullName, Integer>();
-        studentPGDB = new BST<Integer, Integer>();
+        pidIndexDB = new BST<Long, Integer>();
+        fnIndexDB = new BST<FullName, Integer>();
+        pgIndexDB = new BST<Integer, Integer>();
         number = sectionNumber;
         active = true;
     }
@@ -46,7 +46,7 @@ public class Section2 {
      * @return size
      */
     public int size() {
-        return studentPIDDB.size();
+        return pidIndexDB.size();
     }
     
     /**
@@ -56,7 +56,7 @@ public class Section2 {
      * is empty, FALSE otherwise
      */
     public boolean isEmpty() {
-        return (studentPIDDB.size() == 0);
+        return (pidIndexDB.size() == 0);
     }
     
     /**
@@ -67,19 +67,19 @@ public class Section2 {
      * @param i StudentRecord Index
      */
     public void insertStudent(Student st, int sc, int i) {
-        studentPIDDB.insert(st.getPersonalID(), i);
-        studentFNDB.insert(st.getFullName(), i);
-        studentPGDB.insert(sc, i);
+        pidIndexDB.insert(st.getPersonalID(), i);
+        fnIndexDB.insert(st.getFullName(), i);
+        pgIndexDB.insert(sc, i);
     }
     
     public void insert(Student student, int index) {
-        studentPIDDB.insert(student.getPersonalID(), index);
-        studentFNDB.insert(student.getFullName(), index);
-        studentPGDB.insert(student.getPercentageGrade(), index);
+        pidIndexDB.insert(student.getPersonalID(), index);
+        fnIndexDB.insert(student.getFullName(), index);
+        pgIndexDB.insert(student.getPercentageGrade(), index);
     }
     
     public Integer findStudent(long personalID) {
-        return studentPIDDB.find(personalID);
+        return pidIndexDB.find(personalID);
     }
     
     /**
@@ -90,11 +90,11 @@ public class Section2 {
      * @return StudentRecord Index
      */
     public ArrayList<Integer> searchByName(FullName fullName) {
-        return studentFNDB.findall(fullName);
+        return fnIndexDB.findall(fullName);
     }
     
     public int[] findStudents(FullName fullName) {
-        return toIntArray(studentFNDB.findall(fullName));
+        return toIntArray(fnIndexDB.findall(fullName));
     }
     
     private static int[] toIntArray(ArrayList<Integer> oldIndices) {
@@ -115,8 +115,8 @@ public class Section2 {
      * @param i StudentRecord Index
      */
     public void updateStudentScore(int cs, int ns, int index) {
-        studentPGDB.remove(cs, index);
-        studentPGDB.insert(ns, index);
+        pgIndexDB.remove(cs, index);
+        pgIndexDB.insert(ns, index);
     }
     
     /**
@@ -126,7 +126,7 @@ public class Section2 {
      * @return StudentRecord Index
      */
     public Integer removeStudentPID(long p) {
-        return studentPIDDB.remove(p);
+        return pidIndexDB.remove(p);
     }
     
     /**
@@ -136,7 +136,7 @@ public class Section2 {
      * @return StudentRecord Index
      */
     public Integer removeStudentName(FullName n) {
-        return studentFNDB.remove(n);
+        return fnIndexDB.remove(n);
     }
     
     /**
@@ -146,7 +146,7 @@ public class Section2 {
      * @param i StudentRecord Index
      */
     public void removeStudentName(FullName n, int i) {
-        studentFNDB.remove(n, i);
+        fnIndexDB.remove(n, i);
     }
     
     /**
@@ -156,7 +156,7 @@ public class Section2 {
      * @param i StudentRecord Index
      */
     public void removeStudentScore(int s, int i) {
-        studentPGDB.remove(s, i);
+        pgIndexDB.remove(s, i);
     }
     
     /**
@@ -164,9 +164,9 @@ public class Section2 {
      * Section
      */
     public void clear() {
-        studentPIDDB.clear();
-        studentFNDB.clear();
-        studentPGDB.clear();
+        pidIndexDB.clear();
+        fnIndexDB.clear();
+        pgIndexDB.clear();
         active = true;
     }
     
@@ -180,18 +180,18 @@ public class Section2 {
      * @return StudentRecord Indices
      */
     public ArrayList<Integer> searchForScoresInRange(int s1, int s2) {
-        return studentPGDB.findrange(s1, s2);
+        return pgIndexDB.findrange(s1, s2);
     }
     
     public Iterator<Integer> studentPIDIndexIterator() {
-        return studentPIDDB.iterator();
+        return pidIndexDB.iterator();
     }
     
     public Iterator<Integer> studentFNIndexIterator() {
-        return studentFNDB.iterator();
+        return fnIndexDB.iterator();
     }
     
     public Iterator<Integer> studentPGIndexIterator() {
-        return studentPGDB.iterator();
+        return pgIndexDB.iterator();
     }
 }

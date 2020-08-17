@@ -15,7 +15,7 @@ import student.*;
  * TopLevel Class
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-15
+ * @version 2020-08-17
  */
 public class CmdEvaluator {
     private StudentManager2 studentManager;
@@ -257,37 +257,25 @@ public class CmdEvaluator {
         }
     }
 
-    /**
-     * section command
-     * 
-     * @param n section number
-     */
-    public void section(int n) {
-        courseManager.setSection(n);
+    public void section(int sectionNumber) {
+        courseManager.setSection(sectionNumber);
         System.out.println("switch to section "
             + courseManager.getSection());
     }
 
-    /**
-     * insert command
-     * 
-     * @param p pid
-     * @param f firstname
-     * @param l lastname
-     */
-    public void insert(long p, String f, String l) {
-        if (courseManager.isCurrentSectionActive()) {
-            Student s = studentManager.search(p);
-            if (s != null) { // Check if id exists
-                FullName n = new FullName(f, l);
-                if (s.getFullName().compareTo(n) == 0) { // Check if name matches
-                    s = new Student(p, n);
-                    StudentRecord sr = courseManager.insert(s);
+    public void insert(long personalID, String firstName, String lastName) {
+        if (courseManager.isSectionActive()) {
+            Student student = studentManager.findStudent(personalID);
+            if (student != null) { // Check if id exists
+                FullName n = new FullName(firstName, lastName);
+                if (student.getFullName().compareTo(n) == 0) { // Check if name matches
+                	student = new Student(personalID, n);
+                    StudentRecord sr = courseManager.insert(student);
                     if (sr != null) { // Check if student enrolled
                         System.out.println(n + " inserted.");
                     }
                     else {
-                        if (courseManager.searchForSectionByPID(p) == courseManager
+                        if (courseManager.searchForSectionByPID(personalID) == courseManager
                             .getSection()) {
                             System.out.println(n + " is already in section "
                                 + courseManager.getSection());
@@ -306,7 +294,7 @@ public class CmdEvaluator {
                 }
             }
             else {
-                System.out.println(f + " " + l
+                System.out.println(firstName + " " + lastName
                     + " insertion failed. Wrong student information."
                     + " ID doesn't exist");
             }
@@ -315,6 +303,46 @@ public class CmdEvaluator {
             System.out.println(
                 "Command insert is not valid for merged sections");
         }
+    }
+    
+    public void insert2(long personalID, String firstName, String lastName) {
+        if (!courseManager.isSectionActive()) {
+        	System.out.println("Command insert is not valid for merged sections");
+        	return;
+        }
+        
+        Student student = studentManager.findStudent(personalID);
+        if (student == null) { // Check if id exists
+            System.out.println(firstName + " " + lastName
+                    + " insertion failed. Wrong student information."
+                    + " ID doesn't exist");
+            return;
+        }
+        
+        FullName fullName = new FullName(firstName, lastName);
+        if (student.getFullName().compareTo(fullName) != 0) { // Check if name matches
+        	System.out.println(fullName
+                    + " insertion failed. Wrong student information."
+                    + " ID belongs to another student");
+        	return;
+        }
+        
+        Integer sectionNumber = courseManager.findStudentSection(personalID);
+        if (sectionNumber != null) { // Check if student enrolled
+        	if (sectionNumber == courseManager.getSection()) {
+                System.out.println(fullName
+                		+ " is already in section "
+                        + courseManager.getSection());
+        	}
+        	else {
+            	System.out.println(fullName
+                        + " is already registered in a different section");
+        	}
+        	return;
+        }
+        
+        StudentRecord studentRecord = courseManager.insert(new Student(personalID, fullName));
+        System.out.println(studentRecord.getName() + " inserted.");
     }
 
     /**
@@ -339,6 +367,22 @@ public class CmdEvaluator {
                 "Command searchid is not valid for merged sections");
         }
     }
+    
+    public void searchID2(long personalID) {
+        if (!courseManager.isCurrentSectionActive()) {
+        	System.out.println("Command searchid is not valid for merged sections");
+        	return;
+        }
+        
+        StudentRecord studentRecord = courseManager.searchid(personalID);
+        if (studentRecord == null) {
+            System.out.println("Search Failed. Couldn't find any student with ID "
+                    + String.format("%09d", personalID));
+            return;
+        }
+        
+        System.out.println("Found " + studentRecord);
+    }
 
     /**
      * search command
@@ -362,6 +406,25 @@ public class CmdEvaluator {
                 "Command search is not valid for merged sections");
         }
     }
+    
+    public void search2(String firstName, String lastName) {
+        if (!courseManager.isCurrentSectionActive()) {
+        	System.out.println("Command search is not valid for merged sections");
+        	return;
+        }
+        
+        FullName fullName = new FullName(firstName, lastName);
+        System.out.println("search results for " + fullName + ":");
+        ArrayList<StudentRecord> studentRecords = courseManager.search(fullName);
+        for (int i = 0; i < studentRecords.size(); i++) {
+            System.out.println(studentRecords.get(i));
+        }
+        System.out.println(fullName
+        		+ " was found in "
+        		+ studentRecords.size()
+        		+ " records in section "
+        		+ courseManager.getSection());
+    }
 
     /**
      * Search command
@@ -382,6 +445,24 @@ public class CmdEvaluator {
             System.out.println(
                 "Command search is not valid for merged sections");
         }
+    }
+    
+    public void search2(String name) {
+        if (!courseManager.isCurrentSectionActive()) {
+        	System.out.println("Command search is not valid for merged sections");
+        	return;
+        }
+        
+        System.out.println("search results for " + name + ":");
+        ArrayList<StudentRecord> studentRecords = courseManager.search(name);
+        for (int i = 0; i < studentRecords.size(); i++) {
+            System.out.println(studentRecords.get(i));
+        }
+        System.out.println(name
+        		+ " was found in "
+        		+ studentRecords.size()
+        		+ " records in section "
+        		+ courseManager.getSection());
     }
 
     /**
@@ -445,6 +526,32 @@ public class CmdEvaluator {
                 "Command remove is not valid for merged sections");
         }
     }
+    
+    public void remove2(long personalID) {
+        if (!courseManager.isCurrentSectionActive()) {
+        	System.out.println("Command remove is not valid for merged sections");
+        	return;
+        }
+        
+        Student student = studentManager.search(personalID);
+        if (student == null) {
+        	System.out.println("Remove failed: couldn't find any student with id "
+        			+ personalID);
+        	return;
+        }
+        
+        StudentRecord studentRecord = courseManager.remove(personalID);
+        if (studentRecord == null) {
+            System.out.println("Remove failed: couldn't find any student with id "
+            		+ personalID);
+            return;
+        }
+        
+        System.out.println("Student "
+        		+ studentRecord.getName()
+        		+ " get removed from section "
+        		+ courseManager.getSection());
+    }
 
     /**
      * remove command
@@ -471,6 +578,28 @@ public class CmdEvaluator {
                 "Command remove is not valid for merged sections");
         }
     }
+    
+    public void remove2(String firstName, String lastName) {
+        if (!courseManager.isCurrentSectionActive()) {
+        	System.out.println("Command remove is not valid for merged sections");
+        	return;
+        }
+        
+        FullName fullName = new FullName(firstName, lastName);
+        StudentRecord studentRecord = courseManager.remove(fullName);
+        if (studentRecord == null) {
+            System.out.println("Remove failed. Student "
+            		+ fullName
+                    + " doesn't exist in section "
+            		+ courseManager.getSection());
+            return;
+        }
+        
+        System.out.println("Student "
+        		+ fullName
+        		+ " get removed from section "
+                + courseManager.getSection());
+    }
 
     /**
      * clearsection command
@@ -486,15 +615,16 @@ public class CmdEvaluator {
      * dumpsection command
      */
     public void dumpSection() {
-        System.out.println("section " + courseManager.getSection()
-            + " dump:");
+        System.out.println("section "
+        		+ courseManager.getSection()
+        		+ " dump:");
         System.out.println("BST by ID:");
-        int i = courseManager.dumpPIDs();
+        int size = courseManager.dumpPIDs();
         System.out.println("BST by name:");
         courseManager.dumpNames();
         System.out.println("BST by score:");
         courseManager.dumpScores();
-        System.out.println("Size = " + i);
+        System.out.println("Size = " + size);
     }
 
     /**

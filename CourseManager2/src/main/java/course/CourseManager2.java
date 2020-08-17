@@ -14,14 +14,15 @@ import student.StudentRecord;
  * CourseManager Class
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-14
+ * @version 2020-08-17
  */
 public class CourseManager2 {
 	private final int MAX_SECTION_NUMBER = 21;
     private Section2[] sections;
     private Section2 currentSection;
     private ArrayList<StudentRecord> studentRecords;
-    private BST<Long, Integer> studentSectionDB;
+    private ArrayList<Student> students;
+    private BST<Long, Integer> pidSectionDB;
     private BST<String, Integer> gbst; // BST w/ grade key & index value
     private Integer gindex; // index of gradable student record
 
@@ -35,9 +36,10 @@ public class CourseManager2 {
             sections[i] = new Section2(sectionNumber);
         }
         currentSection = sections[0];
-        studentSectionDB = new BST<Long, Integer>();
+        pidSectionDB = new BST<Long, Integer>();
         gBST();
         studentRecords = new ArrayList<StudentRecord>();
+        students = new ArrayList<Student>();
         gindex = null;
     }
 
@@ -69,6 +71,10 @@ public class CourseManager2 {
     public int getSection() {
         return currentSection.getNumber();
     }
+    
+    public boolean isSectionActive() {
+        return currentSection.isActive();
+    }
 
     /**
      * Checks if a student is currently
@@ -89,7 +95,7 @@ public class CourseManager2 {
      * @return section number
      */
     public int searchForSectionByPID(long p) {
-        return studentSectionDB.find(p);
+        return pidSectionDB.find(p);
     }
 
     /**
@@ -125,12 +131,12 @@ public class CourseManager2 {
         gindex = null;
         StudentRecord sr = null;
         long p = nsr.getPID(); // student pid
-        Integer csn = studentSectionDB.find(p); // current section number
+        Integer csn = pidSectionDB.find(p); // current section number
         if (csn == null) { // Check if in section
             sr = nsr;
             sections[sn - 1].insertStudent(sr.getStudent(), sr.getScore(),
                 studentRecords.size()); // Add to section
-            studentSectionDB.insert(p, sn); // Associate with section
+            pidSectionDB.insert(p, sn); // Associate with section
             studentRecords.add(sr); // Add to student record list
         }
         else if (csn == sn) { // Check if in current section
@@ -167,12 +173,12 @@ public class CourseManager2 {
         gindex = null;
         StudentRecord nsr = null;
         long p = s.getPersonalID(); // student pid
-        Integer sn = studentSectionDB.find(p); // section number
+        Integer sn = pidSectionDB.find(p); // section number
         if (sn == null) { // Check if in section
             nsr = new StudentRecord(s);
             currentSection.insertStudent(nsr.getStudent(), nsr.getScore(), studentRecords
                 .size()); // Add to section
-            studentSectionDB.insert(p, currentSection.getNumber()); // Associate with section
+            pidSectionDB.insert(p, currentSection.getNumber()); // Associate with section
             studentRecords.add(nsr); // Add to student record list
             gindex = studentRecords.size() - 1;
         }
@@ -183,15 +189,45 @@ public class CourseManager2 {
         gindex = null;
         StudentRecord studentRecord = null;
         long personalID = student.getPersonalID();
-        Integer sectionNumber = studentSectionDB.find(personalID);
-        if (sectionNumber == null) { // Check if in section
+        if (findStudentSection(personalID) == null) { // Check if in section
         	studentRecord = new StudentRecord(student);
             currentSection.insert(student, studentRecords.size()); // Add to section
-            studentSectionDB.insert(personalID, currentSection.getNumber()); // Associate with section
+            pidSectionDB.insert(personalID, currentSection.getNumber()); // Associate with section
             studentRecords.add(studentRecord); // Add to student record list
             gindex = studentRecords.size() - 1;
         }
         return studentRecord;
+    }
+    
+    public Integer findStudentSection(long personalID) {
+        return pidSectionDB.find(personalID);
+    }
+    
+    public Student insert3(long personalID, String firstName, String lastName) {
+        gindex = null;
+        Student student = null;
+        Integer sectionNumber = pidSectionDB.find(personalID);
+        if (sectionNumber == null) { // Check if in section
+        	student = new Student(personalID, new FullName(firstName, lastName));
+            currentSection.insert(student, studentRecords.size()); // Add to section
+            pidSectionDB.insert(personalID, currentSection.getNumber()); // Associate with section
+            students.add(student); // Add to student record list
+            gindex = studentRecords.size() - 1;
+        }
+        return student;
+    }
+    
+    public Student insert3(Student student) {
+        gindex = null;
+        long personalID = student.getPersonalID();
+        if (findStudentSection(personalID) == null) { // Check if in section
+            currentSection.insert(student, studentRecords.size()); // Add to section
+            pidSectionDB.insert(personalID, currentSection.getNumber()); // Associate with section
+            students.add(student); // Add to student record list
+            gindex = studentRecords.size() - 1;
+            return student;
+        }
+        return null;
     }
 
     /**
@@ -213,7 +249,7 @@ public class CourseManager2 {
         return sr;
     }
     
-    public StudentRecord findStudent(long personalID) {
+    public StudentRecord searchid2(long personalID) {
         gindex = null;
         StudentRecord studentRecord = null;
         Integer studentRecordIndex = currentSection.findStudent(personalID);
@@ -222,6 +258,17 @@ public class CourseManager2 {
             gindex = studentRecordIndex;
         }
         return studentRecord;
+    }
+    
+    public Student searchid3(long personalID) {
+        gindex = null;
+        Student student = null;
+        Integer studentIndex = currentSection.findStudent(personalID);
+        if (studentIndex != null) { // Check if in section
+        	student = students.get(studentIndex);
+            gindex = studentIndex;
+        }
+        return student;
     }
 
     /**
@@ -244,7 +291,7 @@ public class CourseManager2 {
         return nsrl;
     }
     
-    public ArrayList<StudentRecord> findStudents(FullName fullName) {
+    public ArrayList<StudentRecord> search2(FullName fullName) {
         gindex = null;
         ArrayList<StudentRecord> nsrl = new ArrayList<StudentRecord>();
         int[] studentRecordIndices = currentSection.findStudents(fullName);
@@ -255,6 +302,26 @@ public class CourseManager2 {
             gindex = studentRecordIndices[0];
         }
         return nsrl;
+    }
+    
+    public Student[] search3(String firstName, String lastName) {
+        gindex = null;
+        ArrayList<Student> studentsWithName = new ArrayList<Student>();
+        FullName fullName = new FullName(firstName, lastName);
+        int[] studentIndices = currentSection.findStudents(fullName);
+        for (int i = 0; i < studentIndices.length; i++) {
+            studentsWithName.add(students.get(studentIndices[i]));
+        }
+        if (studentIndices.length == 1) {
+            gindex = studentIndices[0];
+        }
+        return toStudentArray(studentsWithName);
+    }
+    
+    private Student[] toStudentArray(ArrayList<Student> oldStudents) {
+        Student[] students = new Student[oldStudents.size()];
+        students = oldStudents.toArray(students);
+        return students;
     }
 
     /**
@@ -288,7 +355,7 @@ public class CourseManager2 {
         return nsrl;
     }
     
-    public ArrayList<StudentRecord> findStudents(String name) {
+    public ArrayList<StudentRecord> search2(String name) {
         gindex = null;
         ArrayList<StudentRecord> studentRecords = new ArrayList<StudentRecord>();
         Iterator<Integer> it = currentSection.studentFNIndexIterator();
@@ -307,6 +374,27 @@ public class CourseManager2 {
             gindex = null;
         }
         return studentRecords;
+    }
+    
+    public Student[] search3(String name) {
+        gindex = null;
+        ArrayList<Student> studentsWithName = new ArrayList<Student>();
+        Iterator<Integer> it = currentSection.studentFNIndexIterator();
+        while (it.hasNext()) {
+            int index = it.next();
+            Student student = students.get(index);
+            FullName fullName = student.getFullName();
+            if (fullName.equalsPartOfIgnoreCase(name)) {
+            	students.add(student);
+                if (studentsWithName.size() == 1) {
+                    gindex = index;
+                }
+            }
+        }
+        if (studentsWithName.size() != 1) {
+            gindex = null;
+        }
+        return toStudentArray(studentsWithName);
     }
 
     /**
@@ -328,7 +416,7 @@ public class CourseManager2 {
         return sr;
     }
     
-    public StudentRecord scoreStudent(int percentage) {
+    public StudentRecord score2(int percentage) {
         StudentRecord studentRecord = null;
         if (gindex != null) {
         	studentRecord = studentRecords.get(gindex);
@@ -337,6 +425,17 @@ public class CourseManager2 {
             gindex = null;
         }
         return studentRecord;
+    }
+    
+    public Student score3(int percentage) {
+        Student student = null;
+        if (gindex != null) {
+        	student = students.get(gindex);
+            currentSection.updateStudentScore(student.getPercentageGrade(), percentage, gindex);
+            student.setPercentageGrade(percentage);
+            gindex = null;
+        }
+        return student;
     }
 
     /**
@@ -350,31 +449,46 @@ public class CourseManager2 {
     public StudentRecord remove(long p) {
         gindex = null;
         StudentRecord sr = null;
-        Integer sn = studentSectionDB.find(p); // section number
+        Integer sn = pidSectionDB.find(p); // section number
         if ((sn != null) && (sn == currentSection.getNumber())) {
             int i = currentSection.removeStudentPID(p);
             sr = studentRecords.get(i);
             currentSection.removeStudentName(sr.getName(), i);
             currentSection.removeStudentScore(sr.getScore(), i);
-            studentSectionDB.remove(p); // Disassociate with section
+            pidSectionDB.remove(p); // Disassociate with section
             sr.setActive(false); // Kill the student record
         }
         return sr;
     }
     
-    public StudentRecord removeStudent(long personalID) {
+    public StudentRecord remove2(long personalID) {
         gindex = null;
         StudentRecord studentRecord = null;
-        Integer sectionNumber = studentSectionDB.find(personalID);
+        Integer sectionNumber = pidSectionDB.find(personalID);
         if ((sectionNumber != null) && (sectionNumber == currentSection.getNumber())) {
             int index = currentSection.removeStudentPID(personalID);
             studentRecord = studentRecords.get(index);
             currentSection.removeStudentName(studentRecord.getName(), index);
             currentSection.removeStudentScore(studentRecord.getScore(), index);
-            studentSectionDB.remove(personalID); // Disassociate with section
+            pidSectionDB.remove(personalID); // Disassociate with section
             studentRecord.setActive(false); // Kill the student record
         }
         return studentRecord;
+    }
+    
+    public Student remove3(long personalID) {
+        gindex = null;
+        Student student = null;
+        Integer sectionNumber = pidSectionDB.find(personalID);
+        if ((sectionNumber != null) && (sectionNumber == currentSection.getNumber())) {
+            int index = currentSection.removeStudentPID(personalID);
+            student = students.get(index);
+            currentSection.removeStudentName(student.getFullName(), index);
+            currentSection.removeStudentScore(student.getPercentageGrade(), index);
+            pidSectionDB.remove(personalID); // Disassociate with section
+            student.clrActive(); // Kill the student record
+        }
+        return student;
     }
 
     /**
@@ -394,13 +508,13 @@ public class CourseManager2 {
             sr = studentRecords.get(i);
             currentSection.removeStudentPID(sr.getPID());
             currentSection.removeStudentScore(sr.getScore(), i);
-            studentSectionDB.remove(sr.getPID()); // Disassociate with section
+            pidSectionDB.remove(sr.getPID()); // Disassociate with section
             sr.setActive(false); // Kill the student record
         }
         return sr;
     }
     
-    public StudentRecord removeStudent(FullName fullName) {
+    public StudentRecord remove2(FullName fullName) {
         gindex = null;
         StudentRecord studentRecord = null;
         int[] indices = currentSection.findStudents(fullName);
@@ -409,10 +523,26 @@ public class CourseManager2 {
             studentRecord = studentRecords.get(index);
             currentSection.removeStudentPID(studentRecord.getPID());
             currentSection.removeStudentScore(studentRecord.getScore(), index);
-            studentSectionDB.remove(studentRecord.getPID()); // Disassociate with section
+            pidSectionDB.remove(studentRecord.getPID()); // Disassociate with section
             studentRecord.setActive(false); // Kill the student record
         }
         return studentRecord;
+    }
+    
+    public Student remove3(String firstName, String lastName) {
+        gindex = null;
+        Student student = null;
+        FullName fullName = new FullName(firstName, lastName);
+        int[] indices = currentSection.findStudents(fullName);
+        if (indices.length == 1) { // Check if name unique
+            int index = currentSection.removeStudentName(fullName);
+            student = students.get(index);
+            currentSection.removeStudentPID(student.getPersonalID());
+            currentSection.removeStudentScore(student.getPercentageGrade(), index);
+            pidSectionDB.remove(student.getPersonalID()); // Disassociate with section
+            student.clrActive(); // Kill the student record
+        }
+        return student;
     }
 
     /**
@@ -442,6 +572,16 @@ public class CourseManager2 {
         }
         return currentSection.size();
     }
+    
+    public int dumpPIDs2() {
+        gindex = null;
+        Iterator<Integer> itr = currentSection.studentPIDIndexIterator();
+        while (itr.hasNext()) {
+            StudentRecord sr = studentRecords.get(itr.next());
+            System.out.println(sr);
+        }
+        return currentSection.size();
+    }
 
     /**
      * Dumps an inorder traversal of
@@ -461,6 +601,16 @@ public class CourseManager2 {
         }
         return currentSection.size();
     }
+    
+    public int dumpNames2() {
+        gindex = null;
+        Iterator<Integer> itr = currentSection.studentFNIndexIterator();
+        while (itr.hasNext()) {
+            StudentRecord sr = studentRecords.get(itr.next());
+            System.out.println(sr);
+        }
+        return currentSection.size();
+    }
 
     /**
      * Dumps an inorder traversal of
@@ -477,6 +627,16 @@ public class CourseManager2 {
                 StudentRecord sr = studentRecords.get(itr.next());
                 System.out.println(sr);
             }
+        }
+        return currentSection.size();
+    }
+    
+    public int dumpScores2() {
+        gindex = null;
+        Iterator<Integer> itr = currentSection.studentPGIndexIterator();
+        while (itr.hasNext()) {
+            StudentRecord sr = studentRecords.get(itr.next());
+            System.out.println(sr);
         }
         return currentSection.size();
     }
@@ -739,6 +899,6 @@ public class CourseManager2 {
             sections[i].clear();
         }
         studentRecords.clear();
-        studentSectionDB.clear();
+        pidSectionDB.clear();
     }
 }

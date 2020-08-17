@@ -7,20 +7,15 @@ import student.Student;
 
 /**
  * StudentManager Class
- * StudentManager Info
  * 
- * @author ati Angel Isiadinso
- * @author kylegg7 Kyle Galindo
- * @version 2019-10-20
+ * @author kyleg997 Kyle Galindo
+ * @version 2020-08-17
  */
 public class StudentManager2 {
-    private BST<Long, Student> sbst; // BST w/ PID key & Student value
+    private BST<Long, Student> pidStudentDB;
     
-    /**
-     * StudentManager default constructor
-     */
     public StudentManager2() {
-        sbst = new BST<Long, Student>();
+        pidStudentDB = new BST<Long, Student>();
     }
     
     /**
@@ -29,7 +24,7 @@ public class StudentManager2 {
      * @return size
      */
     public int size() {
-        return sbst.size();
+        return pidStudentDB.size();
     }
     
     /**
@@ -39,7 +34,7 @@ public class StudentManager2 {
      * empty, FALSE otherwise
      */
     public boolean isEmpty() {
-        return (sbst.size() == 0);
+        return (pidStudentDB.size() == 0);
     }
     
     /**
@@ -50,7 +45,11 @@ public class StudentManager2 {
      * @param s Student
      */
     public void insert(long p, Student s) {
-        sbst.insert(p, s);
+        pidStudentDB.insert(p, s);
+    }
+    
+    public void insert(Student student) {
+    	pidStudentDB.insert(student.getPersonalID(), student);
     }
     
     /**
@@ -61,14 +60,18 @@ public class StudentManager2 {
      * @return Student
      */
     public Student search(long p) {
-        return sbst.find(p);
+        return pidStudentDB.find(p);
+    }
+    
+    public Student findStudent(long personalID) {
+    	return pidStudentDB.find(personalID);
     }
     
     /**
      * Clear the StudentManager
      */
     public void clear() {
-        sbst.clear();
+        pidStudentDB.clear();
     }
     
     /**
@@ -79,6 +82,6 @@ public class StudentManager2 {
      * @return PID Iterator
      */
     public Iterator<Student> iterator() {
-        return sbst.iterator();
+        return pidStudentDB.iterator();
     }
 }
