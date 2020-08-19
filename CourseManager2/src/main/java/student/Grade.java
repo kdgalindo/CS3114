@@ -1,12 +1,18 @@
 package student;
 
+/**
+ * Student Class
+ * 
+ * @author kyleg997 Kyle Galindo
+ * @version 2020-08-19
+ */
 public class Grade {
 	private int percentage;
 	private String letter;
 	
 	public Grade() {
 		percentage = 0;
-		letter = "F";
+		letter = "F ";
 	}
 	
 	public int getPercentage() {

@@ -15,7 +15,7 @@ import student.*;
  * TopLevel Class
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-17
+ * @version 2020-08-19
  */
 public class CmdEvaluator {
     private StudentManager2 studentManager;
@@ -262,50 +262,8 @@ public class CmdEvaluator {
         System.out.println("switch to section "
             + courseManager.getSection());
     }
-
-    public void insert(long personalID, String firstName, String lastName) {
-        if (courseManager.isSectionActive()) {
-            Student student = studentManager.findStudent(personalID);
-            if (student != null) { // Check if id exists
-                FullName n = new FullName(firstName, lastName);
-                if (student.getFullName().compareTo(n) == 0) { // Check if name matches
-                	student = new Student(personalID, n);
-                    StudentRecord sr = courseManager.insert(student);
-                    if (sr != null) { // Check if student enrolled
-                        System.out.println(n + " inserted.");
-                    }
-                    else {
-                        if (courseManager.searchForSectionByPID(personalID) == courseManager
-                            .getSection()) {
-                            System.out.println(n + " is already in section "
-                                + courseManager.getSection());
-                        }
-                        else {
-                            System.out.println(n
-                                + " is already registered in a different"
-                                + " section");
-                        }
-                    }
-                }
-                else {
-                    System.out.println(n
-                        + " insertion failed. Wrong student information."
-                        + " ID belongs to another student");
-                }
-            }
-            else {
-                System.out.println(firstName + " " + lastName
-                    + " insertion failed. Wrong student information."
-                    + " ID doesn't exist");
-            }
-        }
-        else {
-            System.out.println(
-                "Command insert is not valid for merged sections");
-        }
-    }
     
-    public void insert2(long personalID, String firstName, String lastName) {
+    public void insert(long personalID, String firstName, String lastName) {
         if (!courseManager.isSectionActive()) {
         	System.out.println("Command insert is not valid for merged sections");
         	return;
@@ -344,31 +302,8 @@ public class CmdEvaluator {
         StudentRecord studentRecord = courseManager.insert(new Student(personalID, fullName));
         System.out.println(studentRecord.getName() + " inserted.");
     }
-
-    /**
-     * searchid command
-     * 
-     * @param p pid
-     */
-    public void searchID(long p) {
-        if (courseManager.isCurrentSectionActive()) {
-            StudentRecord sr = courseManager.searchid(p);
-            if (sr != null) {
-                System.out.println("Found " + sr);
-            }
-            else {
-                System.out.println(
-                    "Search Failed. Couldn't find any student with ID " + String
-                        .format("%09d", p));
-            }
-        }
-        else {
-            System.out.println(
-                "Command searchid is not valid for merged sections");
-        }
-    }
     
-    public void searchID2(long personalID) {
+    public void searchID(long personalID) {
         if (!courseManager.isCurrentSectionActive()) {
         	System.out.println("Command searchid is not valid for merged sections");
         	return;
@@ -383,31 +318,8 @@ public class CmdEvaluator {
         
         System.out.println("Found " + studentRecord);
     }
-
-    /**
-     * search command
-     * 
-     * @param f firstname
-     * @param l lastname
-     */
-    public void search(String f, String l) {
-        if (courseManager.isCurrentSectionActive()) {
-            FullName n = new FullName(f, l);
-            System.out.println("search results for " + n + ":");
-            ArrayList<StudentRecord> srl = courseManager.search(n);
-            for (int i = 0; i < srl.size(); i++) {
-                System.out.println(srl.get(i));
-            }
-            System.out.println(n + " was found in " + srl.size()
-                + " records in section " + courseManager.getSection());
-        }
-        else {
-            System.out.println(
-                "Command search is not valid for merged sections");
-        }
-    }
     
-    public void search2(String firstName, String lastName) {
+    public void search(String firstName, String lastName) {
         if (!courseManager.isCurrentSectionActive()) {
         	System.out.println("Command search is not valid for merged sections");
         	return;
@@ -425,29 +337,8 @@ public class CmdEvaluator {
         		+ " records in section "
         		+ courseManager.getSection());
     }
-
-    /**
-     * Search command
-     * 
-     * @param n name
-     */
-    public void search(String n) {
-        if (courseManager.isCurrentSectionActive()) {
-            System.out.println("search results for " + n + ":");
-            ArrayList<StudentRecord> srl = courseManager.search(n);
-            for (int i = 0; i < srl.size(); i++) {
-                System.out.println(srl.get(i));
-            }
-            System.out.println(n + " was found in " + srl.size()
-                + " records in section " + courseManager.getSection());
-        }
-        else {
-            System.out.println(
-                "Command search is not valid for merged sections");
-        }
-    }
     
-    public void search2(String name) {
+    public void search(String name) {
         if (!courseManager.isCurrentSectionActive()) {
         	System.out.println("Command search is not valid for merged sections");
         	return;
@@ -464,70 +355,32 @@ public class CmdEvaluator {
         		+ " records in section "
         		+ courseManager.getSection());
     }
-
-    /**
-     * score command
-     * 
-     * @param n number
-     */
-    public void score(int n) {
-        if (courseManager.isCurrentSectionActive()) {
-            if (courseManager.isAStudentGradable()) {
-                if ((n >= 0) && (n <= 100)) {
-                    StudentRecord sr = courseManager.score(n);
-                    System.out.println("Update " + sr.getName()
-                        + " record, score = " + sr.getScore());
-                }
-                else {
-                    System.out.println(
-                        "Scores have to be integers in range 0 to 100.");
-                }
-            }
-            else {
-                System.out.println(
-                    "score command can only be called after an insert command"
+    
+    public void score(int percentage) {
+        if (!courseManager.isCurrentSectionActive()) {
+            System.out.println("Command score is not valid for merged sections");
+            return;
+        }
+        
+        if (!courseManager.isAStudentGradable()) {
+            System.out.println("score command can only be called after an insert command"
                     + " or a successful search command with one exact output.");
-            }
+            return;
         }
-        else {
-            System.out.println(
-                "Command score is not valid for merged sections");
+        
+        if (!CourseManager2.isValidPercentageGrade(percentage)) {
+            System.out.println("Scores have to be integers in range 0 to 100.");
+            return;
         }
-    }
-
-    /**
-     * remove command
-     * 
-     * @param p pid
-     */
-    public void remove(long p) {
-        if (courseManager.isCurrentSectionActive()) {
-            Student s = studentManager.search(p);
-            if (s != null) {
-                StudentRecord sr = courseManager.remove(p);
-                if (sr != null) {
-                    System.out.println("Student " + sr.getName()
-                        + " get removed from section " + courseManager
-                            .getSection());
-                }
-                else {
-                    System.out.println(
-                        "Remove failed: couldn't find any student with id "
-                            + p);
-                }
-            }
-            else {
-                System.out.println(
-                    "Remove failed: couldn't find any student with id " + p);
-            }
-        }
-        else {
-            System.out.println(
-                "Command remove is not valid for merged sections");
-        }
+        
+        StudentRecord sr = courseManager.score(percentage);
+        System.out.println("Update "
+        		+ sr.getName()
+        		+ " record, score = "
+        		+ sr.getScore());
     }
     
-    public void remove2(long personalID) {
+    public void remove(long personalID) {
         if (!courseManager.isCurrentSectionActive()) {
         	System.out.println("Command remove is not valid for merged sections");
         	return;
@@ -552,34 +405,8 @@ public class CmdEvaluator {
         		+ " get removed from section "
         		+ courseManager.getSection());
     }
-
-    /**
-     * remove command
-     * 
-     * @param f firstname
-     * @param l lastname
-     */
-    public void remove(String f, String l) {
-        if (courseManager.isCurrentSectionActive()) {
-            FullName n = new FullName(f, l);
-            StudentRecord sr = courseManager.remove(n);
-            if (sr != null) {
-                System.out.println("Student " + n + " get removed from section "
-                    + courseManager.getSection());
-            }
-            else {
-                System.out.println("Remove failed. Student " + n
-                    + " doesn't exist in section " + courseManager
-                        .getSection());
-            }
-        }
-        else {
-            System.out.println(
-                "Command remove is not valid for merged sections");
-        }
-    }
     
-    public void remove2(String firstName, String lastName) {
+    public void remove(String firstName, String lastName) {
         if (!courseManager.isCurrentSectionActive()) {
         	System.out.println("Command remove is not valid for merged sections");
         	return;
@@ -626,46 +453,29 @@ public class CmdEvaluator {
         courseManager.dumpScores();
         System.out.println("Size = " + size);
     }
-
-    /**
-     * grade command
-     */
+    
     public void grade() {
         courseManager.grade();
-        System.out.println("grading completed");
     }
-
-    /**
-     * stat command
-     */
+    
     public void stat() {
-        String[] letters = { "A ", "A-", "B+", "B ", "B-", "C+", "C ", "C-",
-            "D+", "D ", "D-", "F " };
-        System.out.println("Statistics of section " + courseManager
-            .getSection() + ":");
-        int[] numbers = courseManager.stat();
-        for (int i = 0; i < numbers.length; i++) {
-            int number = numbers[i];
-            if (number != 0) {
-                System.out.println(number + " students with grade "
-                    + letters[i]);
-            }
-        }
+        System.out.println("Statistics of section "
+        		+ courseManager.getSection() + ":");
+        courseManager.stat();
     }
-
-    /**
-     * list command
-     * 
-     * @param g grade
-     */
-    public void list(String g) {
-        System.out.println("Students with grade " + g + " are:");
-        ArrayList<StudentRecord> srl = courseManager.list(g);
-        for (int i = 0; i < srl.size(); i++) {
-            StudentRecord sr = srl.get(i);
-            System.out.println(sr + ", grade = " + sr.getGrade());
+    
+    public void list(String letter) {
+        System.out.println("Students with grade " + letter + " are:");
+        ArrayList<StudentRecord> studentRecords = courseManager.list(letter);
+        for (int i = 0; i < studentRecords.size(); i++) {
+            StudentRecord studentRecord = studentRecords.get(i);
+            System.out.println(studentRecord
+            		+ ", grade = "
+            		+ studentRecord.getGrade());
         }
-        System.out.println("Found " + srl.size() + " students");
+        System.out.println("Found "
+        		+ studentRecords.size()
+        		+ " students");
     }
 
     /**

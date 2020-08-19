@@ -8,7 +8,7 @@ import java.util.StringTokenizer;
  * CmdParser Class
  *
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-17
+ * @version 2020-08-19
  */
 public class CmdParser {
     private CmdEvaluator cmdEvaluator;
@@ -45,13 +45,13 @@ public class CmdParser {
                         	long personalID = sc.nextLong();
                         	String firstName = sc.next();
                         	String lastName = sc.next();
-                        	cmdEvaluator.insert2(personalID, firstName, lastName);
+                        	cmdEvaluator.insert(personalID, firstName, lastName);
                     	}
                         break;
 
                     case "searchid": {
                     		long personalID = sc.nextLong();
-                        	cmdEvaluator.searchID2(personalID);
+                        	cmdEvaluator.searchID(personalID);
                     	}
                         break;
 
@@ -60,11 +60,11 @@ public class CmdParser {
                         	if (tokens.countTokens() == 2) {
                         		String firstName = tokens.nextToken();
                         		String lastName = tokens.nextToken();
-                        		cmdEvaluator.search2(firstName, lastName);
+                        		cmdEvaluator.search(firstName, lastName);
                         	}
                         	else if (tokens.countTokens() == 1) {
                         		String name = tokens.nextToken();
-                        		cmdEvaluator.search2(name);
+                        		cmdEvaluator.search(name);
                         	}
                     	}
                         break;
@@ -79,12 +79,12 @@ public class CmdParser {
                     		StringTokenizer tokens = new StringTokenizer(sc.nextLine());
                         	if (tokens.countTokens() == 1) {
                         		long personalID = Long.parseLong(tokens.nextToken());
-                        		cmdEvaluator.remove2(personalID);
+                        		cmdEvaluator.remove(personalID);
                         	}
                         	else if (tokens.countTokens() == 2) {
                         		String firstName = tokens.nextToken();
                         		String lastName = tokens.nextToken();
-                        		cmdEvaluator.remove2(firstName, lastName);
+                        		cmdEvaluator.remove(firstName, lastName);
                         	}
                     	}
                         break;

@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.Scanner;
 
 import bin.BinFileHelper;
-import course.CourseManager2;
+import course.CourseManager;
 import course.StudentManager;
 import student.*;
 
@@ -15,11 +15,11 @@ import student.*;
  * TopLevel Class
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-13
+ * @version 2020-08-19
  */
 public class TopLevel {
     private StudentManager smanager; // student manager
-    private CourseManager2 cmanager; // course manager
+    private CourseManager cmanager; // course manager
     private boolean sdloaded; // student data loaded
 
     /**
@@ -27,7 +27,7 @@ public class TopLevel {
      */
     TopLevel() {
         smanager = new StudentManager();
-        cmanager = new CourseManager2();
+        cmanager = new CourseManager();
         sdloaded = false;
     }
 

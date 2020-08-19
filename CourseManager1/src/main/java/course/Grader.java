@@ -9,12 +9,12 @@ import student.Student;
  * Grader Class
  *
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-12
+ * @version 2020-08-19
  */
 public class Grader {
 	private final static String[] LETTER_GRADES = { "A", "A-", "B+", "B", "B-", "C+",
 													"C", "C-", "D+", "D", "D-", "F" };
-	private final static int[] PERCENT_GRADES_LBOUNDS = { 90, 85, 80, 75, 70, 65,
+	private final static int[] PERCENTAGE_GRADE_LBOUNDS = { 90, 85, 80, 75, 70, 65,
 														  60, 58, 55, 53, 50 };
 	
 	public static void gradeStudents(Iterator<Student> it) {
@@ -29,9 +29,9 @@ public class Grader {
 	}
 	
     private static int findGradeIndex(int scorePercent) {
-        int index = PERCENT_GRADES_LBOUNDS.length;
-        for (int i = 0; i < PERCENT_GRADES_LBOUNDS.length; i++) {
-            if (scorePercent >= PERCENT_GRADES_LBOUNDS[i]) {
+        int index = PERCENTAGE_GRADE_LBOUNDS.length;
+        for (int i = 0; i < PERCENTAGE_GRADE_LBOUNDS.length; i++) {
+            if (scorePercent >= PERCENTAGE_GRADE_LBOUNDS[i]) {
             	index = i;
                 break;
             }
