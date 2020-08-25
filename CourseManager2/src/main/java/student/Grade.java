@@ -15,6 +15,11 @@ public class Grade {
 		letter = "F ";
 	}
 	
+	public Grade(int percentage, String letter) {
+		this.percentage = percentage;
+		this.letter = letter;
+	}
+	
 	public int getPercentage() {
 		return percentage;
 	}

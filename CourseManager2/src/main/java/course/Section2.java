@@ -5,7 +5,6 @@ import java.util.Iterator;
 
 import bst.BST;
 import student.FullName;
-import student.Student;
 
 /**
  * Section Class
@@ -18,14 +17,14 @@ public class Section2 {
     private BST<FullName, Integer> fnIndexDB; // Index value
     private BST<Integer, Integer> pgIndexDB; // Index value
     private int number;
-    private boolean active; // Active State
+    private boolean isActive; // Active State
     
     Section2(int sectionNumber) {
         pidIndexDB = new BST<Long, Integer>();
         fnIndexDB = new BST<FullName, Integer>();
         pgIndexDB = new BST<Integer, Integer>();
         number = sectionNumber;
-        active = true;
+        isActive = true;
     }
     
     public int getNumber() {
@@ -33,11 +32,11 @@ public class Section2 {
     }
     
     public boolean isActive() {
-        return active;
+        return isActive;
     }
     
     public void setActive(boolean active) {
-        this.active = active;
+        this.isActive = active;
     }
     
     /**
@@ -59,41 +58,23 @@ public class Section2 {
         return (pidIndexDB.size() == 0);
     }
     
-    /**
-     * Inserts a Student into the Section
-     * 
-     * @param st Student
-     * @param sc Student Score
-     * @param i StudentRecord Index
-     */
-    public void insertStudent(Student st, int sc, int i) {
-        pidIndexDB.insert(st.getPersonalID(), i);
-        fnIndexDB.insert(st.getFullName(), i);
-        pgIndexDB.insert(sc, i);
+    public void insert(long personalID, int index) {
+    	pidIndexDB.insert(personalID, index);
     }
     
-    public void insert(Student student, int index) {
-        pidIndexDB.insert(student.getPersonalID(), index);
-        fnIndexDB.insert(student.getFullName(), index);
-        pgIndexDB.insert(student.getPercentageGrade(), index);
+    public void insert(FullName fullName, int index) {
+    	fnIndexDB.insert(fullName, index);
     }
     
-    public Integer findStudent(long personalID) {
+    public void insert(int percentageGrade, int index) {
+    	pgIndexDB.insert(percentageGrade, index);
+    }
+    
+    public Integer findIndex(long personalID) {
         return pidIndexDB.find(personalID);
     }
     
-    /**
-     * Searches for all StudentRecord Indices
-     * in the Section given a Name
-     * 
-     * @param n Name
-     * @return StudentRecord Index
-     */
-    public ArrayList<Integer> searchByName(FullName fullName) {
-        return fnIndexDB.findall(fullName);
-    }
-    
-    public int[] findStudents(FullName fullName) {
+    public int[] findIndices(FullName fullName) {
         return toIntArray(fnIndexDB.findall(fullName));
     }
     
@@ -119,44 +100,20 @@ public class Section2 {
         pgIndexDB.insert(ns, index);
     }
     
-    /**
-     * Remove a Student's PID
-     * 
-     * @param p Student PID
-     * @return StudentRecord Index
-     */
-    public Integer removeStudentPID(long p) {
-        return pidIndexDB.remove(p);
+    public Integer remove(long personalID) {
+        return pidIndexDB.remove(personalID);
     }
     
-    /**
-     * Remove a Student's Name
-     * 
-     * @param n Student Name
-     * @return StudentRecord Index
-     */
-    public Integer removeStudentName(FullName n) {
-        return fnIndexDB.remove(n);
+    public Integer remove(FullName fullName) {
+        return fnIndexDB.remove(fullName);
     }
     
-    /**
-     * Remove a Student's Name
-     * 
-     * @param n Student Name
-     * @param i StudentRecord Index
-     */
-    public void removeStudentName(FullName n, int i) {
-        fnIndexDB.remove(n, i);
+    public void remove(FullName fullName, int index) {
+        fnIndexDB.remove(fullName, index);
     }
     
-    /**
-     * Remove a Student's Score
-     * 
-     * @param s Student Score
-     * @param i StudentRecord Index
-     */
-    public void removeStudentScore(int s, int i) {
-        pgIndexDB.remove(s, i);
+    public void remove(int percentage, int index) {
+        pgIndexDB.remove(percentage, index);
     }
     
     /**
@@ -167,7 +124,7 @@ public class Section2 {
         pidIndexDB.clear();
         fnIndexDB.clear();
         pgIndexDB.clear();
-        active = true;
+        isActive = true;
     }
     
     /**

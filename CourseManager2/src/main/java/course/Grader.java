@@ -56,22 +56,44 @@ public class Grader {
 		return getPercentageGradeBounds(letterGrade).getValue1();
 	}
 	
-	
-	
-	public static void gradeStudents(ArrayList<StudentRecord> studentRecords) {
-		for (int i = 0; i < studentRecords.size(); i++) {
-			gradeStudent(studentRecords.get(i));
+	public static void gradeStudents(Student[] students) {
+		for (int i = 0; i < students.length; i++) {
+			gradeStudent(students[i]);
 		}
 		System.out.println("grading completed");
 	}
 	
-	public static void gradeStudent(StudentRecord studentRecord) {
+	public static void gradeStudent(Student student) {
+		int percentage = student.getPercentageGrade();
+		String letterGrade = LETTER_GRADES[findGradeIndex(percentage)];
+		student.setLetterGrade(letterGrade);
+	}
+	
+	public static void statStudents(Student[] students) {
+		int[] studentsWithEachGrade = new int[LETTER_GRADES.length];
+		Arrays.fill(studentsWithEachGrade, 0);
+		for (int i = 0; i < students.length; i++) {
+			Student student = students[i];
+            int index = findGradeIndex(student.getPercentageGrade());
+            studentsWithEachGrade[index]++;
+		}
+        printGradeResults(studentsWithEachGrade);
+	}
+	
+	public static void grades(ArrayList<StudentRecord> studentRecords) {
+		for (int i = 0; i < studentRecords.size(); i++) {
+			grade(studentRecords.get(i));
+		}
+		System.out.println("grading completed");
+	}
+	
+	public static void grade(StudentRecord studentRecord) {
 		int percentage = studentRecord.getScore();
 		String letterGrade = LETTER_GRADES[findGradeIndex(percentage)];
 		studentRecord.setGrade(letterGrade);
 	}
 	
-	public static void statStudents(ArrayList<StudentRecord> studentRecords) {
+	public static void stat(ArrayList<StudentRecord> studentRecords) {
 		int[] studentsWithEachGrade = new int[LETTER_GRADES.length];
 		Arrays.fill(studentsWithEachGrade, 0);
 		for (int i = 0; i < studentRecords.size(); i++) {

@@ -4,7 +4,7 @@ package student;
  * FullName Class
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-13
+ * @version 2020-08-25
  */
 public class FullName implements Comparable<FullName> {
     private final String firstName;
@@ -45,9 +45,7 @@ public class FullName implements Comparable<FullName> {
         if (result == 0) {
             return firstName.toLowerCase().compareTo(fullName.getFirstName().toLowerCase());
         }
-        else {
-            return result;
-        }
+        return result;
     }
 
     @Override

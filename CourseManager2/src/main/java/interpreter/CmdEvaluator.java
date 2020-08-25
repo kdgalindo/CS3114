@@ -12,7 +12,7 @@ import course.StudentManager2;
 import student.*;
 
 /**
- * TopLevel Class
+ * CmdEvaluator Class
  * 
  * @author kyleg997 Kyle Galindo
  * @version 2020-08-19
@@ -22,37 +22,23 @@ public class CmdEvaluator {
     private CourseManager2 courseManager;
     private boolean sdloaded; // student data loaded
 
-    /**
-     * TopLevel default constructor
-     */
     public CmdEvaluator() {
         studentManager = new StudentManager2();
         courseManager = new CourseManager2();
         sdloaded = false;
     }
 
-    /**
-     * loadstudentdata command
-     * 
-     * @param fn filename
-     */
     public void loadStudentData(String fn) {
         if (fn.endsWith(".csv")) {
-            loadtxtstudentdata(fn);
+        	txtLoadStudentData(fn);
         }
         else if (fn.endsWith(".data")) {
-            loadbinstudentdata(fn);
+        	binLoadStudentData(fn);
         }
         courseManager.loadstudentdata();
     }
 
-    /**
-     * loadstudentdata command for
-     * .csv files
-     * 
-     * @param tfn text filename
-     */
-    private void loadtxtstudentdata(String tfn) {
+    private void txtLoadStudentData(String tfn) {
         System.out.println(tfn + " successfully loaded");
         try {
             Scanner sc1 = new Scanner(new File(tfn));
@@ -60,12 +46,13 @@ public class CmdEvaluator {
                 Scanner sc2 = new Scanner(sc1.nextLine());
                 sc2.useDelimiter("\\s*,\\s*");
                 while (sc2.hasNext()) {
-                    long p = sc2.nextLong(); // student id
-                    String f = sc2.next(); // first name
-                    String m = sc2.next(); // middle name
-                    String l = sc2.next(); // last name
-                    Student s = new Student(p, new FullName(f, m, l));
-                    loadstudentdatahelper(s);
+                    long personalID = sc2.nextLong(); // student id
+                    String firstName = sc2.next(); // first name
+                    String middleName = sc2.next(); // middle name
+                    String lastName = sc2.next(); // last name
+                    FullName fullName = new FullName(firstName, middleName, lastName);
+                    Student student = new Student(personalID, fullName);
+                    loadStudentDataHelper(student);
                 }
                 sc2.close();
             }
@@ -77,59 +64,44 @@ public class CmdEvaluator {
         sdloaded = true;
     }
 
-    /**
-     * loadstudentdata command for
-     * .data files
-     * 
-     * @param bfn binary filename
-     */
-    private void loadbinstudentdata(String bfn) {
+    private void binLoadStudentData(String bfn) {
         System.out.println(bfn + " successfully loaded");
 
         BinFileHelper bfh = new BinFileHelper();
         byte[] bs = bfh.binFileToByteArray(bfn);
 
         for (int i = 14; i < bs.length; i++) {
-            long p = bfh.byteArrayToLong(bs, i);
+            long personalID = bfh.byteArrayToLong(bs, i);
             i += 8; // student id
-            String f = bfh.byteArrayToName(bs, i);
-            i += f.length() + 1; // first name
-            String m = bfh.byteArrayToName(bs, i);
-            i += m.length() + 1; // middle name
-            String l = bfh.byteArrayToName(bs, i);
-            i += l.length() + 1; // last name
+            String firstName = bfh.byteArrayToName(bs, i);
+            i += firstName.length() + 1; // first name
+            String middleName = bfh.byteArrayToName(bs, i);
+            i += middleName.length() + 1; // middle name
+            String lastName = bfh.byteArrayToName(bs, i);
+            i += lastName.length() + 1; // last name
             i += 7;
-            Student s = new Student(p, new FullName(f, m, l));
-            loadstudentdatahelper(s);
+            FullName fullName = new FullName(firstName, middleName, lastName);
+            Student student = new Student(personalID, fullName);
+            loadStudentDataHelper(student);
         }
         sdloaded = true;
     }
     
-    /**
-     * loadstudentdata command helper
-     * 
-     * @param s student
-     */
-    public void loadstudentdatahelper(Student s) {
+    public void loadStudentDataHelper(Student s) {
         studentManager.insert(s.getPersonalID(), s);
     }
 
-    /**
-     * loadcoursedata command
-     * 
-     * @param fn filename
-     */
     public void loadCourseData(String fn) {
         if (sdloaded) {
             if (fn.endsWith(".csv")) {
                 System.out.println(fn.substring(0, fn.length() - 4)
                     + " Course has been successfully loaded.");
-                loadtxtcoursedata(fn);
+                txtLoadCourseData(fn);
             }
             else if (fn.endsWith(".data")) {
                 System.out.println(fn.substring(0, fn.length() - 5)
                     + " Course has been successfully loaded.");
-                loadbincoursedata(fn);
+                binLoadCourseData(fn);
             }
         }
         else {
@@ -138,36 +110,31 @@ public class CmdEvaluator {
                 + " file first.");
         }
     }
-
-    /**
-     * loadcoursedata command for
-     * .csv files
-     * 
-     * @param tfn text filename
-     */
-    public void loadtxtcoursedata(String tfn) {
+    
+    public void txtLoadCourseData(String tfn) {
         try {
             Scanner sc1 = new Scanner(new File(tfn));
             while (sc1.hasNextLine()) {
                 Scanner sc2 = new Scanner(sc1.nextLine());
                 sc2.useDelimiter("\\s*,\\s*");
                 while (sc2.hasNext()) {
-                    int i = sc2.nextInt(); // section id
-                    long p = sc2.nextLong(); // student id
-                    String f = sc2.next(); // first name
-                    String l = sc2.next(); // last name
-                    int s = 0;
-                    String g = "F ";
+                    int sectionNumber = sc2.nextInt(); // section id
+                    long personalID = sc2.nextLong(); // student id
+                    String firstName = sc2.next(); // first name
+                    String lastName = sc2.next(); // last name
+                    int percentageGrade = 0;
+                    String letterGrade = "F ";
                     if (sc2.hasNextInt()) {
-                        s = sc2.nextInt(); // score
-                        g = sc2.next(); // grade
+                        percentageGrade = sc2.nextInt(); // score
+                        letterGrade = sc2.next(); // grade
                     }
                     else {
                         sc2.nextLine();
                     }
-                    Student ns = new Student(p, new FullName(f, l));
-                    StudentRecord nsr = new StudentRecord(ns, s, g);
-                    loadcoursedatahelper(i, nsr);
+                    FullName fullName = new FullName(firstName, lastName);
+                    Grade grade = new Grade(percentageGrade, letterGrade);
+                    Student student = new Student(personalID, fullName, grade);
+                    loadCourseDataHelper(sectionNumber, student);
                 }
                 sc2.close();
             }
@@ -177,14 +144,8 @@ public class CmdEvaluator {
             e.printStackTrace();
         }
     }
-
-    /**
-     * loadcoursedata command for
-     * .data files
-     * 
-     * @param bfn binary filename
-     */
-    public void loadbincoursedata(String bfn) {
+    
+    public void binLoadCourseData(String bfn) {
         BinFileHelper bfh = new BinFileHelper();
         byte[] ba = bfh.binFileToByteArray(bfn);
         int csn = 1; // current section number
@@ -192,22 +153,23 @@ public class CmdEvaluator {
         int csrn = 1; // current student record number
         int lsrn = bfh.byteArrayToInt(ba, 14);
         for (int i = 18; i < ba.length; i++) {
-            long p = bfh.byteArrayToLong(ba, i);
+            long personalID = bfh.byteArrayToLong(ba, i);
             i += 8; // student id
-            String f = bfh.byteArrayToName(ba, i);
-            i += f.length() + 1; // first name + $
-            String l = bfh.byteArrayToName(ba, i);
-            i += l.length() + 1; // last name + $
-            int s = 0;
-            String g = "F ";
+            String firstName = bfh.byteArrayToName(ba, i);
+            i += firstName.length() + 1; // first name + $
+            String lastName = bfh.byteArrayToName(ba, i);
+            i += lastName.length() + 1; // last name + $
+            int percentageGrade = 0;
+            String letterGrade = "F ";
             if (bfh.byteArrayHasScoreGrade(ba, i + 4)) {
-                s = bfh.byteArrayToInt(ba, i);
-                g = bfh.byteArrayToGrade(ba, i + 4);
+            	percentageGrade = bfh.byteArrayToInt(ba, i);
+            	letterGrade = bfh.byteArrayToGrade(ba, i + 4);
                 i += 5; // score + grade
             }
-            Student ns = new Student(p, new FullName(f, l));
-            StudentRecord nsr = new StudentRecord(ns, s, g);
-            loadcoursedatahelper(csn, nsr);
+            FullName fullName = new FullName(firstName, lastName);
+            Grade grade = new Grade(percentageGrade, letterGrade);
+            Student student = new Student(personalID, fullName, grade);
+            loadCourseDataHelper(csn, student);
             if (csrn == lsrn) {
                 i += 9; // GOHOKIES
                 if (csn != lsn) {
@@ -222,38 +184,34 @@ public class CmdEvaluator {
             }
         }
     }
-
-    /**
-     * loadcoursedata command helper
-     * 
-     * @param sn section number
-     * @param nsr new student record
-     */
-    public void loadcoursedatahelper(int sn, StudentRecord nsr) {
-        long p = nsr.getPID();
-        Student s = studentManager.search(p);
-        if (s != null) { // Check if id exists
-            FullName n = nsr.getName();
-            if (s.getFullName().compareTo(n) == 0) {
-                StudentRecord sr = courseManager.loadcoursedata(sn, nsr);
-                if (sr == null) { // Check if student enrolled
-                    System.out.println("Warning: Student " + nsr.getName()
-                        + " is not loaded to section " + sn
-                        + " since he/she is already enrolled in section "
-                        + courseManager.searchForSectionByPID(nsr.getPID()));
-                }
-            }
-            else {
-                System.out.println("Warning: Student " + nsr.getName()
-                    + " is not loaded to section " + sn
-                    + " since the corresponding pid belongs to another"
-                    + " student.");
-            }
+    
+    public void loadCourseDataHelper(int sectionNumber, Student newStudent) {
+        Student student = studentManager.search(newStudent.getPersonalID());
+        if (student == null) { // Check if id exists
+            System.out.println("Warning: Student "
+            		+ newStudent.getFullName()
+            		+ " is not loaded to section "
+            		+ sectionNumber
+            		+ " since he/she doesn't exist in the loaded student records.");
+            return;
         }
-        else {
-            System.out.println("Warning: Student " + nsr.getName()
-                + " is not loaded to section " + sn
-                + " since he/she doesn't exist in the loaded student records.");
+        
+        FullName fullName = newStudent.getFullName();
+        if (student.getFullName().compareTo(fullName) != 0) {
+            System.out.println("Warning: Student "
+            		+ newStudent.getFullName()
+            		+ " is not loaded to section "
+            		+ sectionNumber
+            		+ " since the corresponding pid belongs to another student.");
+            return;
+        }
+        
+        Student record = courseManager.loadCourseData(sectionNumber, newStudent);
+        if (record == null) { // Check if student enrolled
+            System.out.println("Warning: Student " + newStudent.getFullName()
+                + " is not loaded to section " + sectionNumber
+                + " since he/she is already enrolled in section "
+                + courseManager.findStudentSection(newStudent.getPersonalID()));
         }
     }
 
@@ -299,70 +257,70 @@ public class CmdEvaluator {
         	return;
         }
         
-        StudentRecord studentRecord = courseManager.insert(new Student(personalID, fullName));
-        System.out.println(studentRecord.getName() + " inserted.");
+        Student record = courseManager.insert(new Student(personalID, fullName, new Grade()));
+        System.out.println(record.getFullName() + " inserted.");
     }
     
     public void searchID(long personalID) {
-        if (!courseManager.isCurrentSectionActive()) {
+        if (!courseManager.isSectionActive()) {
         	System.out.println("Command searchid is not valid for merged sections");
         	return;
         }
         
-        StudentRecord studentRecord = courseManager.searchid(personalID);
-        if (studentRecord == null) {
+        Student student = courseManager.findStudent(personalID);
+        if (student == null) {
             System.out.println("Search Failed. Couldn't find any student with ID "
                     + String.format("%09d", personalID));
             return;
         }
         
-        System.out.println("Found " + studentRecord);
+        System.out.println("Found " + student);
     }
     
     public void search(String firstName, String lastName) {
-        if (!courseManager.isCurrentSectionActive()) {
+        if (!courseManager.isSectionActive()) {
         	System.out.println("Command search is not valid for merged sections");
         	return;
         }
         
         FullName fullName = new FullName(firstName, lastName);
         System.out.println("search results for " + fullName + ":");
-        ArrayList<StudentRecord> studentRecords = courseManager.search(fullName);
-        for (int i = 0; i < studentRecords.size(); i++) {
-            System.out.println(studentRecords.get(i));
+        Student[] students = courseManager.findStudents(fullName);
+        for (int i = 0; i < students.length; i++) {
+            System.out.println(students[i]);
         }
         System.out.println(fullName
         		+ " was found in "
-        		+ studentRecords.size()
+        		+ students.length
         		+ " records in section "
         		+ courseManager.getSection());
     }
     
     public void search(String name) {
-        if (!courseManager.isCurrentSectionActive()) {
+        if (!courseManager.isSectionActive()) {
         	System.out.println("Command search is not valid for merged sections");
         	return;
         }
         
         System.out.println("search results for " + name + ":");
-        ArrayList<StudentRecord> studentRecords = courseManager.search(name);
-        for (int i = 0; i < studentRecords.size(); i++) {
-            System.out.println(studentRecords.get(i));
+        Student[] students = courseManager.findStudents(name);
+        for (int i = 0; i < students.length; i++) {
+            System.out.println(students[i]);
         }
         System.out.println(name
         		+ " was found in "
-        		+ studentRecords.size()
+        		+ students.length
         		+ " records in section "
         		+ courseManager.getSection());
     }
     
     public void score(int percentage) {
-        if (!courseManager.isCurrentSectionActive()) {
+        if (!courseManager.isSectionActive()) {
             System.out.println("Command score is not valid for merged sections");
             return;
         }
         
-        if (!courseManager.isAStudentGradable()) {
+        if (!courseManager.isStudentGradable()) {
             System.out.println("score command can only be called after an insert command"
                     + " or a successful search command with one exact output.");
             return;
@@ -373,15 +331,15 @@ public class CmdEvaluator {
             return;
         }
         
-        StudentRecord sr = courseManager.score(percentage);
+        Student student = courseManager.scoreStudent(percentage);
         System.out.println("Update "
-        		+ sr.getName()
+        		+ student.getFullName()
         		+ " record, score = "
-        		+ sr.getScore());
+        		+ student.getPercentageGrade());
     }
     
     public void remove(long personalID) {
-        if (!courseManager.isCurrentSectionActive()) {
+        if (!courseManager.isSectionActive()) {
         	System.out.println("Command remove is not valid for merged sections");
         	return;
         }
@@ -393,28 +351,28 @@ public class CmdEvaluator {
         	return;
         }
         
-        StudentRecord studentRecord = courseManager.remove(personalID);
-        if (studentRecord == null) {
+        Student record = courseManager.removeStudent(personalID);
+        if (record == null) {
             System.out.println("Remove failed: couldn't find any student with id "
             		+ personalID);
             return;
         }
         
         System.out.println("Student "
-        		+ studentRecord.getName()
+        		+ record.getFullName()
         		+ " get removed from section "
         		+ courseManager.getSection());
     }
     
     public void remove(String firstName, String lastName) {
-        if (!courseManager.isCurrentSectionActive()) {
+        if (!courseManager.isSectionActive()) {
         	System.out.println("Command remove is not valid for merged sections");
         	return;
         }
         
         FullName fullName = new FullName(firstName, lastName);
-        StudentRecord studentRecord = courseManager.remove(fullName);
-        if (studentRecord == null) {
+        Student student = courseManager.removeStudent(fullName);
+        if (student == null) {
             System.out.println("Remove failed. Student "
             		+ fullName
                     + " doesn't exist in section "
@@ -428,9 +386,6 @@ public class CmdEvaluator {
                 + courseManager.getSection());
     }
 
-    /**
-     * clearsection command
-     */
     public void clearSection() {
         courseManager.clearsection();
         System.out.println("Section "
@@ -438,9 +393,6 @@ public class CmdEvaluator {
             + " cleared");
     }
 
-    /**
-     * dumpsection command
-     */
     public void dumpSection() {
         System.out.println("section "
         		+ courseManager.getSection()
@@ -455,49 +407,41 @@ public class CmdEvaluator {
     }
     
     public void grade() {
-        courseManager.grade();
+        courseManager.gradeStudents();
     }
     
     public void stat() {
         System.out.println("Statistics of section "
         		+ courseManager.getSection() + ":");
-        courseManager.stat();
+        courseManager.statStudents();
     }
     
     public void list(String letter) {
         System.out.println("Students with grade " + letter + " are:");
-        ArrayList<StudentRecord> studentRecords = courseManager.list(letter);
-        for (int i = 0; i < studentRecords.size(); i++) {
-            StudentRecord studentRecord = studentRecords.get(i);
-            System.out.println(studentRecord
+        Student[] students = courseManager.listStudents(letter);
+        for (int i = 0; i < students.length; i++) {
+            Student student = students[i];
+            System.out.println(student
             		+ ", grade = "
-            		+ studentRecord.getGrade());
+            		+ student.getLetterGrade());
         }
         System.out.println("Found "
-        		+ studentRecords.size()
+        		+ students.length
         		+ " students");
     }
 
-    /**
-     * findpair command
-     * 
-     * @param s score
-     */
-    public void findPair(int s) {
+    public void findPair(int percentageDiff) {
         System.out.println("Students with score difference less than or equal "
-            + s + ":");
-        ArrayList<String> sl = courseManager.findpair(s);
-        for (int i = 0; i < sl.size(); i++) {
-            System.out.println(sl.get(i));
+        		+ percentageDiff + ":");
+        ArrayList<String> strings = courseManager.findpair(percentageDiff);
+        for (int i = 0; i < strings.size(); i++) {
+            System.out.println(strings.get(i));
         }
-        System.out.println("found " + sl.size() + " pairs");
+        System.out.println("found " + strings.size() + " pairs");
     }
 
-    /**
-     * merge command
-     */
     public void merge() {
-        if (courseManager.merge()) {
+        if (courseManager.mergeSections()) {
             System.out.println("All sections merged at section " + courseManager
                 .getSection());
         }
@@ -508,11 +452,6 @@ public class CmdEvaluator {
         }
     }
 
-    /**
-     * savestudentdata command
-     * 
-     * @param bfn binary filename
-     */
     public void saveStudentData(String bfn) {
         System.out.println("Saved all Students data to " + bfn);
         try {
@@ -545,21 +484,13 @@ public class CmdEvaluator {
         courseManager.loadstudentdata();
     }
 
-    /**
-     * savecoursedata command
-     * 
-     * @param bfn binaryfilename
-     */
     public void saveCourseData(String bfn) {
         System.out.println("Saved all course data to " + bfn);
         BinFileHelper bfh = new BinFileHelper();
-        byte[] ba = courseManager.savecoursedata();
+        byte[] ba = courseManager.saveCourseData();
         bfh.byteArrayToBinFile(ba, bfn);
     }
 
-    /**
-     * clearcoursedata command
-     */
     public void clearCourseData() {
         System.out.println("All course data cleared.");
         courseManager.clearcoursedata();

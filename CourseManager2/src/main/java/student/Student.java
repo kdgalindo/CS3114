@@ -18,6 +18,13 @@ public class Student implements Comparable<Student> {
         this.grade = null;
         this.isActive = true;
     }
+    
+    public Student(long personalID, FullName fullName, Grade grade) {
+    	this.personalID = personalID;
+        this.fullName = fullName;
+        this.grade = grade;
+        this.isActive = true;
+    }
 
     public long getPersonalID() {
         return personalID;
@@ -74,6 +81,10 @@ public class Student implements Comparable<Student> {
 
     @Override
     public String toString() {
-        return String.format("%09d, %s", personalID, fullName);
+    	String identity = String.format("%09d, %s", personalID, fullName);
+    	if (grade != null) {
+    		return String.format("%s, score = %d", identity, grade.getPercentage());
+    	}
+        return identity;
     }
 }
