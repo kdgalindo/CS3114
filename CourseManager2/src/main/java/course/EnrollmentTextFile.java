@@ -6,6 +6,12 @@ import java.util.Scanner;
 
 import data.*;
 
+/**
+ * EnrollmentTextFile Class
+ * 
+ * @author kyleg997 Kyle Galindo
+ * @version 2020-11-05
+ */
 public class EnrollmentTextFile {
 	private static class Enrollment {
 		private final int sectionNumber;
@@ -40,18 +46,15 @@ public class EnrollmentTextFile {
 			s.close();
 		} 
 		catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return enrollments.toArray(new Enrollment[enrollments.size()]);
 	}
 	
 	private static Enrollment readEnrollmentFrom(String line) {
-    	Enrollment enrollment = null;
     	Scanner s = new Scanner(line);
     	s.useDelimiter("\\s*,\\s*");
-    	int sectionNumber = s.nextInt();
-    	enrollment = new Enrollment(sectionNumber, readStudentFrom(s));
+    	Enrollment enrollment = new Enrollment(s.nextInt(), readStudentFrom(s));
     	s.close();
     	return enrollment;
 	}
@@ -61,26 +64,18 @@ public class EnrollmentTextFile {
 	}
     
 	private static Identity readIdentityFrom(Scanner s) {
-		long personalID = s.nextLong();
-        return new Identity(personalID, readFullNameFrom(s));
+        return new Identity(s.nextLong(), readFullNameFrom(s));
 	}
     
 	private static FullName readFullNameFrom(Scanner s) {
-		String firstName = s.next();
-        String lastName = s.next();
-        return new FullName(firstName, lastName);
+        return new FullName(s.next(), s.next());
 	}
 	
 	private static Grade readGradeFrom(Scanner s) {
 		if (s.hasNextInt()) {
-			int percentageGrade = s.nextInt();
-			String letterGrade = s.next();
-			return new Grade(percentageGrade, letterGrade);
+			return new Grade(s.nextInt(), s.next());
 		}
-		else {
-			s.nextLine();
-			return new Grade();
-		}
+		return new Grade();
 	}
     
     private static SectionEnrollment[] makeSEnrollmentsFrom(Enrollment[] enrollments) {

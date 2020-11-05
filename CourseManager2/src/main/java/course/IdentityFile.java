@@ -2,6 +2,12 @@ package course;
 
 import data.Identity;
 
+/**
+ * IdentityFile Class
+ * 
+ * @author kyleg997 Kyle Galindo
+ * @version 2020-11-05
+ */
 public class IdentityFile {
 	public static Identity[] readFrom(String filename) {
 		Identity[] identities = null;

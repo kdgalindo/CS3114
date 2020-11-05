@@ -5,6 +5,12 @@ import java.io.RandomAccessFile;
 
 import data.*;
 
+/**
+ * EnrollmentBinaryFile Class
+ * 
+ * @author kyleg997 Kyle Galindo
+ * @version 2020-11-05
+ */
 public class EnrollmentBinaryFile {
 	private final static String HEADER = "CS3114atVT";
 	private final static String DELIMITER = "GOHOKIES";	
@@ -45,14 +51,11 @@ public class EnrollmentBinaryFile {
     }
     
     private static Identity readIdentityFrom(RandomAccessFile raf) throws IOException {
-    	long personalID = raf.readLong();
-    	return new Identity(personalID, readFullNameFrom(raf));
+    	return new Identity(raf.readLong(), readFullNameFrom(raf));
     }
     
     private static FullName readFullNameFrom(RandomAccessFile raf) throws IOException {
-		String firstName = readNameFrom(raf);
-        String lastName = readNameFrom(raf);
-        return new FullName(firstName, lastName);
+        return new FullName(readNameFrom(raf), readNameFrom(raf));
     }
     
 	private static String readNameFrom(RandomAccessFile raf) throws IOException {
@@ -65,8 +68,7 @@ public class EnrollmentBinaryFile {
 	}
 	
 	private static Grade readGradeFrom(RandomAccessFile raf) throws IOException {
-		int percentageGrade = raf.readInt();
-		return new Grade(percentageGrade, readLetterGradeFrom(raf));
+		return new Grade(raf.readInt(), readLetterGradeFrom(raf));
 	}
 	
 	private static String readLetterGradeFrom(RandomAccessFile raf) throws IOException {

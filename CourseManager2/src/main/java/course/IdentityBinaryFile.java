@@ -6,6 +6,12 @@ import java.io.RandomAccessFile;
 import data.FullName;
 import data.Identity;
 
+/**
+ * IdentityBinaryFile Class
+ * 
+ * @author kyleg997 Kyle Galindo
+ * @version 2020-11-05
+ */
 public class IdentityBinaryFile {
 	private final static String HEADER = "VTSTUDENTS";
 	private final static String DELIMITER = "GOHOKIES";
@@ -15,9 +21,8 @@ public class IdentityBinaryFile {
 		try {
 			RandomAccessFile raf = new RandomAccessFile(filename, "r");
 			raf.seek(HEADER.length());
-			int numOfIdentities = raf.readInt();
-			identities = new Identity[numOfIdentities];
-			for (int i = 0; i < numOfIdentities; ++i) {
+			identities = new Identity[raf.readInt()];
+			for (int i = 0; i < identities.length; ++i) {
 				identities[i] = readIdentityFrom(raf);
 				raf.seek(raf.getFilePointer() + DELIMITER.length());
 			}
@@ -30,15 +35,11 @@ public class IdentityBinaryFile {
 	}
 	
 	private static Identity readIdentityFrom(RandomAccessFile raf) throws IOException {
-		long personalID = raf.readLong();
-		return new Identity(personalID, readFullNameFrom(raf));
+		return new Identity(raf.readLong(), readFullNameFrom(raf));
 	}
 	
 	private static FullName readFullNameFrom(RandomAccessFile raf) throws IOException {
-		String firstName = readNameFrom(raf);
-        String middleName = readNameFrom(raf);
-        String lastName = readNameFrom(raf);
-        return new FullName(firstName, middleName, lastName);
+        return new FullName(readNameFrom(raf), readNameFrom(raf), readNameFrom(raf));
 	}
 	
 	private static String readNameFrom(RandomAccessFile raf) throws IOException {

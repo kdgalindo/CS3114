@@ -2,6 +2,12 @@ package course;
 
 import data.CourseEnrollment;
 
+/**
+ * EnrollmentFile Class
+ * 
+ * @author kyleg997 Kyle Galindo
+ * @version 2020-11-05
+ */
 public class EnrollmentFile {
 	public static CourseEnrollment readFrom(String filename) {
 		CourseEnrollment cEnrollment = null;

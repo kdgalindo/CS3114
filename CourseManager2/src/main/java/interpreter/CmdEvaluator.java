@@ -2,7 +2,7 @@ package interpreter;
 
 import java.util.ArrayList;
 
-import course.CourseManager2;
+import course.CourseManager;
 import course.EnrollmentFile;
 import course.IdentityFile;
 import course.IdentityManager;
@@ -16,12 +16,12 @@ import data.*;
  */
 public class CmdEvaluator {
     private IdentityManager studentManager;
-    private CourseManager2 courseManager;
+    private CourseManager courseManager;
     private boolean isStudentDataLoaded;
 
     public CmdEvaluator() {
         studentManager = new IdentityManager();
-        courseManager = new CourseManager2();
+        courseManager = new CourseManager();
         isStudentDataLoaded = false;
     }
 
@@ -207,7 +207,7 @@ public class CmdEvaluator {
             return;
         }
         
-        if (!CourseManager2.isValidPercentageGrade(percentageGrade)) {
+        if (!CourseManager.isValidPercentageGrade(percentageGrade)) {
             System.out.println("Scores have to be integers in range 0 to 100.");
             return;
         }
