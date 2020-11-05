@@ -70,8 +70,8 @@ public class CmdParser {
                         break;
 
                     case "score": {
-                        	int percentage = sc.nextInt();
-                        	cmdEvaluator.score(percentage);
+                        	int percentageGrade = sc.nextInt();
+                        	cmdEvaluator.score(percentageGrade);
                     	}
                         break;
 

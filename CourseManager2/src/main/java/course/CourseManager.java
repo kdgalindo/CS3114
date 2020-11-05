@@ -2,32 +2,28 @@ package course;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import bin.BinFileHelper;
 import bst.BST;
-import student.FullName;
-import student.Student;
-import student.StudentRecord;
+import data.FullName;
+import data.Student;
 
 /**
  * CourseManager Class
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-13
+ * @version 2020-08-19
  */
 public class CourseManager {
 	private final int MAX_SECTION_NUMBER = 21;
     private Section[] sections;
     private Section currentSection;
-    private ArrayList<StudentRecord> srecords; // list of student records
-    private BST<Long, Integer> pbst; // BST w/ id key & section value
-    private BST<String, Integer> gbst; // BST w/ grade key & index value
-    private Integer gindex; // index of gradable student record
+    private ArrayList<Student> students;
+    private BST<Long, Integer> pidSectionDB;
+    private Integer currentStudentIndex; // index of gradable student record
 
-    /**
-     * CourseManager default constructor
-     */
     public CourseManager() {
         sections = new Section[MAX_SECTION_NUMBER];
         for (int i = 0; i < MAX_SECTION_NUMBER; i++) {
@@ -35,73 +31,21 @@ public class CourseManager {
             sections[i] = new Section(sectionNumber);
         }
         currentSection = sections[0];
-        pbst = new BST<Long, Integer>();
-        gBST();
-        srecords = new ArrayList<StudentRecord>();
-        gindex = null;
-    }
-
-    /**
-     * Initializes the gbst of grade keys
-     * and index values
-     */
-    private void gBST() {
-        gbst = new BST<String, Integer>();
-        gbst.insert("a*", 0);
-        gbst.insert("a", 0);
-        gbst.insert("a-", 2);
-        gbst.insert("b*", 4);
-        gbst.insert("b+", 4);
-        gbst.insert("b", 6);
-        gbst.insert("b-", 8);
-        gbst.insert("c*", 10);
-        gbst.insert("c+", 10);
-        gbst.insert("c", 12);
-        gbst.insert("c-", 14);
-        gbst.insert("d*", 16);
-        gbst.insert("d+", 16);
-        gbst.insert("d", 18);
-        gbst.insert("d-", 20);
-        gbst.insert("f*", 22);
-        gbst.insert("f", 22);
+        pidSectionDB = new BST<Long, Integer>();
+        students = new ArrayList<Student>();
+        currentStudentIndex = null;
     }
 
     public int getSection() {
         return currentSection.getNumber();
     }
-
-    /**
-     * Checks if a student is currently
-     * gradable
-     * 
-     * @return TRUE if a student is gradable,
-     * FALSE otherwise
-     */
-    public boolean isAStudentGradable() {
-        return (gindex != null);
-    }
-
-    /**
-     * Searches for a section number
-     * given a student pid
-     * 
-     * @param p student pid
-     * @return section number
-     */
-    public int searchForSectionByPID(long p) {
-        return pbst.find(p);
-    }
-
-    /**
-     * Checks if the current section
-     * is active; section is active
-     * if it is not a merged section
-     * 
-     * @return TRUE if active, FALSE
-     * otherwise
-     */
-    public boolean isCurrentSectionActive() {
+    
+    public boolean isSectionActive() {
         return currentSection.isActive();
+    }
+
+    public boolean isStudentGradable() {
+        return (currentStudentIndex != null);
     }
 
     /**
@@ -109,43 +53,56 @@ public class CourseManager {
      * load student data command
      */
     public void loadstudentdata() {
-        gindex = null;
+    	clearStudentScorable();
+    }
+    
+    private void clearStudentScorable() {
+    	currentStudentIndex = null;
+    }
+    
+    public Student loadCourseData(int sectionNumber, Student newStudent) {
+    	clearStudentScorable();
+        Student student = null;
+        long personalID = newStudent.getPersonalID(); // student pid
+        Integer cSectionNumber = findStudentSection(personalID); // current section number
+        if (cSectionNumber == null) { // Check if in section
+        	student = newStudent;
+        	addToActiveSection(student, students.size(), sectionNumber);
+            students.add(student); // Add to student record list
+        }
+        else if (cSectionNumber == sectionNumber) { // Check if in current section
+        	student = newStudent;
+            int index = sections[sectionNumber - 1].findIndex(student.getPersonalID());
+            Student oldStudent = students.get(index);
+            sections[sectionNumber - 1].updateStudentScore(oldStudent.getPercentageGrade(),
+            		student.getPercentageGrade(), index); // Update score
+            oldStudent.setPercentageGrade(student.getPercentageGrade());
+            oldStudent.setLetterGrade(student.getLetterGrade()); // Update grade
+        }
+        return student;
+    }
+    
+    public Integer findStudentSection(long personalID) {
+        return pidSectionDB.find(personalID);
+    }
+    
+    private void addToActiveSection(Student student, int index, int sectionNumber) {
+    	addToSection(student, index, sectionNumber);
+    	pidSectionDB.insert(student.getPersonalID(), sectionNumber);
+    }
+    
+    private void addToSection(Student student, int index, int sectionNumber) {
+    	sections[sectionNumber - 1].insert(student.getPersonalID(), index);
+    	sections[sectionNumber - 1].insert(student.getFullName(), index);
+    	sections[sectionNumber - 1].insert(student.getPercentageGrade(), index);
     }
 
     /**
-     * Loads student into section sn
      * 
-     * @param sn section number
-     * @param nsr new student record
-     * @return student record if not
-     * already in section or in sn,
-     * null otherwise
+     * @param sectionNumber
      */
-    public StudentRecord loadcoursedata(int sn, StudentRecord nsr) {
-        gindex = null;
-        StudentRecord sr = null;
-        long p = nsr.getPID(); // student pid
-        Integer csn = pbst.find(p); // current section number
-        if (csn == null) { // Check if in section
-            sr = nsr;
-            sections[sn - 1].insertStudent(sr.getStudent(), sr.getScore(),
-                srecords.size()); // Add to section
-            pbst.insert(p, sn); // Associate with section
-            srecords.add(sr); // Add to student record list
-        }
-        else if (csn == sn) { // Check if in current section
-            sr = nsr;
-            int srli = sections[sn - 1].findStudent(sr.getPID());
-            StudentRecord osr = srecords.get(srli);
-            sections[sn - 1].updateStudentScore(osr.getScore(), osr.setScore(sr
-                .getScore()), srli); // Update score
-            osr.setGrade(sr.getGrade()); // Update grade
-        }
-        return sr;
-    }
-
     public void setSection(int sectionNumber) {
-        gindex = null;
+    	clearStudentScorable();
         if (isValidSection(sectionNumber)) {
         	currentSection = sections[sectionNumber - 1];
         }
@@ -154,421 +111,260 @@ public class CourseManager {
     public boolean isValidSection(int sectionNumber) {
     	return ((sectionNumber > 0) && (sectionNumber < MAX_SECTION_NUMBER + 1));
     }
-
-    /**
-     * Insert a student into the
-     * current section
-     * 
-     * @param s student
-     * @return student record if not
-     * already in section, null otherwise
-     */
-    public StudentRecord insert(Student s) {
-        gindex = null;
-        StudentRecord nsr = null;
-        long p = s.getPersonalID(); // student pid
-        Integer sn = pbst.find(p); // section number
-        if (sn == null) { // Check if in section
-            nsr = new StudentRecord(s);
-            currentSection.insertStudent(nsr.getStudent(), nsr.getScore(), srecords
-                .size()); // Add to section
-            pbst.insert(p, currentSection.getNumber()); // Associate with section
-            srecords.add(nsr); // Add to student record list
-            gindex = srecords.size() - 1;
-        }
-        return nsr;
+    
+    private void setStudentScorable(int index) {
+    	currentStudentIndex = index;
     }
-
+    
     /**
-     * Search for a student record by
-     * pid
      * 
-     * @param p student pid
-     * @return student record if found,
-     * null otherwise
+     * @param student
+     * @return
      */
-    public StudentRecord searchid(long p) {
-        gindex = null;
-        StudentRecord sr = null;
-        Integer srli = currentSection.findStudent(p); // srecord index
-        if (srli != null) { // Check if in section
-            sr = srecords.get(srli);
-            gindex = srli;
+    public Student insert(Student student) {
+    	clearStudentScorable();
+        long personalID = student.getPersonalID();
+        if (findStudentSection(personalID) == null) { // Check if in section
+        	addToActiveSection(student, students.size());
+            students.add(student); // Add to student record list
+            setStudentScorable(students.size() - 1);
+            return student;
         }
-        return sr;
+        return null;
     }
-
-    /**
-     * Search for student records by
-     * name
-     * 
-     * @param n name
-     * @return student record list
-     */
-    public ArrayList<StudentRecord> search(FullName n) {
-        gindex = null;
-        ArrayList<StudentRecord> nsrl = new ArrayList<StudentRecord>();
-        ArrayList<Integer> il = currentSection.searchByName(n); // srecord indices
-        for (int i = 0; i < il.size(); i++) {
-            nsrl.add(srecords.get(il.get(i)));
-        }
-        if (il.size() == 1) {
-            gindex = il.get(0);
-        }
-        return nsrl;
+    
+    public void addToActiveSection(Student student, int index) {
+    	addToSection(student, index);
+    	pidSectionDB.insert(student.getPersonalID(), currentSection.getNumber());
     }
-
+    
+    private void addToSection(Student student, int index) {
+    	currentSection.insert(student.getPersonalID(), index);
+    	currentSection.insert(student.getFullName(), index);
+    	currentSection.insert(student.getPercentageGrade(), index);
+    }
+    
     /**
-     * Search for student records by
-     * string
      * 
-     * @param s string
-     * @return student record list
+     * @param personalID
+     * @return
      */
-    public ArrayList<StudentRecord> search(String s) {
-        gindex = null;
-        ArrayList<StudentRecord> nsrl = new ArrayList<StudentRecord>();
-        Iterator<Integer> itr = currentSection.iterateByName();
-        if (!currentSection.isEmpty()) {
-            while (itr.hasNext()) {
-                int i = itr.next();
-                StudentRecord sr = srecords.get(i);
-                String f = sr.getFirst();
-                String l = sr.getLast();
-                if (f.equalsIgnoreCase(s) || l.equalsIgnoreCase(s)) {
-                    nsrl.add(sr);
-                    if (nsrl.size() == 1) {
-                        gindex = i;
-                    }
-                }
+    public Student findStudent(long personalID) {
+    	clearStudentScorable();
+        Student student = null;
+        Integer index = currentSection.findIndex(personalID);
+        if (index != null) { // Check if in section
+        	student = students.get(index);
+            setStudentScorable(index);
+        }
+        return student;
+    }
+    
+    public Student[] findStudents(FullName fullName) {
+    	clearStudentScorable();
+        ArrayList<Student> studentsWithName = new ArrayList<Student>();
+        int[] indices = currentSection.findIndices(fullName);
+        for (int i = 0; i < indices.length; i++) {
+        	studentsWithName.add(students.get(indices[i]));
+        }
+        if (indices.length == 1) {
+            setStudentScorable(indices[0]);
+        }
+        return toStudentArray(studentsWithName);
+    }
+    
+    private Student[] toStudentArray(ArrayList<Student> oldStudents) {
+        Student[] students = new Student[oldStudents.size()];
+        students = oldStudents.toArray(students);
+        return students;
+    }
+    
+    public Student[] findStudents(String name) {
+    	clearStudentScorable();
+        ArrayList<Student> studentsWithName = new ArrayList<Student>();
+        Iterator<Integer> it = currentSection.studentFNIndexIterator();
+        while (it.hasNext()) {
+            int index = it.next();
+            Student student = students.get(index);
+            FullName fullName = student.getFullName();
+            if (fullName.equalsPartOfIgnoreCase(name)) {
+            	studentsWithName.add(student);
+                currentStudentIndex = index;
             }
         }
-        if (nsrl.size() != 1) {
-            gindex = null;
+        if (studentsWithName.size() != 1) {
+        	clearStudentScorable();
         }
-        return nsrl;
+        return toStudentArray(studentsWithName);
+    }
+    
+    public Student scoreStudent(int percentage) {
+        Student student = null;
+        if (currentStudentIndex != null) {
+        	student = students.get(currentStudentIndex);
+            currentSection.updateStudentScore(student.getPercentageGrade(), percentage, currentStudentIndex);
+            student.setPercentageGrade(percentage);
+            clearStudentScorable();
+        }
+        return student;
+    }
+    
+    public static boolean isValidPercentageGrade(int scorePercentage) {
+    	return ((scorePercentage > -1) && (scorePercentage < 101));
+    }
+    
+    public Student removeStudent(long personalID) {
+    	clearStudentScorable();
+        Student student = null;
+        Integer sectionNumber = pidSectionDB.find(personalID);
+        if ((sectionNumber != null) && (sectionNumber == currentSection.getNumber())) {
+            int index = currentSection.remove(personalID);
+            student = students.get(index);
+            currentSection.remove(student.getFullName(), index);
+            currentSection.remove(student.getPercentageGrade(), index);
+            pidSectionDB.remove(personalID); // Disassociate with section
+            student.clrActive(); // Kill the student record
+        }
+        return student;
+    }
+    
+    public Student removeStudent(FullName fullName) {
+    	clearStudentScorable();
+        Student student = null;
+        int[] indices = currentSection.findIndices(fullName);
+        if (indices.length == 1) { // Check if name unique
+            int index = currentSection.remove(fullName);
+            student = students.get(index);
+            currentSection.remove(student.getPersonalID());
+            currentSection.remove(student.getPercentageGrade(), index);
+            pidSectionDB.remove(student.getPersonalID()); // Disassociate with section
+            student.clrActive(); // Kill the student record
+        }
+        return student;
     }
 
     /**
-     * Update the score of a
-     * student record
      * 
-     * @param n number
-     * @return student record if found,
-     * null otherwise
-     */
-    public StudentRecord score(int n) {
-        StudentRecord sr = null;
-        if (gindex != null) {
-            sr = srecords.get(gindex);
-            currentSection.updateStudentScore(sr.getScore(), n, gindex);
-            sr.setScore(n);
-            gindex = null;
-        }
-        return sr;
-    }
-
-    /**
-     * Remove a student record by
-     * pid
-     * 
-     * @param p student pid
-     * @return student record if found,
-     * null otherwise
-     */
-    public StudentRecord remove(long p) {
-        gindex = null;
-        StudentRecord sr = null;
-        Integer sn = pbst.find(p); // section number
-        if ((sn != null) && (sn == currentSection.getNumber())) {
-            int i = currentSection.removeStudentPID(p);
-            sr = srecords.get(i);
-            currentSection.removeStudentName(sr.getName(), i);
-            currentSection.removeStudentScore(sr.getScore(), i);
-            pbst.remove(p); // Disassociate with section
-            sr.setActive(false); // Kill the student record
-        }
-        return sr;
-    }
-
-    /**
-     * Remove a student record by
-     * name
-     * 
-     * @param n name
-     * @return student record if found,
-     * null otherwise
-     */
-    public StudentRecord remove(FullName n) {
-        gindex = null;
-        StudentRecord sr = null;
-        ArrayList<Integer> il = currentSection.searchByName(n);
-        if (il.size() == 1) { // Check if name unique
-            int i = currentSection.removeStudentName(n);
-            sr = srecords.get(i);
-            currentSection.removeStudentPID(sr.getPID());
-            currentSection.removeStudentScore(sr.getScore(), i);
-            pbst.remove(sr.getPID()); // Disassociate with section
-            sr.setActive(false); // Kill the student record
-        }
-        return sr;
-    }
-
-    /**
-     * Clears the current section
-     * from CourseManager
      */
     public void clearsection() {
-        gindex = null;
+    	clearStudentScorable();
         currentSection.clear();
     }
-
+    
     /**
-     * Dumps an inorder traversal of
-     * all the student records in the
-     * current section by pid
      * 
-     * @return number of records
+     * @return
      */
     public int dumpPIDs() {
-        gindex = null;
-        Iterator<Integer> itr = currentSection.iterateByPID();
-        if (!currentSection.isEmpty()) {
-            while (itr.hasNext()) {
-                StudentRecord sr = srecords.get(itr.next());
-                System.out.println(sr);
-            }
-        }
+    	clearStudentScorable();
+    	dump(currentSection.studentPIDIndexIterator());
         return currentSection.size();
     }
-
-    /**
-     * Dumps an inorder traversal of
-     * all the student records in the
-     * current section by name
-     * 
-     * @return number of records
-     */
+    
     public int dumpNames() {
-        gindex = null;
-        Iterator<Integer> itr = currentSection.iterateByName();
-        if (!currentSection.isEmpty()) {
-            while (itr.hasNext()) {
-                StudentRecord sr = srecords.get(itr.next());
-                System.out.println(sr);
-            }
-        }
+    	clearStudentScorable();
+    	dump(currentSection.studentFNIndexIterator());
         return currentSection.size();
     }
-
-    /**
-     * Dumps an inorder traversal of
-     * all the student records in the
-     * current section by score
-     * 
-     * @return number of records
-     */
+    
     public int dumpScores() {
-        gindex = null;
-        Iterator<Integer> itr = currentSection.iterateByScore();
-        if (!currentSection.isEmpty()) {
-            while (itr.hasNext()) {
-                StudentRecord sr = srecords.get(itr.next());
-                System.out.println(sr);
-            }
-        }
+    	clearStudentScorable();
+    	dump(currentSection.studentPGIndexIterator());
         return currentSection.size();
     }
-
-    /**
-     * Updates the letter grades
-     * of all student records in
-     * the current section
-     */
-    public void grade() {
-        gindex = null;
-        String[] letters = { "A ", "A-", "B+", "B ", "B-", "C+", "C ", "C-",
-            "D+", "D ", "D-", "F " };
-        Iterator<Integer> itr = currentSection.iterateByScore();
-        if (!currentSection.isEmpty()) {
-            while (itr.hasNext()) {
-                int i = itr.next();
-                StudentRecord sr = srecords.get(i);
-                int s = sr.getScore();
-                sr.setGrade(letters[gradehelper(s)]);
-            }
-        }
+    
+    private void dump(Iterator<Integer> it) {
+    	while (it.hasNext()) {
+    		System.out.println(students.get(it.next()));
+    
+    	}
     }
-
-    /**
-     * Helps update the grades of all
-     * student records in the current
-     * section by obtaining the index
-     * of the letter grade
-     * 
-     * @param s score
-     * @return letter grade index
-     */
-    private int gradehelper(int s) {
-        gindex = null;
-        int li = 11;
-        int[] ranges = { 90, 85, 80, 75, 70, 65, 60, 58, 55, 53, 50 };
-        for (int i = 0; i < 11; i++) {
-            if (s >= ranges[i]) {
-                li = i;
-                break;
-            }
-        }
-        return li;
+    
+    public void gradeStudents() {
+        currentStudentIndex = null;
+        Grader.gradeStudents(toStudentArray());
     }
-
-    /**
-     * Lists the number of students
-     * with each letter grade in the
-     * current section
-     * 
-     * @return array of numbers
-     */
-    public int[] stat() {
-        gindex = null;
-        int[] numbers = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        Iterator<Integer> itr = currentSection.iterateByScore();
-        if (!currentSection.isEmpty()) {
-            while (itr.hasNext()) {
-                int i = itr.next();
-                StudentRecord sr = srecords.get(i);
-                int s = sr.getScore();
-                numbers[gradehelper(s)]++;
-            }
-        }
-        return numbers;
+    
+    private Student[] toStudentArray() {
+		Student[] newStudents = new Student[currentSection.size()];
+		Arrays.fill(newStudents, null);
+		Iterator<Integer> it = currentSection.studentPGIndexIterator();
+		int i = 0;
+		while (it.hasNext()) {
+			newStudents[i++] = students.get(it.next());
+		}
+		return newStudents;
     }
-
-    /**
-     * Lists the student records with
-     * letter grade g in the current
-     * section
-     * 
-     * @param g grade
-     * @return list of student records
-     */
-    public ArrayList<StudentRecord> list(String g) {
-        gindex = null;
-        int[] granges = { 100, 90, 89, 85, 84, 80, 79, 75, 74, 70, 69, 65, 64,
-            60, 59, 58, 57, 55, 54, 53, 52, 50, 49, 0 };
-        ArrayList<StudentRecord> nsrl = new ArrayList<StudentRecord>();
-        String ng = g.toLowerCase();
-        ArrayList<Integer> il;
-        int i1 = gbst.find(ng);
-        int i2 = listhelper(ng, i1);
-        il = currentSection.searchForScoresInRange(granges[i2], granges[i1]);
-        for (int i = 0; i < il.size(); i++) {
-            nsrl.add(srecords.get(il.get(i)));
-        }
-        return nsrl;
+    
+    public void statStudents() {
+        currentStudentIndex = null;
+        Grader.statStudents(toStudentArray());
     }
-
-    /**
-     * Helps list the student records
-     * with letter grade g in the current
-     * section by obtaining the index of
-     * the lower bound
-     * 
-     * @param g grade
-     * @param i1 index of higher
-     * @return index of lower
-     */
-    private int listhelper(String g, int i1) {
-        int i2 = i1;
-        if (g.contains("*")) {
-            if (g.contains("a")) {
-                i2 = i1 + 3;
-            }
-            else if (!g.contains("f")) {
-                i2 = i1 + 5;
-            }
+    
+    public Student[] listStudents(String letter) {
+        currentStudentIndex = null;
+        ArrayList<Student> records = new ArrayList<Student>();
+        int lower = Grader.getLowerPercentageGrade(letter);
+        int upper = Grader.getUpperPercentageGrade(letter);
+        ArrayList<Integer> indices = currentSection.searchForScoresInRange(lower, upper);
+        for (int i = 0; i < indices.size(); i++) {
+        	records.add(students.get(indices.get(i)));
         }
-        else {
-            i2 = i1 + 1;
-        }
-        return i2;
+        return toStudentArray(records);
     }
-
-    /**
-     * Finds pairs of Student Records
-     * with score differences less than
-     * or equal to a score
-     * 
-     * @param s score
-     * @return string list of pairs of
-     * names
-     */
-    public ArrayList<String> findpair(int s) {
-        gindex = null;
-        ArrayList<String> nsl = new ArrayList<String>();
-        Iterator<Integer> itr1 = currentSection.iterateByScore();
-        int i = 0;
-        if (!currentSection.isEmpty()) {
-            while (itr1.hasNext()) {
-                StudentRecord sr1 = srecords.get(itr1.next());
-                Iterator<Integer> itr2 = currentSection.iterateByScore();
-                for (int j = 0; j < i; j++) {
-                    itr2.next();
+    
+    public ArrayList<String> findpair(int scorePercentageDiff) {
+        ArrayList<String> studentPairsWithinDiff = new ArrayList<String>();
+        int studentsToSkip = 0;
+        Iterator<Integer> itOuter = currentSection.studentPGIndexIterator();
+        while (itOuter.hasNext()) {
+        	Student first = students.get(itOuter.next());
+        	Iterator<Integer> itInner = currentSection.studentPGIndexIterator();
+            skipStudents(itInner, ++studentsToSkip);
+            while (itInner.hasNext()) {
+            	Student second = students.get(itInner.next());
+            	int diff = Math.abs(first.getPercentageGrade() - second.getPercentageGrade());
+                if (diff <= scorePercentageDiff) {
+                	studentPairsWithinDiff.add(first.getFullName() + ", " + second.getFullName());
                 }
-                while (itr2.hasNext()) {
-                    StudentRecord sr2 = srecords.get(itr2.next());
-                    int diff = Math.abs(sr1.getScore() - sr2.getScore());
-                    if ((diff <= s) && (sr1 != sr2)) {
-                        nsl.add(sr1.getName() + ", " + sr2.getName());
-                    }
-                }
-                i++;
             }
         }
-        return nsl;
+        return studentPairsWithinDiff;
     }
-
-    /**
-     * Merges all student records
-     * from all sections into the current
-     * section
-     * 
-     * @return TRUE if merge is
-     * successful, FALSE otherwise
-     */
-    public boolean merge() {
-        gindex = null;
-        boolean b = false;
+    
+    private void skipStudents(Iterator<Integer> it, int studentsToSkip) {
+    	for (int i = 0; i < studentsToSkip; i++) {
+    		if (it.hasNext()) {
+    			it.next();
+    		}
+    	}
+    }
+    
+    public boolean mergeSections() {
+        currentStudentIndex = null;
+        boolean result = false;
         if (currentSection.isEmpty()) {
             currentSection.setActive(false);
             for (int i = 0; i < sections.length; i++) {
                 if (sections[i].isActive()) {
-                    Iterator<Integer> itr = sections[i].iterateByPID();
+                    Iterator<Integer> it = sections[i].studentPIDIndexIterator();
                     if (!sections[i].isEmpty()) {
-                        while (itr.hasNext()) {
-                            int j = itr.next();
-                            StudentRecord sr = srecords.get(j);
-                            currentSection.insertStudent(sr.getStudent(), sr
-                                .getScore(), j);
+                        while (it.hasNext()) {
+                            int index = it.next();
+                            Student student = students.get(index);
+                            addToSection(student, index);
                         }
                     }
                 }
             }
-            b = true;
+            result = true;
         }
-        return b;
+        return result;
     }
-
-    /**
-     * Saves all of the active student
-     * records in a byte array structured
-     * according to the project description
-     * 
-     * @return byte array
-     */
-    public byte[] savecoursedata() {
-        gindex = null;
-        byte[] ba = null;
+    
+    public byte[] saveCourseData() {
+        currentStudentIndex = null;
+        byte[] bytes = null;
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             BinFileHelper bfh = new BinFileHelper();
@@ -576,35 +372,35 @@ public class CourseManager {
             int sl = savecoursedatahelper();
             baos.write(bfh.intToByteArray(sl));
             for (int i = 0; i < sl; i++) {
-                Iterator<Integer> itr = sections[i].iterateByPID();
+                Iterator<Integer> it = sections[i].studentPIDIndexIterator();
                 if (!sections[i].isEmpty() && sections[i].isActive()) {
                     baos.write(bfh.intToByteArray(sections[i].size()));
-                    while (itr.hasNext()) {
-                        int j = itr.next();
-                        StudentRecord sr = srecords.get(j);
-                        baos.write(bfh.longToByteArray(sr.getPID()));
-                        baos.write(sr.getFirst().getBytes());
+                    while (it.hasNext()) {
+                        int index = it.next();
+                        Student student = students.get(index);
+                        baos.write(bfh.longToByteArray(student.getPersonalID()));
+                        baos.write(student.getFirstName().getBytes());
                         baos.write("$".getBytes());
-                        baos.write(sr.getLast().getBytes());
+                        baos.write(student.getLastName().getBytes());
                         baos.write("$".getBytes());
-                        baos.write(bfh.intToByteArray(sr.getScore()));
-                        if (sr.getGrade().getBytes().length > 1) {
-                            baos.write(sr.getGrade().getBytes());
+                        baos.write(bfh.intToByteArray(student.getPercentageGrade()));
+                        if (student.getLetterGrade().getBytes().length > 1) {
+                            baos.write(student.getLetterGrade().getBytes());
                         }
                         else {
-                            String g = new String(sr.getGrade() + " ");
+                            String g = new String(student.getGrade() + " ");
                             baos.write(g.getBytes());
                         }
                     }
                     baos.write("GOHOKIES".getBytes());
                 }
             }
-            ba = baos.toByteArray();
+            bytes = baos.toByteArray();
         }
         catch (Exception e) {
             e.printStackTrace();
         }
-        return ba;
+        return bytes;
     }
     
     /**
@@ -616,7 +412,7 @@ public class CourseManager {
      * 
      * @return last used section number
      */
-    int savecoursedatahelper() {
+    public int savecoursedatahelper() {
         int lsn = 1;
         for (int i = 0; i < sections.length; i++) {
             if (!sections[i].isEmpty() && sections[i].isActive()) {
@@ -633,11 +429,11 @@ public class CourseManager {
      * from CourseManager
      */
     public void clearcoursedata() {
-        gindex = null;
+        currentStudentIndex = null;
         for (int i = 0; i < 21; i++) {
             sections[i].clear();
         }
-        srecords.clear();
-        pbst.clear();
+        students.clear();
+        pidSectionDB.clear();
     }
 }

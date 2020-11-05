@@ -1,4 +1,4 @@
-package student;
+package data;
 
 /**
  * Student Class
@@ -7,47 +7,52 @@ package student;
  * @version 2020-08-17
  */
 public class Student implements Comparable<Student> {
-    private final long personalID;
-    private final FullName fullName;
+    private final Identity identity;
     private Grade grade;
     private boolean isActive;
 
-    public Student(long personalID, FullName fullName) {
-    	this.personalID = personalID;
-        this.fullName = fullName;
+    public Student(Identity identity) {
+    	this.identity = identity;
         this.grade = null;
         this.isActive = true;
     }
     
-    public Student(long personalID, FullName fullName, Grade grade) {
-    	this.personalID = personalID;
-        this.fullName = fullName;
+    public Student(Identity identity, Grade grade) {
+    	this.identity = identity;
         this.grade = grade;
         this.isActive = true;
     }
+    
+    public Identity getIdentity() {
+    	return identity;
+    }
 
     public long getPersonalID() {
-        return personalID;
+        return identity.getPersonalID();
     }
 
     public FullName getFullName() {
-        return fullName;
+        return identity.getFullName();
     }
     
     public String getFirstName() {
-        return fullName.getFirstName();
+        return identity.getFirstName();
     }
     
     public String getMiddleName() {
-        return fullName.getMiddleName();
+        return identity.getMiddleName();
     }
     
     public String getLastName() {
-        return fullName.getLastName();
+        return identity.getLastName();
     }
     
     public Grade getGrade() {
     	return grade;
+    }
+    
+    public void setGrade(Grade grade) {
+    	this.grade = grade;
     }
     
     public int getPercentageGrade() {
@@ -76,15 +81,14 @@ public class Student implements Comparable<Student> {
     
     @Override
     public int compareTo(Student student) {
-        return Long.compare(personalID, student.getPersonalID());
+    	return identity.compareTo(student.getIdentity());
     }
 
     @Override
     public String toString() {
-    	String identity = String.format("%09d, %s", personalID, fullName);
     	if (grade != null) {
     		return String.format("%s, score = %d", identity, grade.getPercentage());
     	}
-        return identity;
+        return identity.toString();
     }
 }

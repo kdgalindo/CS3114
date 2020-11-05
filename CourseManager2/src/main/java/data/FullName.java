@@ -1,4 +1,4 @@
-package student;
+package data;
 
 /**
  * FullName Class
@@ -13,7 +13,7 @@ public class FullName implements Comparable<FullName> {
 
     public FullName(String firstName, String lastName) {
         this.firstName = firstName;
-        this.middleName = null;
+        this.middleName = "";
         this.lastName = lastName;
     }
     

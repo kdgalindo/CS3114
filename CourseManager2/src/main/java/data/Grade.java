@@ -1,4 +1,4 @@
-package student;
+package data;
 
 /**
  * Student Class

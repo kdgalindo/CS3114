@@ -4,28 +4,27 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import bst.BST;
-import student.FullName;
-import student.Student;
+import data.FullName;
 
 /**
  * Section Class
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-13
+ * @version 2020-08-17
  */
 public class Section {
-    private BST<Long, Integer> personalIDDB; // Index value
-    private BST<FullName, Integer> fullNameDB; // Index value
-    private BST<Integer, Integer> scorePercentageDB; // Index value
+    private BST<Long, Integer> pidIndexDB; // Index value
+    private BST<FullName, Integer> fnIndexDB; // Index value
+    private BST<Integer, Integer> pgIndexDB; // Index value
     private int number;
-    private boolean active; // Active State
+    private boolean isActive; // Active State
     
     Section(int sectionNumber) {
-        personalIDDB = new BST<Long, Integer>();
-        fullNameDB = new BST<FullName, Integer>();
-        scorePercentageDB = new BST<Integer, Integer>();
+        pidIndexDB = new BST<Long, Integer>();
+        fnIndexDB = new BST<FullName, Integer>();
+        pgIndexDB = new BST<Integer, Integer>();
         number = sectionNumber;
-        active = true;
+        isActive = true;
     }
     
     public int getNumber() {
@@ -33,11 +32,11 @@ public class Section {
     }
     
     public boolean isActive() {
-        return active;
+        return isActive;
     }
     
     public void setActive(boolean active) {
-        this.active = active;
+        this.isActive = active;
     }
     
     /**
@@ -46,7 +45,7 @@ public class Section {
      * @return size
      */
     public int size() {
-        return personalIDDB.size();
+        return pidIndexDB.size();
     }
     
     /**
@@ -56,35 +55,35 @@ public class Section {
      * is empty, FALSE otherwise
      */
     public boolean isEmpty() {
-        return (personalIDDB.size() == 0);
+        return (pidIndexDB.size() == 0);
     }
     
-    /**
-     * Inserts a Student into the Section
-     * 
-     * @param st Student
-     * @param sc Student Score
-     * @param i StudentRecord Index
-     */
-    public void insertStudent(Student st, int sc, int i) {
-        personalIDDB.insert(st.getPersonalID(), i);
-        fullNameDB.insert(st.getFullName(), i);
-        scorePercentageDB.insert(sc, i);
+    public void insert(long personalID, int index) {
+    	pidIndexDB.insert(personalID, index);
     }
     
-    public Integer findStudent(long personalID) {
-        return personalIDDB.find(personalID);
+    public void insert(FullName fullName, int index) {
+    	fnIndexDB.insert(fullName, index);
     }
     
-    /**
-     * Searches for all StudentRecord Indices
-     * in the Section given a Name
-     * 
-     * @param n Name
-     * @return StudentRecord Index
-     */
-    public ArrayList<Integer> searchByName(FullName n) {
-        return fullNameDB.findall(n);
+    public void insert(int percentageGrade, int index) {
+    	pgIndexDB.insert(percentageGrade, index);
+    }
+    
+    public Integer findIndex(long personalID) {
+        return pidIndexDB.find(personalID);
+    }
+    
+    public int[] findIndices(FullName fullName) {
+        return toIntArray(fnIndexDB.findall(fullName));
+    }
+    
+    private static int[] toIntArray(ArrayList<Integer> oldIndices) {
+        int[] indices = new int[oldIndices.size()];
+        for (int i = 0; i < indices.length; i++) {
+        	indices[i] = oldIndices.get(i).intValue();
+        }
+        return indices;
     }
     
     /**
@@ -96,49 +95,25 @@ public class Section {
      * @param ns New Score
      * @param i StudentRecord Index
      */
-    public void updateStudentScore(int cs, int ns, int i) {
-        scorePercentageDB.remove(cs, i);
-        scorePercentageDB.insert(ns, i);
+    public void updateStudentScore(int cs, int ns, int index) {
+        pgIndexDB.remove(cs, index);
+        pgIndexDB.insert(ns, index);
     }
     
-    /**
-     * Remove a Student's PID
-     * 
-     * @param p Student PID
-     * @return StudentRecord Index
-     */
-    public Integer removeStudentPID(long p) {
-        return personalIDDB.remove(p);
+    public Integer remove(long personalID) {
+        return pidIndexDB.remove(personalID);
     }
     
-    /**
-     * Remove a Student's Name
-     * 
-     * @param n Student Name
-     * @return StudentRecord Index
-     */
-    public Integer removeStudentName(FullName n) {
-        return fullNameDB.remove(n);
+    public Integer remove(FullName fullName) {
+        return fnIndexDB.remove(fullName);
     }
     
-    /**
-     * Remove a Student's Name
-     * 
-     * @param n Student Name
-     * @param i StudentRecord Index
-     */
-    public void removeStudentName(FullName n, int i) {
-        fullNameDB.remove(n, i);
+    public void remove(FullName fullName, int index) {
+        fnIndexDB.remove(fullName, index);
     }
     
-    /**
-     * Remove a Student's Score
-     * 
-     * @param s Student Score
-     * @param i StudentRecord Index
-     */
-    public void removeStudentScore(int s, int i) {
-        scorePercentageDB.remove(s, i);
+    public void remove(int percentageGrade, int index) {
+        pgIndexDB.remove(percentageGrade, index);
     }
     
     /**
@@ -146,10 +121,10 @@ public class Section {
      * Section
      */
     public void clear() {
-        personalIDDB.clear();
-        fullNameDB.clear();
-        scorePercentageDB.clear();
-        active = true;
+        pidIndexDB.clear();
+        fnIndexDB.clear();
+        pgIndexDB.clear();
+        isActive = true;
     }
     
     /**
@@ -162,39 +137,18 @@ public class Section {
      * @return StudentRecord Indices
      */
     public ArrayList<Integer> searchForScoresInRange(int s1, int s2) {
-        return scorePercentageDB.findrange(s1, s2);
+        return pgIndexDB.findrange(s1, s2);
     }
     
-    /**
-     * Returns an iterator for an inorder
-     * traversal of all Student PID keys
-     * in the Section
-     * 
-     * @return PID Iterator
-     */
-    public Iterator<Integer> iterateByPID() {
-        return personalIDDB.iterator();
+    public Iterator<Integer> studentPIDIndexIterator() {
+        return pidIndexDB.iterator();
     }
     
-    /**
-     * Returns an iterator for an inorder
-     * traversal of all Student Name keys
-     * in the Section
-     * 
-     * @return Name Iterator
-     */
-    public Iterator<Integer> iterateByName() {
-        return fullNameDB.iterator();
+    public Iterator<Integer> studentFNIndexIterator() {
+        return fnIndexDB.iterator();
     }
     
-    /**
-     * Returns an iterator for an inorder
-     * traversal of all Student Score keys
-     * in the Section
-     * 
-     * @return Score Iterator
-     */
-    public Iterator<Integer> iterateByScore() {
-        return scorePercentageDB.iterator();
+    public Iterator<Integer> studentPGIndexIterator() {
+        return pgIndexDB.iterator();
     }
 }
