@@ -4,33 +4,42 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import data.Student;
-import util.Pair;
 
 /** 
  * Grader Class
  *
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-19
+ * @version 2020-11-11
  */
 public class Grader {
-	private final static String[] LETTER_GRADES = { "A ", "A-", "B+", "B ", "B-", "C+",
-													"C ", "C-", "D+", "D ", "D-", "F " };
-	private final static int[] PERCENTAGE_GRADE_LBOUNDS = { 90, 85, 80, 75, 70, 65,
-															60, 58, 55, 53, 50, 0 };
-	private final static int[] PERCENTAGE_GRADE_UBOUNDS = { 100, 89, 84, 79, 74, 69,
-															64, 59, 57, 54, 52, 49 };
-	private final static HashMap<String, Pair<Integer, Integer>> GRADE_BOUNDS;
+	private final static String[] LGRADES = { "A ", "A-", "B+", "B ", "B-", "C+",
+											  "C ", "C-", "D+", "D ", "D-", "F " };
+	private final static int[] PGRADE_LBOUNDS = { 90, 85, 80, 75, 70, 65,
+												  60, 58, 55, 53, 50, 0 };
+	private final static int[] PGRADE_UBOUNDS = { 100, 89, 84, 79, 74, 69,
+												  64, 59, 57, 54, 52, 49 };
+	private final static HashMap<String, PGradeRange> GRADE_RANGES;
+	
+	private static class PGradeRange {
+		private final int lBound;
+		private final int uBound;
+		
+		private PGradeRange(int lBound, int uBound) {
+			this.lBound = lBound;
+			this.uBound = uBound;
+		}
+	}
 	
 	static {
-		GRADE_BOUNDS = new HashMap<String, Pair<Integer, Integer>>();
-		for (int i = 0; i < LETTER_GRADES.length; i++) {
-			GRADE_BOUNDS.put(LETTER_GRADES[i].toLowerCase(), Pair.with(PERCENTAGE_GRADE_LBOUNDS[i], PERCENTAGE_GRADE_UBOUNDS[i]));
+		GRADE_RANGES = new HashMap<String, PGradeRange>();
+		for (int i = 0; i < LGRADES.length; ++i) {
+			GRADE_RANGES.put(LGRADES[i].toLowerCase(), new PGradeRange(PGRADE_LBOUNDS[i], PGRADE_UBOUNDS[i]));
 		}
-		GRADE_BOUNDS.put("a*", Pair.with(getLowerPercentageGrade("A-"), getUpperPercentageGrade("A ")));
-		GRADE_BOUNDS.put("b*", Pair.with(getLowerPercentageGrade("B-"), getUpperPercentageGrade("B+")));
-		GRADE_BOUNDS.put("c*", Pair.with(getLowerPercentageGrade("C-"), getUpperPercentageGrade("C+")));
-		GRADE_BOUNDS.put("d*", Pair.with(getLowerPercentageGrade("D-"), getUpperPercentageGrade("D+")));
-		GRADE_BOUNDS.put("f*", Pair.with(getLowerPercentageGrade("F "), getUpperPercentageGrade("F ")));
+		GRADE_RANGES.put("a*", new PGradeRange(getPercentageGradeLowerBound("A-"), getPercentageGradeUpperBound("A ")));
+		GRADE_RANGES.put("b*", new PGradeRange(getPercentageGradeLowerBound("B-"), getPercentageGradeUpperBound("B+")));
+		GRADE_RANGES.put("c*", new PGradeRange(getPercentageGradeLowerBound("C-"), getPercentageGradeUpperBound("C+")));
+		GRADE_RANGES.put("d*", new PGradeRange(getPercentageGradeLowerBound("D-"), getPercentageGradeUpperBound("D+")));
+		GRADE_RANGES.put("f*", new PGradeRange(getPercentageGradeLowerBound("F "), getPercentageGradeUpperBound("F ")));
 	}
 	
 	/**
@@ -38,12 +47,17 @@ public class Grader {
 	 * @param letterGrade
 	 * @return
 	 */
-	public static Integer getLowerPercentageGrade(String letterGrade) {
-		return getPercentageGradeBounds(letterGrade).getValue0();
+	public static Integer getPercentageGradeLowerBound(String letterGrade) {
+		PGradeRange range = getPGradeRange(letterGrade);
+		if (range == null) {
+			return null;
+		}
+		
+		return range.lBound;
 	}
 	
-	private static Pair<Integer, Integer> getPercentageGradeBounds(String letterGrade) {
-		return GRADE_BOUNDS.get(preprocessLetterGrade(letterGrade));
+	private static PGradeRange getPGradeRange(String letterGrade) {
+		return GRADE_RANGES.get(preprocessLetterGrade(letterGrade));
 	}
 	
 	private static String preprocessLetterGrade(String oldLetterGrade) {
@@ -59,8 +73,13 @@ public class Grader {
 	 * @param letterGrade
 	 * @return
 	 */
-	public static Integer getUpperPercentageGrade(String letterGrade) {
-		return getPercentageGradeBounds(letterGrade).getValue1();
+	public static Integer getPercentageGradeUpperBound(String letterGrade) {
+		PGradeRange range = getPGradeRange(letterGrade);
+		if (range == null) {
+			return null;
+		}
+		
+		return range.uBound;
 	}
 	
 	/**
@@ -76,13 +95,13 @@ public class Grader {
 	
 	public static void gradeStudent(Student student) {
 		int percentage = student.getPercentageGrade();
-		String letterGrade = LETTER_GRADES[findGradeIndex(percentage)];
+		String letterGrade = LGRADES[findGradeIndex(percentage)];
 		student.setLetterGrade(letterGrade);
 	}
 	
     private static int findGradeIndex(int percentageGrade) {
-        for (int i = 0; i < PERCENTAGE_GRADE_LBOUNDS.length; i++) {
-            if (percentageGrade >= PERCENTAGE_GRADE_LBOUNDS[i]) {
+        for (int i = 0; i < PGRADE_LBOUNDS.length; i++) {
+            if (percentageGrade >= PGRADE_LBOUNDS[i]) {
             	return i;
             }
         }
@@ -94,7 +113,7 @@ public class Grader {
 	 * @param students
 	 */
 	public static void statStudents(Student[] students) {
-		int[] studentsWithEachGrade = new int[LETTER_GRADES.length];
+		int[] studentsWithEachGrade = new int[LGRADES.length];
 		Arrays.fill(studentsWithEachGrade, 0);
 		for (int i = 0; i < students.length; i++) {
 			Student student = students[i];
@@ -111,7 +130,7 @@ public class Grader {
             if (studentsWithGrade != 0) {
                 System.out.println(studentsWithGrade
                 	+ " students with grade "
-                	+ LETTER_GRADES[i]);
+                	+ LGRADES[i]);
             }
         }
 	}

@@ -3,8 +3,8 @@ package course;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import bst.BST;
 import data.Identity;
+import util.BST;
 
 /**
  * StudentManager Class

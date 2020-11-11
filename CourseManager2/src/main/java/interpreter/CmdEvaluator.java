@@ -343,9 +343,6 @@ public class CmdEvaluator {
     public void saveCourseData(String filename) {
         EnrollmentFile.writeTo(courseManager.getEnrollment(), filename);
         System.out.println("Saved all course data to " + filename);
-//        BinFileHelper bfh = new BinFileHelper();
-//        byte[] ba = courseManager.saveCourseData();
-//        bfh.byteArrayToBinFile(ba, bfn);
     }
 
     public void clearCourseData() {

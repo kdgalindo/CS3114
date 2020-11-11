@@ -2,31 +2,25 @@ package course;
 
 import java.util.ArrayList;
 
-import bst.BST;
 import data.CourseEnrollment;
 import data.FullName;
 import data.SectionEnrollment;
 import data.Student;
+import util.BST;
 
-/**
- * CourseManager Class
- * 
- * @author kyleg997 Kyle Galindo
- * @version 2020-08-19
- */
 public class CourseManager {
 	private final int MAX_SECTION_NUMBER = 21;
-    private Section[] sections;
-    private Section currentSection;
+    private SectionManager[] sections;
+    private SectionManager currentSection;
     private Student currentStudent;
     private boolean studentScorable;
     private BST<Long, Integer> pidSectionDB;
 
     public CourseManager() {
-        sections = new Section[MAX_SECTION_NUMBER];
+        sections = new SectionManager[MAX_SECTION_NUMBER];
         for (int i = 0; i < MAX_SECTION_NUMBER; i++) {
         	int sectionNumber = i + 1;
-            sections[i] = new Section(sectionNumber);
+            sections[i] = new SectionManager(sectionNumber);
         }
         currentSection = sections[0];
         currentStudent = null;
@@ -35,11 +29,11 @@ public class CourseManager {
     }
 
     public int getSectionNumber() {
-        return currentSection.getNumber();
+        return currentSection.getSectionNumber();
     }
     
     public boolean isSectionActive() {
-        return currentSection.isActive();
+        return currentSection.isSectionActive();
     }
 
     /**
@@ -119,7 +113,7 @@ public class CourseManager {
     
     public void addToActiveSection(Student student) {
     	addToSection(student);
-    	pidSectionDB.insert(student.getPersonalID(), currentSection.getNumber());
+    	pidSectionDB.insert(student.getPersonalID(), currentSection.getSectionNumber());
     }
     
     private void addToSection(Student student) {
@@ -138,7 +132,7 @@ public class CourseManager {
      */
     public Student findStudent(long personalID) {
     	clearStudentScorable();
-        Student student = currentSection.findStudent(personalID);
+        Student student = currentSection.find(personalID);
         if (student != null) {
         	setStudentScorable(student);
         }
@@ -147,7 +141,7 @@ public class CourseManager {
     
     public Student[] findStudents(FullName fullName) {
     	clearStudentScorable();
-        Student[] students = currentSection.findStudents(fullName);
+        Student[] students = currentSection.find(fullName);
         if (students.length == 1) {
             setStudentScorable(students[0]);
         }
@@ -156,7 +150,7 @@ public class CourseManager {
     
     public Student[] findStudents(String name) {
     	clearStudentScorable();
-        Student[] students = currentSection.findStudents(name);
+        Student[] students = currentSection.find(name);
         if (students.length == 1) {
             setStudentScorable(students[0]);
         }
@@ -182,8 +176,8 @@ public class CourseManager {
     public Student removeStudent(long personalID) {
     	clearStudentScorable();
         Integer sectionNumber = pidSectionDB.find(personalID);
-        if ((sectionNumber != null) && (sectionNumber == currentSection.getNumber())) {
-        	return currentSection.removeStudent(personalID);
+        if ((sectionNumber != null) && (sectionNumber == currentSection.getSectionNumber())) {
+        	return currentSection.remove(personalID);
         }
         return null;
     }
@@ -191,9 +185,9 @@ public class CourseManager {
     public Student removeStudent(FullName fullName) {
     	clearStudentScorable();
         Student student = null;
-        Student[] students = currentSection.findStudents(fullName);
+        Student[] students = currentSection.find(fullName);
         if (students.length == 1) { // Check if name unique
-        	student = currentSection.removeStudent(fullName);
+        	student = currentSection.remove(fullName);
         }
         return student;
     }
@@ -254,7 +248,7 @@ public class CourseManager {
         if (currentSection.isEmpty()) {
             currentSection.setActive(false);
             for (int i = 0; i < sections.length; i++) {
-                if (sections[i].isActive()) {
+                if (sections[i].isSectionActive()) {
                 	Student[] students = sections[i].getStudents();
                 	for (int j = 0; j < students.length; j++) {
                 		currentSection.insert(students[j]);
