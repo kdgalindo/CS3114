@@ -1,6 +1,6 @@
-package course;
+package course.enrollment.file;
 
-import data.CourseEnrollment;
+import course.enrollment.CourseEnrollment;
 
 /**
  * EnrollmentFile Class

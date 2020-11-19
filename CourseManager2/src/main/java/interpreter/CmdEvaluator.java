@@ -3,14 +3,13 @@ package interpreter;
 import java.util.ArrayList;
 
 import course.CourseManager;
-import course.EnrollmentFile;
+import course.enrollment.CourseEnrollment;
+import course.enrollment.file.EnrollmentFile;
+import course.section.SectionEnrollment;
 import data.*;
 import grade.Grade;
-import identity.FullName;
-import identity.Identity;
-import identity.IdentityFile;
-import identity.IdentityManager;
-import section.SectionEnrollment;
+import identity.*;
+import identity.file.IdentityFile;
 
 /**
  * CmdEvaluator Class

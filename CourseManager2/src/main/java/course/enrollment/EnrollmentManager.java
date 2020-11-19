@@ -1,4 +1,4 @@
-package course;
+package course.enrollment;
 
 import util.BST;
 

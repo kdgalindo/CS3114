@@ -1,6 +1,6 @@
-package data;
+package course.enrollment;
 
-import section.SectionEnrollment;
+import course.section.SectionEnrollment;
 
 public class CourseEnrollment {
 	private final SectionEnrollment[] sectionEnrollments;

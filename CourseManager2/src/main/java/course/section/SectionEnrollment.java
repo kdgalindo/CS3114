@@ -1,4 +1,4 @@
-package section;
+package course.section;
 
 import data.Student;
 

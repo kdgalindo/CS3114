@@ -1,4 +1,4 @@
-package section;
+package course.section;
 
 public class Section {
 	private final int number;

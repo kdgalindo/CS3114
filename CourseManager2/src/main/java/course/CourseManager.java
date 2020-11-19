@@ -2,9 +2,11 @@ package course;
 
 import java.util.ArrayList;
 
+import course.enrollment.CourseEnrollment;
+import course.enrollment.EnrollmentManager;
+import course.section.*;
 import data.*;
 import identity.FullName;
-import section.*;
 
 public class CourseManager {
 	private final int MAX_SECTION_NUM = 21;

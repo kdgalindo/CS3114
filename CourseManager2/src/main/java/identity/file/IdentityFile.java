@@ -1,4 +1,6 @@
-package identity;
+package identity.file;
+
+import identity.Identity;
 
 /**
  * IdentityFile Class
