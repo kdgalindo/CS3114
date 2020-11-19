@@ -1,5 +1,7 @@
 package data;
 
+import section.SectionEnrollment;
+
 public class CourseEnrollment {
 	private final SectionEnrollment[] sectionEnrollments;
 	

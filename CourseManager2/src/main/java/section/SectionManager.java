@@ -1,47 +1,35 @@
-package course;
+package section;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import data.FullName;
-import data.SectionEnrollment;
 import data.Student;
+import grade.*;
+import identity.FullName;
 import util.BST;
 
 public class SectionManager {
-    private int sectionNumber;
-    private boolean isSectionActive;
-    
+    private Section section;
     private BST<Long, Integer> idIndexDB;
     private BST<FullName, Integer> fnIndexDB;
     private BST<Integer, Integer> pgIndexDB;
     private ArrayList<Student> studentDB;
     
-    public SectionManager(int sectionNumber) {
-        this.sectionNumber = sectionNumber;
-        this.isSectionActive = true;
-        
+    public SectionManager(Section section) {
+        this.section = section;
     	idIndexDB = new BST<Long, Integer>();
         fnIndexDB = new BST<FullName, Integer>();
         pgIndexDB = new BST<Integer, Integer>();
         studentDB = new ArrayList<Student>();
     }
     
-    public int getSectionNumber() {
-        return sectionNumber;
-    }
-    
-    public boolean isSectionActive() {
-        return isSectionActive;
-    }
-    
-    public void setActive(boolean active) {
-        this.isSectionActive = active;
+    public Section getSection() {
+    	return section;
     }
     
     public boolean hasEnrollment() {
-    	return (isSectionActive && (idIndexDB.size() != 0));
+    	return section.isModifiable() && (idIndexDB.size() != 0);
     }
     
     public boolean isEmpty() {
@@ -52,15 +40,24 @@ public class SectionManager {
         return idIndexDB.size();
     }
     
+    /**
+     * 
+     * @param personalID
+     * @return
+     */
     public Student find(long personalID) {
     	Integer index = idIndexDB.find(personalID);
     	if (index == null) {
     		return null;
     	}
-    	
     	return studentDB.get(index);
     }
     
+    /**
+     * 
+     * @param fullName
+     * @return
+     */
     public Student[] find(FullName fullName) {
     	ArrayList<Student> students = new ArrayList<Student>();
     	for (Integer index : fnIndexDB.findAll(fullName)) {
@@ -69,12 +66,16 @@ public class SectionManager {
     	return students.toArray(new Student[students.size()]);
     }
     
+    /**
+     * 
+     * @param name
+     * @return
+     */
     public Student[] find(String name) {
         ArrayList<Student> students = new ArrayList<Student>();
         Iterator<Integer> it = fnIndexDB.iterator();
         while (it.hasNext()) {
-            int index = it.next();
-            Student student = studentDB.get(index);
+            Student student = studentDB.get(it.next());
             FullName fullName = student.getFullName();
             if (fullName.equalsPartOfIgnoreCase(name)) {
             	students.add(student);
@@ -83,12 +84,54 @@ public class SectionManager {
         return students.toArray(new Student[students.size()]);
     }
     
+    /**
+     * 
+     * @param student
+     */
     public void insert(Student student) {
     	int index = studentDB.size();
     	idIndexDB.insert(student.getPersonalID(), index);
     	fnIndexDB.insert(student.getFullName(), index);
     	pgIndexDB.insert(student.getPercentageGrade(), index);
     	studentDB.add(student);
+    }
+    
+    /**
+     * 
+     * @param personalID
+     * @param grade
+     * @return
+     */
+    public Student updateGrade(long personalID, Grade grade) {
+    	Integer index = idIndexDB.find(personalID);
+    	if (index == null) {
+    		return null;
+    	}
+    	
+    	Student student = studentDB.get(index);
+        pgIndexDB.remove(student.getPercentageGrade(), index);
+        pgIndexDB.insert(grade.getPercentage(), index);
+        Grader.setGrade(student, grade);
+        return student;
+    }
+    
+    /**
+     * 
+     * @param personalID
+     * @param pGrade
+     * @return
+     */
+    public Student updatePercentageGrade(long personalID, int pGrade) {
+    	Integer index = idIndexDB.find(personalID);
+    	if (index == null) {
+    		return null;
+    	}
+    	
+    	Student student = studentDB.get(index);
+        pgIndexDB.remove(student.getPercentageGrade(), index);
+        pgIndexDB.insert(pGrade, index);
+        Grader.setPercentageGrade(student, pGrade);
+        return student;
     }
     
     public Student remove(long personalID) {
@@ -114,23 +157,7 @@ public class SectionManager {
         fnIndexDB.clear();
         pgIndexDB.clear();
         // studentDB TODO
-        isSectionActive = true;
-    }
-    
-    public void setGrade(Student student) {
-    	int index = idIndexDB.find(student.getPersonalID());
-    	Student oldStudent = studentDB.get(index);
-        pgIndexDB.remove(oldStudent.getPercentageGrade(), index);
-        pgIndexDB.insert(student.getPercentageGrade(), index);
-        oldStudent.setGrade(student.getGrade());
-    }
-    
-    public void score(Student student, int percentageGrade) {
-    	int index = idIndexDB.find(student.getPersonalID());
-        pgIndexDB.remove(student.getPercentageGrade(), index);
-        pgIndexDB.insert(percentageGrade, index);
-        student.setPercentageGrade(percentageGrade);
-        studentDB.get(index).setGrade(student.getGrade());
+        section.setModifiable(true);
     }
     
     public void printStudentsByPersonalID() {
@@ -208,6 +235,6 @@ public class SectionManager {
     }
     
     public SectionEnrollment getEnrollment() {
-    	return new SectionEnrollment(sectionNumber, getStudents());
+    	return new SectionEnrollment(section.getNumber(), getStudents());
     }
 }

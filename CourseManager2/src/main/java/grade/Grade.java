@@ -1,4 +1,4 @@
-package data;
+package grade;
 
 /**
  * Student Class
@@ -24,7 +24,7 @@ public class Grade {
 		return percentage;
 	}
 	
-	public void setPercentage(int percentage) {
+	void setPercentage(int percentage) {
 		this.percentage = percentage;
 	}
 	
@@ -32,7 +32,7 @@ public class Grade {
 		return letter;
 	}
 	
-	public void setLetter(String letter) {
+	void setLetter(String letter) {
 		this.letter = letter;
 	}
 }

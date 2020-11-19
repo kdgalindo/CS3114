@@ -1,4 +1,6 @@
-package data;
+package section;
+
+import data.Student;
 
 public class SectionEnrollment {
 	private final int sectionNumber;

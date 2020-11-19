@@ -1,6 +1,4 @@
-package course;
-
-import data.Identity;
+package identity;
 
 /**
  * IdentityFile Class

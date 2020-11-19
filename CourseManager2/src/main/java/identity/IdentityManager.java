@@ -1,9 +1,8 @@
-package course;
+package identity;
 
 import java.util.Arrays;
 import java.util.Iterator;
 
-import data.Identity;
 import util.BST;
 
 /**

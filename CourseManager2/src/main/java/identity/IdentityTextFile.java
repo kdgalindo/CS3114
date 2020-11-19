@@ -1,11 +1,8 @@
-package course;
+package identity;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
-
-import data.FullName;
-import data.Identity;
 
 /**
  * IdentityTextFile Class

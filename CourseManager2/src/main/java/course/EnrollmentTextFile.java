@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import data.*;
+import grade.Grade;
+import identity.FullName;
+import identity.Identity;
+import section.SectionEnrollment;
 
 /**
  * EnrollmentTextFile Class

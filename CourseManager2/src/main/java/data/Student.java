@@ -1,5 +1,9 @@
 package data;
 
+import grade.Grade;
+import identity.FullName;
+import identity.Identity;
+
 /**
  * Student Class
  * 
@@ -8,7 +12,7 @@ package data;
  */
 public class Student implements Comparable<Student> {
     private final Identity identity;
-    private Grade grade;
+    private final Grade grade;
     private boolean isActive;
 
     public Student(Identity identity) {
@@ -51,24 +55,12 @@ public class Student implements Comparable<Student> {
     	return grade;
     }
     
-    public void setGrade(Grade grade) {
-    	this.grade = grade;
-    }
-    
     public int getPercentageGrade() {
     	return grade.getPercentage();
     }
     
-    public void setPercentageGrade(int percentage) {
-    	grade.setPercentage(percentage);
-    }
-    
     public String getLetterGrade() {
     	return grade.getLetter();
-    }
-    
-    public void setLetterGrade(String letter) {
-    	grade.setLetter(letter);
     }
     
     public boolean isActive() {

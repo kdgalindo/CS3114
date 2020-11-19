@@ -2,94 +2,92 @@ package course;
 
 import java.util.ArrayList;
 
-import data.CourseEnrollment;
-import data.FullName;
-import data.SectionEnrollment;
-import data.Student;
-import util.BST;
+import data.*;
+import identity.FullName;
+import section.*;
 
 public class CourseManager {
-	private final int MAX_SECTION_NUMBER = 21;
-    private SectionManager[] sections;
-    private SectionManager currentSection;
+	private final int MAX_SECTION_NUM = 21;
+    private SectionManager[] sManagers;
+    private SectionManager sManager;
+    private EnrollmentManager eManager;
     private Student currentStudent;
     private boolean studentScorable;
-    private BST<Long, Integer> pidSectionDB;
 
     public CourseManager() {
-        sections = new SectionManager[MAX_SECTION_NUMBER];
-        for (int i = 0; i < MAX_SECTION_NUMBER; i++) {
-        	int sectionNumber = i + 1;
-            sections[i] = new SectionManager(sectionNumber);
+        sManagers = new SectionManager[MAX_SECTION_NUM];
+        for (int i = 0; i < sManagers.length; ++i) {
+            sManagers[i] = new SectionManager(new Section(i + 1));
         }
-        currentSection = sections[0];
+        sManager = sManagers[0];
+        eManager = new EnrollmentManager();
         currentStudent = null;
         studentScorable = false;
-        pidSectionDB = new BST<Long, Integer>();
-    }
-
-    public int getSectionNumber() {
-        return currentSection.getSectionNumber();
     }
     
-    public boolean isSectionActive() {
-        return currentSection.isSectionActive();
-    }
-
-    /**
-     * Grade command cannot come after
-     * load student data command
-     */
-    public void loadstudentdata() {
-    	clearStudentScorable();
+    public Section getCommandableSection() {
+    	return sManager.getSection();
     }
     
-    private void clearStudentScorable() {
-    	studentScorable = false;
-    }
-    
-    public Student loadCourseData(int sectionNumber, Student newStudent) {
-    	clearStudentScorable();
-        Student student = null;
-        long personalID = newStudent.getPersonalID(); // student pid
-        Integer cSectionNumber = findStudentSection(personalID); // current section number
-        if (cSectionNumber == null) { // Check if in section
-        	student = newStudent;
-        	addToActiveSection(student, sectionNumber);
-        }
-        else if (cSectionNumber == sectionNumber) { // Check if in current section
-        	student = newStudent;
-            sections[sectionNumber - 1].setGrade(student);
-        }
-        return student;
-    }
-    
-    public Integer findStudentSection(long personalID) {
-        return pidSectionDB.find(personalID);
-    }
-    
-    private void addToActiveSection(Student student, int sectionNumber) {
-    	addToSection(student, sectionNumber);
-    	pidSectionDB.insert(student.getPersonalID(), sectionNumber);
-    }
-    
-    private void addToSection(Student student, int sectionNumber) {
-    	sections[sectionNumber - 1].insert(student);
-    }
-
     /**
      * 
      * @param sectionNumber
      */
-    public void setSection(int sectionNumber) {
+    public void setCommandableSection(int sectionNum) {
     	clearStudentScorable();
-        if (isValidSection(sectionNumber)) {
-        	currentSection = sections[sectionNumber - 1];
+        if (isValidSectionNum(sectionNum)) {
+        	sManager = sManagers[sectionNum - 1];
         }
     }
     
-    public boolean isValidSection(int sectionNumber) {
-    	return ((sectionNumber > 0) && (sectionNumber < MAX_SECTION_NUMBER + 1));
+    public void clearStudentScorable() {
+    	studentScorable = false;
+    }
+    
+    public boolean isValidSectionNum(int sectionNum) {
+    	return (sectionNum > 0) && (sectionNum < MAX_SECTION_NUM + 1);
+    }
+    
+    /**
+     * 
+     * @param personalID
+     * @return
+     */
+    public Student find(long personalID) {
+    	clearStudentScorable();
+        Student student = sManager.find(personalID);
+        if (student != null) {
+        	setStudentScorable(student);
+        }
+        return student;
+    }
+    
+    /**
+     * 
+     * @param fullName
+     * @return
+     */
+    public Student[] find(FullName fullName) {
+    	clearStudentScorable();
+        Student[] students = sManager.find(fullName);
+        if (students.length == 1) {
+            setStudentScorable(students[0]);
+        }
+        return students;
+    }
+    
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public Student[] find(String name) {
+    	clearStudentScorable();
+        Student[] students = sManager.find(name);
+        if (students.length == 1) {
+            setStudentScorable(students[0]);
+        }
+        return students;
     }
     
     /**
@@ -99,25 +97,22 @@ public class CourseManager {
      */
     public Student insert(Student student) {
     	clearStudentScorable();
-        if (!isStudentEnrolled(student.getPersonalID())) {
-        	addToActiveSection(student);
-            setStudentScorable(student);
-            return student;
+        if (eManager.isEnrolled(student.getPersonalID())) {
+        	return null;
         }
-        return null;
+        
+        insertIntoModifiableSection(student);
+        setStudentScorable(student);
+        return student;
     }
     
-    private boolean isStudentEnrolled(long personalID) {
-    	return (findStudentSection(personalID) != null);
+    private void insertIntoModifiableSection(Student student) {
+    	sManager.insert(student);
+    	eManager.enroll(student.getPersonalID(), getCommandableSection().getNumber());
     }
     
-    public void addToActiveSection(Student student) {
-    	addToSection(student);
-    	pidSectionDB.insert(student.getPersonalID(), currentSection.getSectionNumber());
-    }
-    
-    private void addToSection(Student student) {
-    	currentSection.insert(student);
+    public int getSectionNum(Section section) {
+    	return section.getNumber();
     }
     
     private void setStudentScorable(Student student) {
@@ -127,39 +122,46 @@ public class CourseManager {
     
     /**
      * 
-     * @param personalID
+     * @param student
+     * @param sectionNum
      * @return
      */
-    public Student findStudent(long personalID) {
+    public Student insert(Student student, int sectionNum) {
     	clearStudentScorable();
-        Student student = currentSection.find(personalID);
-        if (student != null) {
-        	setStudentScorable(student);
+        Integer eSectionNum = eManager.findEnrollment(student.getPersonalID());
+        if (eSectionNum == null) {
+        	insertIntoModifiableSection(student, sectionNum);
+        }
+        else if (eSectionNum == sectionNum) {
+        	updateInModifiableSection(student, sectionNum);
+        }
+        else {
+        	return null;
         }
         return student;
     }
     
-    public Student[] findStudents(FullName fullName) {
-    	clearStudentScorable();
-        Student[] students = currentSection.find(fullName);
-        if (students.length == 1) {
-            setStudentScorable(students[0]);
-        }
-        return students;
+    public Integer findEnrollment(long personalID) {
+    	return eManager.findEnrollment(personalID);
     }
     
-    public Student[] findStudents(String name) {
-    	clearStudentScorable();
-        Student[] students = currentSection.find(name);
-        if (students.length == 1) {
-            setStudentScorable(students[0]);
-        }
-        return students;
+    private void insertIntoModifiableSection(Student student, int sectionNum) {
+    	sManagers[sectionNum - 1].insert(student);
+    	eManager.enroll(student.getPersonalID(), sectionNum);
     }
     
+    private void updateInModifiableSection(Student student, int sectionNum) {
+    	sManagers[sectionNum - 1].updateGrade(student.getPersonalID(), student.getGrade());
+    }
+    
+    /**
+     * 
+     * @param percentageGrade
+     * @return
+     */
     public Student scoreStudent(int percentageGrade) {
         if (isStudentScorable()) {
-        	currentSection.score(currentStudent, percentageGrade);
+        	sManager.updatePercentageGrade(currentStudent.getPersonalID(), percentageGrade);
         }
         clearStudentScorable();
         return currentStudent;
@@ -170,34 +172,45 @@ public class CourseManager {
     }
     
     public static boolean isValidPercentageGrade(int percentageGrade) {
-    	return ((percentageGrade > -1) && (percentageGrade < 101));
+    	return (percentageGrade > -1) && (percentageGrade < 101);
     }
     
-    public Student removeStudent(long personalID) {
+    /**
+     * 
+     * @param personalID
+     * @return
+     */
+    public Student remove(long personalID) {
     	clearStudentScorable();
-        Integer sectionNumber = pidSectionDB.find(personalID);
-        if ((sectionNumber != null) && (sectionNumber == currentSection.getSectionNumber())) {
-        	return currentSection.remove(personalID);
+        Integer eSectionNum = eManager.findEnrollment(personalID);
+        if ((eSectionNum == null) || (eSectionNum != getCommandableSection().getNumber())) {
+        	return null;
         }
-        return null;
+        
+        return sManager.remove(personalID);
     }
     
-    public Student removeStudent(FullName fullName) {
+    /**
+     * 
+     * @param fullName
+     * @return
+     */
+    public Student remove(FullName fullName) {
     	clearStudentScorable();
-        Student student = null;
-        Student[] students = currentSection.find(fullName);
-        if (students.length == 1) { // Check if name unique
-        	student = currentSection.remove(fullName);
+        Student[] students = sManager.find(fullName);
+        if (students.length != 1) {
+        	return null;
         }
-        return student;
+        
+        return sManager.remove(fullName);
     }
 
     /**
      * 
      */
-    public void clearSection() {
+    public void clear() {
     	clearStudentScorable();
-        currentSection.clear();
+        sManager.clear();
     }
     
     /**
@@ -206,52 +219,52 @@ public class CourseManager {
      */
     public int dumpPIDs() {
     	clearStudentScorable();
-    	currentSection.printStudentsByPersonalID();
-        return currentSection.size();
+    	sManager.printStudentsByPersonalID();
+        return sManager.size();
     }
     
     public int dumpNames() {
     	clearStudentScorable();
-    	currentSection.printStudentsByFullName();
-        return currentSection.size();
+    	sManager.printStudentsByFullName();
+        return sManager.size();
     }
     
     public int dumpScores() {
     	clearStudentScorable();
-    	currentSection.printStudentsByPercentageGrade();
-        return currentSection.size();
+    	sManager.printStudentsByPercentageGrade();
+        return sManager.size();
     }
     
     public void gradeStudents() {
         clearStudentScorable();
-        currentSection.gradeAllStudents();
+        sManager.gradeAllStudents();
     }
     
     public void statStudents() {
         clearStudentScorable();
-        currentSection.statAllStudents();
+        sManager.statAllStudents();
     }
     
     public Student[] listStudents(String letter) {
     	clearStudentScorable();
-        return currentSection.listAllStudents(letter);
+        return sManager.listAllStudents(letter);
     }
     
     public ArrayList<String> findpair(int scorePercentageDiff) {
     	clearStudentScorable();
-    	return currentSection.findStudentPairs(scorePercentageDiff);
+    	return sManager.findStudentPairs(scorePercentageDiff);
     }
     
     public boolean mergeSections() {
         clearStudentScorable();
         boolean result = false;
-        if (currentSection.isEmpty()) {
-            currentSection.setActive(false);
-            for (int i = 0; i < sections.length; i++) {
-                if (sections[i].isSectionActive()) {
-                	Student[] students = sections[i].getStudents();
+        if (sManager.isEmpty()) {
+            setUnmodifiable(sManager.getSection());
+            for (int i = 0; i < sManagers.length; i++) {
+                if (isModifiable(sManagers[i].getSection())) {
+                	Student[] students = sManagers[i].getStudents();
                 	for (int j = 0; j < students.length; j++) {
-                		currentSection.insert(students[j]);
+                		sManager.insert(students[j]);
                 	}
                 }
             }
@@ -260,18 +273,26 @@ public class CourseManager {
         return result;
     }
     
+    private void setUnmodifiable(Section section) {
+    	section.setModifiable(false);
+    }
+    
+    public boolean isModifiable(Section section) {
+    	return section.isModifiable();
+    }
+    
     public CourseEnrollment getEnrollment() {
     	int size = getNumberOfActiveSections();
     	SectionEnrollment[] sEnrollments = new SectionEnrollment[size];
     	for (int i = 0; i < sEnrollments.length; ++i) {
-    		sEnrollments[i] = sections[i].getEnrollment();
+    		sEnrollments[i] = sManagers[i].getEnrollment();
     	}
     	return new CourseEnrollment(sEnrollments);
     }
     
     private int getNumberOfActiveSections() {
     	int i = 0;
-    	while ((i < sections.length) && sections[i].hasEnrollment()) {
+    	while ((i < sManagers.length) && sManagers[i].hasEnrollment()) {
     		++i;
     	}
     	return i;
@@ -284,8 +305,8 @@ public class CourseManager {
     public void clearcoursedata() {
         clearStudentScorable();
         for (int i = 0; i < 21; i++) {
-            sections[i].clear();
+            sManagers[i].clear();
         }
-        pidSectionDB.clear();
+        eManager.clear();
     }
 }

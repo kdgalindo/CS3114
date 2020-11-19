@@ -1,4 +1,4 @@
-package data;
+package identity;
 
 public class Identity implements Comparable<Identity> {
 	private final long personalID;

@@ -1,10 +1,7 @@
-package course;
+package identity;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
-
-import data.FullName;
-import data.Identity;
 
 /**
  * IdentityBinaryFile Class
