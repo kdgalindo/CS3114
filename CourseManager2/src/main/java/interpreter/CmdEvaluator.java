@@ -1,15 +1,15 @@
 package interpreter;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import course.CourseManager;
 import course.enrollment.CourseEnrollment;
 import course.enrollment.file.EnrollmentFile;
 import course.section.SectionEnrollment;
-import data.*;
-import grade.Grade;
+import grade.*;
 import identity.*;
 import identity.file.IdentityFile;
+import student.*;
 
 /**
  * CmdEvaluator Class
@@ -169,13 +169,13 @@ public class CmdEvaluator {
         
         FullName fullName = new FullName(firstName, lastName);
         System.out.println("search results for " + fullName + ":");
-        Student[] students = cManager.find(fullName);
-        for (int i = 0; i < students.length; i++) {
-            System.out.println(students[i]);
+        List<Student> students = cManager.find(fullName);
+        for (Student student : students) {
+            System.out.println(student);
         }
         System.out.println(fullName
         		+ " was found in "
-        		+ students.length
+        		+ students.size()
         		+ " records in section "
         		+ cManager.getSectionNum(cManager.getCommandableSection()));
     }
@@ -187,13 +187,13 @@ public class CmdEvaluator {
         }
         
         System.out.println("search results for " + name + ":");
-        Student[] students = cManager.find(name);
-        for (int i = 0; i < students.length; i++) {
-            System.out.println(students[i]);
+        List<Student> students = cManager.find(name);
+        for (Student student : students) {
+            System.out.println(student);
         }
         System.out.println(name
         		+ " was found in "
-        		+ students.length
+        		+ students.size()
         		+ " records in section "
         		+ cManager.getSectionNum(cManager.getCommandableSection()));
     }
@@ -210,7 +210,7 @@ public class CmdEvaluator {
             return;
         }
         
-        if (!CourseManager.isValidPercentageGrade(percentageGrade)) {
+        if (!Grader.isValidPercentageGrade(percentageGrade)) {
             System.out.println("Scores have to be integers in range 0 to 100.");
             return;
         }
@@ -292,33 +292,35 @@ public class CmdEvaluator {
     
     public void grade() {
         cManager.gradeStudents();
+        System.out.println("grading completed");
     }
     
     public void stat() {
         System.out.println("Statistics of section "
         		+ cManager.getSectionNum(cManager.getCommandableSection())
         		+ ":");
-        cManager.statStudents();
+        for (String s : cManager.statStudents()) { // TODO
+        	System.out.println(s);
+        }
     }
     
     public void list(String letter) {
         System.out.println("Students with grade " + letter + " are:");
-        Student[] students = cManager.listStudents(letter);
-        for (int i = 0; i < students.length; i++) {
-            Student student = students[i];
+        List<Student> students = cManager.listStudents(letter);
+        for (Student student : students) {
             System.out.println(student
             		+ ", grade = "
             		+ student.getLetterGrade());
         }
         System.out.println("Found "
-        		+ students.length
+        		+ students.size()
         		+ " students");
     }
 
     public void findPair(int percentageDiff) {
         System.out.println("Students with score difference less than or equal "
         		+ percentageDiff + ":");
-        ArrayList<String> strings = cManager.findpair(percentageDiff);
+        List<String> strings = cManager.findpair(percentageDiff);
         for (int i = 0; i < strings.size(); i++) {
             System.out.println(strings.get(i));
         }

@@ -6,10 +6,10 @@ import java.util.Scanner;
 
 import course.enrollment.CourseEnrollment;
 import course.section.SectionEnrollment;
-import data.*;
 import grade.Grade;
 import identity.FullName;
 import identity.Identity;
+import student.*;
 
 /**
  * EnrollmentTextFile Class

@@ -1,13 +1,18 @@
 package course;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import course.enrollment.CourseEnrollment;
-import course.enrollment.EnrollmentManager;
+import course.enrollment.*;
 import course.section.*;
-import data.*;
 import identity.FullName;
+import student.*;
 
+/** 
+ * CourseManager Class
+ *
+ * @author kyleg997 Kyle Galindo
+ * @version 2020-12-08
+ */
 public class CourseManager {
 	private final int MAX_SECTION_NUM = 21;
     private SectionManager[] sManagers;
@@ -27,6 +32,10 @@ public class CourseManager {
         studentScorable = false;
     }
     
+    /**
+     * 
+     * @return
+     */
     public Section getCommandableSection() {
     	return sManager.getSection();
     }
@@ -42,10 +51,15 @@ public class CourseManager {
         }
     }
     
-    public void clearStudentScorable() {
+    public void clearStudentScorable() { // TODO
     	studentScorable = false;
     }
     
+    /**
+     * 
+     * @param sectionNum
+     * @return
+     */
     public boolean isValidSectionNum(int sectionNum) {
     	return (sectionNum > 0) && (sectionNum < MAX_SECTION_NUM + 1);
     }
@@ -69,11 +83,11 @@ public class CourseManager {
      * @param fullName
      * @return
      */
-    public Student[] find(FullName fullName) {
+    public List<Student> find(FullName fullName) {
     	clearStudentScorable();
-        Student[] students = sManager.find(fullName);
-        if (students.length == 1) {
-            setStudentScorable(students[0]);
+        List<Student> students = sManager.find(fullName);
+        if (students.size() == 1) {
+            setStudentScorable(students.get(0));
         }
         return students;
     }
@@ -83,11 +97,11 @@ public class CourseManager {
      * @param name
      * @return
      */
-    public Student[] find(String name) {
+    public List<Student> find(String name) {
     	clearStudentScorable();
-        Student[] students = sManager.find(name);
-        if (students.length == 1) {
-            setStudentScorable(students[0]);
+    	List<Student> students = sManager.find(name);
+        if (students.size() == 1) {
+            setStudentScorable(students.get(0));
         }
         return students;
     }
@@ -117,7 +131,7 @@ public class CourseManager {
     	return section.getNumber();
     }
     
-    private void setStudentScorable(Student student) {
+    private void setStudentScorable(Student student) { // TODO
     	currentStudent = student;
     	studentScorable = true;
     }
@@ -173,10 +187,6 @@ public class CourseManager {
     	return studentScorable;
     }
     
-    public static boolean isValidPercentageGrade(int percentageGrade) {
-    	return (percentageGrade > -1) && (percentageGrade < 101);
-    }
-    
     /**
      * 
      * @param personalID
@@ -199,10 +209,6 @@ public class CourseManager {
      */
     public Student remove(FullName fullName) {
     	clearStudentScorable();
-        Student[] students = sManager.find(fullName);
-        if (students.length != 1) {
-        	return null;
-        }
         
         return sManager.remove(fullName);
     }
@@ -239,25 +245,39 @@ public class CourseManager {
     
     public void gradeStudents() {
         clearStudentScorable();
-        sManager.gradeAllStudents();
+        sManager.updateGrades();
     }
     
-    public void statStudents() {
+    /**
+     * 
+     * @return
+     */
+    public List<String> statStudents() {
         clearStudentScorable();
-        sManager.statAllStudents();
+        return sManager.listGradeLevelStats();
     }
     
-    public Student[] listStudents(String letter) {
+    /**
+     * 
+     * @param lGradeLevel
+     * @return
+     */
+    public List<Student> listStudents(String lGradeLevel) {
     	clearStudentScorable();
-        return sManager.listAllStudents(letter);
+        return sManager.listStudentsIn(lGradeLevel);
     }
     
-    public ArrayList<String> findpair(int scorePercentageDiff) {
+    /**
+     * 
+     * @param pGradeDiff
+     * @return
+     */
+    public List<String> findpair(int pGradeDiff) {
     	clearStudentScorable();
-    	return sManager.findStudentPairs(scorePercentageDiff);
+    	return sManager.listStudentPairsWithin(pGradeDiff);
     }
     
-    public boolean mergeSections() {
+    public boolean mergeSections() { // TODO
         clearStudentScorable();
         boolean result = false;
         if (sManager.isEmpty()) {

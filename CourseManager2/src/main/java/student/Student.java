@@ -1,4 +1,4 @@
-package data;
+package student;
 
 import grade.Grade;
 import identity.FullName;

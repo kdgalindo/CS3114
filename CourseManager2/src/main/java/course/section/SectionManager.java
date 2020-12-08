@@ -3,67 +3,90 @@ package course.section;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
-import data.Student;
 import grade.*;
 import identity.FullName;
+import student.Student;
 import util.BST;
 
+/** 
+ * SectionManager Class
+ *
+ * @author kyleg997 Kyle Galindo
+ * @version 2020-12-08
+ */
 public class SectionManager {
     private Section section;
-    private BST<Long, Integer> idIndexDB;
-    private BST<FullName, Integer> fnIndexDB;
-    private BST<Integer, Integer> pgIndexDB;
-    private ArrayList<Student> studentDB;
+    private BST<Long, Integer> idIndexDb;
+    private BST<FullName, Integer> fnIndexDb;
+    private BST<Integer, Integer> pgIndexDb;
+    private ArrayList<Student> studentDb;
     
     public SectionManager(Section section) {
         this.section = section;
-    	idIndexDB = new BST<Long, Integer>();
-        fnIndexDB = new BST<FullName, Integer>();
-        pgIndexDB = new BST<Integer, Integer>();
-        studentDB = new ArrayList<Student>();
+    	idIndexDb = new BST<Long, Integer>();
+        fnIndexDb = new BST<FullName, Integer>();
+        pgIndexDb = new BST<Integer, Integer>();
+        studentDb = new ArrayList<Student>();
     }
     
     public Section getSection() {
     	return section;
     }
     
-    public boolean hasEnrollment() {
-    	return section.isModifiable() && (idIndexDB.size() != 0);
+    public SectionEnrollment getEnrollment() {
+    	return new SectionEnrollment(section.getNumber(), getStudents());
+    }
+    
+    public Student[] getStudents() { // TODO
+		Student[] students = new Student[idIndexDb.size()];
+		Arrays.fill(students, null);
+		Iterator<Integer> it = idIndexDb.iterator();
+		int i = 0;
+		while (it.hasNext()) {
+			students[i++] = studentDb.get(it.next());
+		}
+		return students;
+    }
+    
+    public boolean hasEnrollment() { // TODO
+    	return section.isModifiable() && (idIndexDb.size() != 0);
     }
     
     public boolean isEmpty() {
-        return idIndexDB.size() == 0;
+        return idIndexDb.size() == 0;
     }
     
     public int size() {
-        return idIndexDB.size();
+        return idIndexDb.size();
     }
     
     /**
      * 
-     * @param personalID
+     * @param personalID Student PID
      * @return
      */
     public Student find(long personalID) {
-    	Integer index = idIndexDB.find(personalID);
+    	Integer index = idIndexDb.find(personalID);
     	if (index == null) {
     		return null;
     	}
-    	return studentDB.get(index);
+    	
+    	return studentDb.get(index);
     }
     
     /**
      * 
-     * @param fullName
+     * @param fullName Student full name
      * @return
      */
-    public Student[] find(FullName fullName) {
-    	ArrayList<Student> students = new ArrayList<Student>();
-    	for (Integer index : fnIndexDB.findAll(fullName)) {
-    		students.add(studentDB.get(index));
+    public List<Student> find(FullName fullName) {
+    	List<Student> students = new ArrayList<Student>();
+    	for (Integer index : fnIndexDb.findAll(fullName)) {
+    		students.add(studentDb.get(index));
     	}
-    	return students.toArray(new Student[students.size()]);
+    	return students;
     }
     
     /**
@@ -71,48 +94,66 @@ public class SectionManager {
      * @param name
      * @return
      */
-    public Student[] find(String name) {
-        ArrayList<Student> students = new ArrayList<Student>();
-        Iterator<Integer> it = fnIndexDB.iterator();
-        while (it.hasNext()) {
-            Student student = studentDB.get(it.next());
+    public List<Student> find(String name) {
+        List<Student> students = new ArrayList<Student>();
+        for (Iterator<Integer> i = fnIndexDb.iterator(); i.hasNext();) {
+            Student student = studentDb.get(i.next());
             FullName fullName = student.getFullName();
-            if (fullName.equalsPartOfIgnoreCase(name)) {
+            if (fullName.equalsPartOfIgnoreCase(name)) { // TODO
             	students.add(student);
             }
         }
-        return students.toArray(new Student[students.size()]);
+        return students;
     }
     
     /**
      * 
-     * @param student
+     * @param student Student
      */
     public void insert(Student student) {
-    	int index = studentDB.size();
-    	idIndexDB.insert(student.getPersonalID(), index);
-    	fnIndexDB.insert(student.getFullName(), index);
-    	pgIndexDB.insert(student.getPercentageGrade(), index);
-    	studentDB.add(student);
+    	int index = studentDb.size();
+    	idIndexDb.insert(student.getPersonalID(), index);
+    	fnIndexDb.insert(student.getFullName(), index);
+    	pgIndexDb.insert(student.getPercentageGrade(), index);
+    	studentDb.add(student);
     }
     
     /**
      * 
-     * @param personalID
+     * @param personalID Student PID
      * @param grade
      * @return
      */
     public Student updateGrade(long personalID, Grade grade) {
-    	Integer index = idIndexDB.find(personalID);
+    	Integer index = idIndexDb.find(personalID);
     	if (index == null) {
     		return null;
     	}
     	
-    	Student student = studentDB.get(index);
-        pgIndexDB.remove(student.getPercentageGrade(), index);
-        pgIndexDB.insert(grade.getPercentage(), index);
+    	Student student = studentDb.get(index);
+        pgIndexDb.remove(student.getPercentageGrade(), index);
+        pgIndexDb.insert(grade.getPercentage(), index);
         Grader.setGrade(student, grade);
         return student;
+    }
+    
+    /**
+     * 
+     */
+    public void updateGrades() {
+    	for (Student student : getActiveStudents()) {
+    		Grader.setLetterGrade(student);
+    	}
+    }
+    
+    private List<Student> getActiveStudents() {
+    	List<Student> students = new ArrayList<Student>();
+    	for (Student student : studentDb) {
+    		if (student.isActive()) {
+    			students.add(student);
+    		}
+    	}
+    	return students;
     }
     
     /**
@@ -122,119 +163,134 @@ public class SectionManager {
      * @return
      */
     public Student updatePercentageGrade(long personalID, int pGrade) {
-    	Integer index = idIndexDB.find(personalID);
+    	Integer index = idIndexDb.find(personalID);
     	if (index == null) {
     		return null;
     	}
     	
-    	Student student = studentDB.get(index);
-        pgIndexDB.remove(student.getPercentageGrade(), index);
-        pgIndexDB.insert(pGrade, index);
+    	Student student = studentDb.get(index);
+        pgIndexDb.remove(student.getPercentageGrade(), index);
+        pgIndexDb.insert(pGrade, index);
         Grader.setPercentageGrade(student, pGrade);
         return student;
     }
     
+    /**
+     * 
+     * @param personalID
+     * @return
+     */
     public Student remove(long personalID) {
-        int index = idIndexDB.remove(personalID);
-        Student student = studentDB.get(index);
-        fnIndexDB.remove(student.getFullName(), index);
-        pgIndexDB.remove(student.getPercentageGrade(), index);
+        Integer index = idIndexDb.remove(personalID);
+        if (index == null) {
+        	return null;
+        }
+        
+        Student student = studentDb.get(index);
+        fnIndexDb.remove(student.getFullName(), index);
+        pgIndexDb.remove(student.getPercentageGrade(), index);
         student.clrActive();
         return student;
     }
     
+    /**
+     * 
+     * @param fullName
+     * @return
+     */
     public Student remove(FullName fullName) {
-        int index = fnIndexDB.remove(fullName);
-        Student student = studentDB.get(index);
-        idIndexDB.remove(student.getPersonalID());
-        pgIndexDB.remove(student.getPercentageGrade(), index);
+    	List<Student> students = find(fullName);
+    	if (students.size() != 1) {
+    		return null;
+    	}
+    	
+        Integer index = fnIndexDb.remove(fullName);
+        
+        Student student = studentDb.get(index);
+        idIndexDb.remove(student.getPersonalID());
+        pgIndexDb.remove(student.getPercentageGrade(), index);
         student.clrActive();
         return student;
     }
     
+    /**
+     * 
+     */
     public void clear() {
-    	idIndexDB.clear();
-        fnIndexDB.clear();
-        pgIndexDB.clear();
-        // studentDB TODO
+    	idIndexDb.clear();
+        fnIndexDb.clear();
+        pgIndexDb.clear();
+        // studentDb TODO
         section.setModifiable(true);
     }
     
     public void printStudentsByPersonalID() {
-    	printStudents(idIndexDB.iterator());
+    	printStudents(idIndexDb.iterator());
     }
     
     public void printStudentsByFullName() {
-    	printStudents(fnIndexDB.iterator());
+    	printStudents(fnIndexDb.iterator());
     }
     
     public void printStudentsByPercentageGrade() {
-    	printStudents(pgIndexDB.iterator());
+    	printStudents(pgIndexDb.iterator());
     }
     
-    public void printStudents(Iterator<Integer> it) {
-    	while (it.hasNext()) {
-    		System.out.println(studentDB.get(it.next()));
+    public void printStudents(Iterator<Integer> i) {
+    	while (i.hasNext()) {
+    		System.out.println(studentDb.get(i.next()));
     	}
     }
     
-    public void gradeAllStudents() {
-    	Grader.gradeStudents(getStudents());
+    /**
+     * 
+     * @return
+     */
+    public List<String> listGradeLevelStats() {
+    	return Grader.listGradeLevelStats(getActiveStudents());
     }
     
-    public Student[] getStudents() {
-		Student[] students = new Student[idIndexDB.size()];
-		Arrays.fill(students, null);
-		Iterator<Integer> it = idIndexDB.iterator();
-		int i = 0;
-		while (it.hasNext()) {
-			students[i++] = studentDB.get(it.next());
-		}
-		return students;
-    }
-    
-    public void statAllStudents() {
-    	Grader.statStudents(getStudents());
-    }
-    
-    public Student[] listAllStudents(String letter) {
-        ArrayList<Student> students = new ArrayList<Student>();
-        int lower = Grader.getPercentageGradeLowerBound(letter);
-        int upper = Grader.getPercentageGradeUpperBound(letter);
-        for (Integer index : pgIndexDB.findRange(lower, upper)) {
-        	students.add(studentDB.get(index));
+    /**
+     * 
+     * @param lGradeLevel Letter grade level
+     * @return
+     */
+    public List<Student> listStudentsIn(String lGradeLevel) {
+        List<Student> students = new ArrayList<Student>();
+        int lower = Grader.getPercentageGradeLB(lGradeLevel);
+        int upper = Grader.getPercentageGradeUB(lGradeLevel);
+        for (Integer index : pgIndexDb.findRange(lower, upper)) {
+        	students.add(studentDb.get(index));
         }
-        return students.toArray(new Student[students.size()]);
+        return students;
     }
     
-    public ArrayList<String> findStudentPairs(int scorePercentageDiff) {
-        ArrayList<String> studentPairsWithinDiff = new ArrayList<String>();
-        int studentsToSkip = 0;
-        Iterator<Integer> itOuter = pgIndexDB.iterator();
-        while (itOuter.hasNext()) {
-        	Student first = studentDB.get(itOuter.next());
-        	Iterator<Integer> itInner = pgIndexDB.iterator();
-            skipStudents(itInner, ++studentsToSkip);
-            while (itInner.hasNext()) {
-            	Student second = studentDB.get(itInner.next());
+    /**
+     * 
+     * @param pGradeDiff
+     * @return
+     */
+    public List<String> listStudentPairsWithin(int pGradeDiff) {
+        List<String> pairsWithinDiff = new ArrayList<String>();
+        int i = 0;
+        for (Iterator<Integer> j = pgIndexDb.iterator(); j.hasNext();) {
+        	Student first = studentDb.get(j.next());
+        	for (Iterator<Integer> k = initPGIndexDbIterator(++i); k.hasNext();) {
+            	Student second = studentDb.get(k.next());
             	int diff = Math.abs(first.getPercentageGrade() - second.getPercentageGrade());
-                if (diff <= scorePercentageDiff) {
-                	studentPairsWithinDiff.add(first.getFullName() + ", " + second.getFullName());
+                if (diff <= pGradeDiff) {
+                	pairsWithinDiff.add(first.getFullName() + ", " + second.getFullName());
                 }
             }
         }
-        return studentPairsWithinDiff;
+        return pairsWithinDiff;
     }
     
-    private void skipStudents(Iterator<Integer> it, int studentsToSkip) {
-    	for (int i = 0; i < studentsToSkip; i++) {
-    		if (it.hasNext()) {
-    			it.next();
-    		}
+    private Iterator<Integer> initPGIndexDbIterator(int pos) {
+    	Iterator<Integer> i = pgIndexDb.iterator();
+    	for (int j = 0; (j < pos) && i.hasNext(); ++j) {
+    		i.next();
     	}
-    }
-    
-    public SectionEnrollment getEnrollment() {
-    	return new SectionEnrollment(section.getNumber(), getStudents());
+    	return i;
     }
 }

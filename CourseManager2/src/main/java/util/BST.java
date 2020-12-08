@@ -122,6 +122,23 @@ public class BST<K extends Comparable<? super K>, V extends Comparable<? super V
 		return sRoot;
 	}
 	
+    private BSTNode min(BSTNode sRoot) {
+        if (sRoot.left == null) {
+            return sRoot;
+        }
+        else {
+        	return min(sRoot.left);
+        }
+    }
+    
+    private BSTNode deleteMin(BSTNode sRoot) {
+        if (sRoot.left == null) {
+            return sRoot.right;
+        }
+        sRoot.left = deleteMin(sRoot.left);
+        return sRoot;
+    }
+	
 	public V remove(K key, V value) {
 		V oValue = find(key, value, root);
 		if (oValue == null) {
@@ -190,23 +207,6 @@ public class BST<K extends Comparable<? super K>, V extends Comparable<? super V
 		}
 		return sRoot;
 	}
-	
-    private BSTNode min(BSTNode sRoot) {
-        if (sRoot.left == null) {
-            return sRoot;
-        }
-        else {
-        	return min(sRoot.left);
-        }
-    }
-    
-    private BSTNode deleteMin(BSTNode sRoot) {
-        if (sRoot.left == null) {
-            return sRoot.right;
-        }
-        sRoot.left = deleteMin(sRoot.left);
-        return sRoot;
-    }
 	
 	public void clear() {
 		root = null;

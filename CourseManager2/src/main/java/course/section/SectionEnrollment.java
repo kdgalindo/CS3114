@@ -1,6 +1,6 @@
 package course.section;
 
-import data.Student;
+import student.Student;
 
 public class SectionEnrollment {
 	private final int sectionNumber;

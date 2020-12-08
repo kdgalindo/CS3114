@@ -1,10 +1,10 @@
 package grade;
 
 /**
- * Student Class
+ * Grade Class
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-19
+ * @version 2020-12-07
  */
 public class Grade {
 	private int percentage;
