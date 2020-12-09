@@ -3,8 +3,15 @@ package grade;
 /**
  * Grade Class
  * 
+ * Grades have a percentage grade and a letter grade. Grades can only be
+ * modified by the grader.
+ * 
+ * TODO Create default percentage and letter constants for the default 
+ * constructor.
+ * TODO Only allow grades to be instantiated by the grader.
+ * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-12-07
+ * @version 2020-12-08
  */
 public class Grade {
 	private int percentage;

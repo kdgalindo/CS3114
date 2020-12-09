@@ -9,6 +9,12 @@ import student.Student;
 
 /** 
  * Grader Class
+ * 
+ * The grader can modify grades, obtain lower/upper percentage grade bounds
+ * from a letter grade, and report the number of students in each grade level.
+ * 
+ * TODO Separate constants and some functionality into another utility class.
+ * TODO Enhance performance for some "searching" methods. 
  *
  * @author kyleg997 Kyle Galindo
  * @version 2020-12-08
@@ -50,8 +56,9 @@ public final class Grader {
 	
 	/**
 	 * 
-	 * @param lGrade Letter grade
-	 * @return
+	 * @param lGrade Letter grade (A, A-, B+, ...)
+	 * @return The percentage grade lower bound of the letter grade if the
+	 * letter grade exists, otherwise null.
 	 */
 	public static Integer getPercentageGradeLB(String lGrade) {
 		Range pGradeRange = GRADE_RANGES.get(toLetterGradeKey(lGrade));
@@ -68,8 +75,9 @@ public final class Grader {
 	
 	/**
 	 * 
-	 * @param lGrade Letter grade
-	 * @return
+	 * @param lGrade Letter grade (A, A-, B+, ...)
+	 * @return The percentage grade upper bound of the letter grade if the
+	 * letter grade is valid, otherwise null.
 	 */
 	public static Integer getPercentageGradeUB(String lGrade) {
 		Range pGradeRange = GRADE_RANGES.get(toLetterGradeKey(lGrade));
@@ -82,9 +90,10 @@ public final class Grader {
 	
 	
 	/**
+	 * Sets the student's percentage grade if the percentage grade is valid. 
 	 * 
 	 * @param student Student
-	 * @param pGrade Percentage grade
+	 * @param pGrade Percentage grade [0, 100]
 	 */
 	public static void setPercentageGrade(Student student, int pGrade) {
 		if (isValidPercentageGrade(pGrade)) {
@@ -95,7 +104,8 @@ public final class Grader {
     /**
      * 
      * @param pGrade Percentage grade
-     * @return
+     * @return true if the percentage grade is between 0 and 100, false
+     * otherwise
      */
     public static boolean isValidPercentageGrade(int pGrade) {
     	return (pGrade > -1) && (pGrade < 101);
@@ -108,6 +118,8 @@ public final class Grader {
     
 	
 	/**
+	 * Sets the student's letter grade based upon their current percentage
+	 * grade if it is valid.
 	 * 
 	 * @param student Student
 	 */
@@ -145,6 +157,10 @@ public final class Grader {
     
 	
 	/**
+	 * Sets the student's grade (percentage and letter) if it is valid
+	 * (percentage grade is between 0 and 100 and percentage grade is
+	 * between the lower and upper percentage grade bounds of the letter
+	 * grade).
 	 * 
 	 * @param student Student
 	 * @param grade Grade
@@ -174,10 +190,12 @@ public final class Grader {
     
     
 	
-	/**
-	 * 
-	 * @param students List of students
-	 */
+    /**
+     * 
+     * @param students List of students
+     * @return List of strings providing the number of students in each grade
+     * level.
+     */
 	public static List<String> listGradeLevelStats(List<Student> students) {
 		int[] studentsPerGrade = new int[LETTERS.length];
 		Arrays.fill(studentsPerGrade, 0);
