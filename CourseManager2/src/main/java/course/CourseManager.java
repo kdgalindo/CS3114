@@ -19,7 +19,7 @@ public class CourseManager {
     private SectionManager sManager;
     private EnrollmentManager eManager;
     private Student currentStudent;
-    private boolean studentScorable;
+    private boolean isStudentGradable;
 
     public CourseManager() {
         sManagers = new SectionManager[MAX_SECTION_NUM];
@@ -29,30 +29,30 @@ public class CourseManager {
         sManager = sManagers[0];
         eManager = new EnrollmentManager();
         currentStudent = null;
-        studentScorable = false;
+        isStudentGradable = false;
     }
     
     /**
      * 
      * @return
      */
-    public Section getCommandableSection() {
+    public Section getCmdSection() {
     	return sManager.getSection();
     }
     
     /**
      * 
-     * @param sectionNumber
+     * @param sectionNum Section number
      */
-    public void setCommandableSection(int sectionNum) {
-    	clearStudentScorable();
+    public void setCmdSection(int sectionNum) {
+    	makeStudentUngradable();
         if (isValidSectionNum(sectionNum)) {
         	sManager = sManagers[sectionNum - 1];
         }
     }
     
-    public void clearStudentScorable() { // TODO
-    	studentScorable = false;
+    public void makeStudentUngradable() {
+    	isStudentGradable = false;
     }
     
     /**
@@ -64,246 +64,7 @@ public class CourseManager {
     	return (sectionNum > 0) && (sectionNum < MAX_SECTION_NUM + 1);
     }
     
-    /**
-     * 
-     * @param personalID
-     * @return
-     */
-    public Student find(long personalID) {
-    	clearStudentScorable();
-        Student student = sManager.find(personalID);
-        if (student != null) {
-        	setStudentScorable(student);
-        }
-        return student;
-    }
-    
-    /**
-     * 
-     * @param fullName
-     * @return
-     */
-    public List<Student> find(FullName fullName) {
-    	clearStudentScorable();
-        List<Student> students = sManager.find(fullName);
-        if (students.size() == 1) {
-            setStudentScorable(students.get(0));
-        }
-        return students;
-    }
-    
-    /**
-     * 
-     * @param name
-     * @return
-     */
-    public List<Student> find(String name) {
-    	clearStudentScorable();
-    	List<Student> students = sManager.find(name);
-        if (students.size() == 1) {
-            setStudentScorable(students.get(0));
-        }
-        return students;
-    }
-    
-    /**
-     * 
-     * @param student
-     * @return
-     */
-    public Student insert(Student student) {
-    	clearStudentScorable();
-        if (eManager.isEnrolled(student.getPersonalID())) {
-        	return null;
-        }
-        
-        insertIntoModifiableSection(student);
-        setStudentScorable(student);
-        return student;
-    }
-    
-    private void insertIntoModifiableSection(Student student) {
-    	sManager.insert(student);
-    	eManager.enroll(student.getPersonalID(), getCommandableSection().getNumber());
-    }
-    
-    public int getSectionNum(Section section) {
-    	return section.getNumber();
-    }
-    
-    private void setStudentScorable(Student student) { // TODO
-    	currentStudent = student;
-    	studentScorable = true;
-    }
-    
-    /**
-     * 
-     * @param student
-     * @param sectionNum
-     * @return
-     */
-    public Student insert(Student student, int sectionNum) {
-    	clearStudentScorable();
-        Integer eSectionNum = eManager.findEnrollment(student.getPersonalID());
-        if (eSectionNum == null) {
-        	insertIntoModifiableSection(student, sectionNum);
-        }
-        else if (eSectionNum == sectionNum) {
-        	updateInModifiableSection(student, sectionNum);
-        }
-        else {
-        	return null;
-        }
-        return student;
-    }
-    
-    public Integer findEnrollment(long personalID) {
-    	return eManager.findEnrollment(personalID);
-    }
-    
-    private void insertIntoModifiableSection(Student student, int sectionNum) {
-    	sManagers[sectionNum - 1].insert(student);
-    	eManager.enroll(student.getPersonalID(), sectionNum);
-    }
-    
-    private void updateInModifiableSection(Student student, int sectionNum) {
-    	sManagers[sectionNum - 1].updateGrade(student.getPersonalID(), student.getGrade());
-    }
-    
-    /**
-     * 
-     * @param percentageGrade
-     * @return
-     */
-    public Student scoreStudent(int percentageGrade) {
-        if (isStudentScorable()) {
-        	sManager.updatePercentageGrade(currentStudent.getPersonalID(), percentageGrade);
-        }
-        clearStudentScorable();
-        return currentStudent;
-    }
-    
-    public boolean isStudentScorable() {
-    	return studentScorable;
-    }
-    
-    /**
-     * 
-     * @param personalID
-     * @return
-     */
-    public Student remove(long personalID) {
-    	clearStudentScorable();
-        Integer eSectionNum = eManager.findEnrollment(personalID);
-        if ((eSectionNum == null) || (eSectionNum != getCommandableSection().getNumber())) {
-        	return null;
-        }
-        
-        return sManager.remove(personalID);
-    }
-    
-    /**
-     * 
-     * @param fullName
-     * @return
-     */
-    public Student remove(FullName fullName) {
-    	clearStudentScorable();
-        
-        return sManager.remove(fullName);
-    }
-
-    /**
-     * 
-     */
-    public void clear() {
-    	clearStudentScorable();
-        sManager.clear();
-    }
-    
-    /**
-     * 
-     * @return
-     */
-    public int dumpPIDs() {
-    	clearStudentScorable();
-    	sManager.printStudentsByPersonalID();
-        return sManager.size();
-    }
-    
-    public int dumpNames() {
-    	clearStudentScorable();
-    	sManager.printStudentsByFullName();
-        return sManager.size();
-    }
-    
-    public int dumpScores() {
-    	clearStudentScorable();
-    	sManager.printStudentsByPercentageGrade();
-        return sManager.size();
-    }
-    
-    public void gradeStudents() {
-        clearStudentScorable();
-        sManager.updateGrades();
-    }
-    
-    /**
-     * 
-     * @return
-     */
-    public List<String> statStudents() {
-        clearStudentScorable();
-        return sManager.listGradeLevelStats();
-    }
-    
-    /**
-     * 
-     * @param lGradeLevel
-     * @return
-     */
-    public List<Student> listStudents(String lGradeLevel) {
-    	clearStudentScorable();
-        return sManager.listStudentsIn(lGradeLevel);
-    }
-    
-    /**
-     * 
-     * @param pGradeDiff
-     * @return
-     */
-    public List<String> findpair(int pGradeDiff) {
-    	clearStudentScorable();
-    	return sManager.listStudentPairsWithin(pGradeDiff);
-    }
-    
-    public boolean mergeSections() { // TODO
-        clearStudentScorable();
-        boolean result = false;
-        if (sManager.isEmpty()) {
-            setUnmodifiable(sManager.getSection());
-            for (int i = 0; i < sManagers.length; i++) {
-                if (isModifiable(sManagers[i].getSection())) {
-                	Student[] students = sManagers[i].getStudents();
-                	for (int j = 0; j < students.length; j++) {
-                		sManager.insert(students[j]);
-                	}
-                }
-            }
-            result = true;
-        }
-        return result;
-    }
-    
-    private void setUnmodifiable(Section section) {
-    	section.setModifiable(false);
-    }
-    
-    public boolean isModifiable(Section section) {
-    	return section.isModifiable();
-    }
-    
-    public CourseEnrollment getEnrollment() {
+    public CourseEnrollment getEnrollment() { // TODO
     	int size = getNumberOfActiveSections();
     	SectionEnrollment[] sEnrollments = new SectionEnrollment[size];
     	for (int i = 0; i < sEnrollments.length; ++i) {
@@ -319,14 +80,271 @@ public class CourseManager {
     	}
     	return i;
     }
+    
+    /**
+     * 
+     * @param personalID Student PID
+     * @return
+     */
+    public Student find(long personalID) {
+    	makeStudentUngradable();
+        Student student = sManager.find(personalID);
+        if (student != null) {
+        	makeStudentGradable(student);
+        }
+        return student;
+    }
+    
+    /**
+     * 
+     * @param fullName Student full name
+     * @return
+     */
+    public List<Student> find(FullName fullName) {
+    	makeStudentUngradable();
+        List<Student> students = sManager.find(fullName);
+        if (students.size() == 1) {
+        	makeStudentGradable(students.get(0));
+        }
+        return students;
+    }
+    
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public List<Student> find(String name) {
+    	makeStudentUngradable();
+    	List<Student> students = sManager.find(name);
+        if (students.size() == 1) {
+        	makeStudentGradable(students.get(0));
+        }
+        return students;
+    }
+    
+    /**
+     * 
+     * @param student Student
+     * @return
+     */
+    public Student insert(Student student) {
+    	makeStudentUngradable();
+        if (eManager.isEnrolled(student.getPersonalID())) {
+        	return null;
+        }
+        
+        insertIntoModifiableSection(student);
+        makeStudentGradable(student);
+        return student;
+    }
+    
+    private void insertIntoModifiableSection(Student student) {
+    	sManager.insert(student);
+    	eManager.enroll(student.getPersonalID(), getCmdSection().getNumber());
+    }
+    
+    public int getSectionNum(Section section) {
+    	return section.getNumber();
+    }
+    
+    private void makeStudentGradable(Student student) { // TODO
+    	currentStudent = student;
+    	isStudentGradable = true;
+    }
+    
+    /**
+     * 
+     * @param student Student
+     * @param sectionNum Section number
+     * @return
+     */
+    public Student insert(Student student, int sectionNum) {
+    	makeStudentUngradable();
+        Integer eSectionNum = eManager.findEnrollment(student.getPersonalID());
+        if (eSectionNum == null) {
+        	insertIntoModifiableSection(student, sectionNum);
+        }
+        else if (eSectionNum == sectionNum) {
+        	updateInModifiableSection(student, sectionNum);
+        }
+        else {
+        	return null;
+        }
+        return student;
+    }
+    
+    /**
+     * 
+     * @param personalID
+     * @return
+     */
+    public Integer findEnrollment(long personalID) {
+    	return eManager.findEnrollment(personalID);
+    }
+    
+    private void insertIntoModifiableSection(Student student, int sectionNum) {
+    	sManagers[sectionNum - 1].insert(student);
+    	eManager.enroll(student.getPersonalID(), sectionNum);
+    }
+    
+    private void updateInModifiableSection(Student student, int sectionNum) {
+    	sManagers[sectionNum - 1].updateGrade(student.getPersonalID(), student.getGrade());
+    }
+    
+    /**
+     * 
+     * @param pGrade Percentage grade
+     * @return
+     */
+    public Student updatePercentageGrade(int pGrade) {
+        if (isStudentGradable()) {
+        	sManager.updatePercentageGrade(currentStudent.getPersonalID(), pGrade);
+        }
+        makeStudentUngradable();
+        return currentStudent;
+    }
+    
+    public boolean isStudentGradable() {
+    	return isStudentGradable;
+    }
+    
+    /**
+     * 
+     */
+    public void updateGrades() {
+        makeStudentUngradable();
+        sManager.updateGrades();
+    }
+    
+    /**
+     * 
+     * @param personalID Student PID
+     * @return
+     */
+    public Student remove(long personalID) {
+    	makeStudentUngradable();
+        Integer eSectionNum = eManager.findEnrollment(personalID);
+        // TODO
+        if ((eSectionNum == null) || (eSectionNum != getCmdSection().getNumber())) {
+        	return null;
+        }
+        
+        return sManager.remove(personalID);
+    }
+    
+    /**
+     * 
+     * @param fullName Student full name
+     * @return
+     */
+    public Student remove(FullName fullName) {
+    	makeStudentUngradable();
+        
+        return sManager.remove(fullName);
+    }
 
     /**
-     * Clears all student records
-     * from CourseManager
+     * 
      */
-    public void clearcoursedata() {
-        clearStudentScorable();
-        for (int i = 0; i < 21; i++) {
+    public void clear() {
+    	makeStudentUngradable();
+        sManager.clear();
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public List<Student> listInPersonalIDOrder() {
+    	makeStudentUngradable();
+    	return sManager.listInPersonalIDOrder();
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public List<Student> listInFullNameOrder() {
+    	makeStudentUngradable();
+    	return sManager.listInFullNameOrder();
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public List<Student> listInPercentageGradeOrder() {
+    	makeStudentUngradable();
+    	return sManager.listInPercentageGradeOrder();
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public List<String> listGradeLevelStats() {
+        makeStudentUngradable();
+        return sManager.listGradeLevelStats();
+    }
+    
+    /**
+     * 
+     * @param lGrade Letter grade
+     * @return
+     */
+    public List<Student> listInGradeLevel(String lGrade) {
+    	makeStudentUngradable();
+        return sManager.listInGradeLevel(lGrade);
+    }
+    
+    /**
+     * 
+     * @param pGradeDiff Percentage grade difference
+     * @return
+     */
+    public List<String> listStudentPairsWithin(int pGradeDiff) {
+    	makeStudentUngradable();
+    	return sManager.listStudentPairsWithin(pGradeDiff);
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public boolean mergeSections() {
+        makeStudentUngradable();
+        
+        if (!sManager.isEmpty()) {
+        	return false;
+        }
+        
+        setUnmodifiable(sManager.getSection());
+        for (int i = 0; i < sManagers.length; ++i) {
+        	if (isModifiable(sManagers[i].getSection())) {
+        		for (Student student : sManagers[i].getActiveStudents()) {
+        			this.sManager.insert(student); // TODO
+        		}
+        	}
+        }
+        
+        return true;
+    }
+    
+    private void setUnmodifiable(Section section) {
+    	section.setModifiable(false);
+    }
+    
+    public boolean isModifiable(Section section) {
+    	return section.isModifiable();
+    }
+    
+    /**
+     * 
+     */
+    public void clearSections() {
+        makeStudentUngradable();
+        for (int i = 0; i < sManagers.length; ++i) {
             sManagers[i].clear();
         }
         eManager.clear();

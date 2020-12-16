@@ -1,43 +1,62 @@
 package identity;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import util.BST;
 
 /**
  * StudentManager Class
  * 
+ * 
+ * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-17
+ * @version 2020-12-16
  */
 public class IdentityManager {
-    private BST<Long, Identity> pidIdentityDB;
+    private BST<Long, Identity> idIdentityDb;
     
+    /**
+     * 
+     */
     public IdentityManager() {
-    	pidIdentityDB = new BST<Long, Identity>();
+    	idIdentityDb = new BST<Long, Identity>();
     }
     
+    /**
+     * 
+     * @param personalID
+     * @return
+     */
+    public Identity find(long personalID) {
+    	return idIdentityDb.find(personalID);
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public List<Identity> list() {
+    	List<Identity> identities = new ArrayList<Identity>(idIdentityDb.size());
+    	for (Iterator<Identity> i = idIdentityDb.iterator(); i.hasNext();) {
+    		identities.add(i.next());
+    	}
+    	return identities;
+    }
+    
+    /**
+     * 
+     * @param identity
+     */
     public void insert(Identity identity) {
-    	pidIdentityDB.insert(identity.getPersonalID(), identity);
+    	idIdentityDb.insert(identity.getPersonalID(), identity);
     }
     
-    public Identity findIdentity(long personalID) {
-    	return pidIdentityDB.find(personalID);
-    }
-    
-    public Identity[] getIdentities() {
-    	Identity[] identities = new Identity[pidIdentityDB.size()];
-		Arrays.fill(identities, null);
-		Iterator<Identity> it = pidIdentityDB.iterator();
-		int i = 0;
-		while (it.hasNext()) {
-			identities[i++] = it.next();
-		}
-		return identities;
-    }
-    
+    /**
+     * 
+     */
     public void clear() {
-    	pidIdentityDB.clear();
+    	idIdentityDb.clear();
     }
 }

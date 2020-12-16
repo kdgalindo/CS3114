@@ -2,6 +2,9 @@ package identity.file;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import identity.FullName;
 import identity.Identity;
@@ -9,15 +12,30 @@ import identity.Identity;
 /**
  * IdentityBinaryFile Class
  * 
+ * Identity binary files are files that contain identity data (binary format)
+ * and can be read from or written to.
+ * 
+ * TODO Improve exception handling and try-catch blocks.
+ * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-11-05
+ * @version 2020-12-16
  */
-public class IdentityBinaryFile {
+public final class IdentityBinaryFile {
 	private final static String HEADER = "VTSTUDENTS";
 	private final static String DELIMITER = "GOHOKIES";
 	
-	public static Identity[] readFrom(String filename) {
-		Identity[] identities = null;
+	private IdentityBinaryFile() {
+		// Empty
+	}
+	
+	/**
+	 * 
+	 * @param filename Identity binary data file name
+	 * @return An immutable list of identities parsed from the identity binary
+	 * data file if no reading errors occur, otherwise an empty list.
+	 */
+	public static List<Identity> readFrom(String filename) {
+		Identity[] identities = new Identity[0];
 		try {
 			RandomAccessFile raf = new RandomAccessFile(filename, "r");
 			raf.seek(HEADER.length());
@@ -31,7 +49,7 @@ public class IdentityBinaryFile {
 		catch (IOException e) {
 			e.printStackTrace();
 		}
-        return identities;
+        return Collections.unmodifiableList(Arrays.asList(identities));
 	}
 	
 	private static Identity readIdentityFrom(RandomAccessFile raf) throws IOException {
@@ -51,18 +69,26 @@ public class IdentityBinaryFile {
 		return sb.toString();
 	}
 	
-    public static void writeTo(Identity[] identities, String filename) {
+	/**
+	 * Generates an identity binary data file from the given filename and list
+	 * of identities if no writing errors occur, otherwise ...
+	 * 
+	 * @param identities List of identities
+	 * @param filename Identity binary data file name
+	 */
+    public static void writeTo(List<Identity> identities, String filename) {
     	try {
 			RandomAccessFile raf = new RandomAccessFile(filename, "rw");
 			raf.writeBytes(HEADER);
-			int numOfIdentities = identities.length;
+			int numOfIdentities = identities.size();
 			raf.writeInt(numOfIdentities);
 			for (int i = 0; i < numOfIdentities; ++i) {
-				writeIdentityTo(identities[i], raf);
+				writeIdentityTo(identities.get(i), raf);
 				raf.writeBytes(DELIMITER);
 			}
 			raf.close();
-		} catch (IOException e) {
+		}
+    	catch (IOException e) {
 			e.printStackTrace();
 		}
     }

@@ -1,5 +1,13 @@
 package course.section;
 
+/** 
+ * Section Class
+ * 
+ * 
+ *
+ * @author kyleg997 Kyle Galindo
+ * @version 2020-12-08
+ */
 public class Section {
 	private final int number;
 	private boolean modifiable;

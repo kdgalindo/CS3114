@@ -1,6 +1,14 @@
 package identity;
 
-public class Identity implements Comparable<Identity> {
+/**
+ * Identity Class
+ * 
+ * 
+ * 
+ * @author kyleg997 Kyle Galindo
+ * @version 2020-12-10
+ */
+public final class Identity implements Comparable<Identity> {
 	private final long personalID;
 	private final FullName fullName;
 	
@@ -15,18 +23,6 @@ public class Identity implements Comparable<Identity> {
 	
     public FullName getFullName() {
         return fullName;
-    }
-    
-    public String getFirstName() {
-        return fullName.getFirstName();
-    }
-    
-    public String getMiddleName() {
-        return fullName.getMiddleName();
-    }
-    
-    public String getLastName() {
-        return fullName.getLastName();
     }
     
     @Override

@@ -7,8 +7,13 @@ import identity.Identity;
 /**
  * Student Class
  * 
+ * Students have an identity and a grade. A student's identity cannot be
+ * modified, but the Grader can modify a student's grade.
+ * 
+ * TODO Separate "tombstone" (isActive flag) from the class.
+ * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-17
+ * @version 2020-12-10
  */
 public class Student implements Comparable<Student> {
     private final Identity identity;
@@ -37,18 +42,6 @@ public class Student implements Comparable<Student> {
 
     public FullName getFullName() {
         return identity.getFullName();
-    }
-    
-    public String getFirstName() {
-        return identity.getFirstName();
-    }
-    
-    public String getMiddleName() {
-        return identity.getMiddleName();
-    }
-    
-    public String getLastName() {
-        return identity.getLastName();
     }
     
     public Grade getGrade() {

@@ -17,12 +17,16 @@ import util.BST;
  * @version 2020-12-08
  */
 public class SectionManager {
-    private Section section;
+    private final Section section;
     private BST<Long, Integer> idIndexDb;
     private BST<FullName, Integer> fnIndexDb;
     private BST<Integer, Integer> pgIndexDb;
     private ArrayList<Student> studentDb;
     
+    /**
+     * 
+     * @param section
+     */
     public SectionManager(Section section) {
         this.section = section;
     	idIndexDb = new BST<Long, Integer>();
@@ -31,6 +35,10 @@ public class SectionManager {
         studentDb = new ArrayList<Student>();
     }
     
+    /**
+     * 
+     * @return
+     */
     public Section getSection() {
     	return section;
     }
@@ -54,10 +62,18 @@ public class SectionManager {
     	return section.isModifiable() && (idIndexDb.size() != 0);
     }
     
+    /**
+     * 
+     * @return
+     */
     public boolean isEmpty() {
         return idIndexDb.size() == 0;
     }
     
+    /**
+     * 
+     * @return
+     */
     public int size() {
         return idIndexDb.size();
     }
@@ -72,7 +88,6 @@ public class SectionManager {
     	if (index == null) {
     		return null;
     	}
-    	
     	return studentDb.get(index);
     }
     
@@ -99,7 +114,7 @@ public class SectionManager {
         for (Iterator<Integer> i = fnIndexDb.iterator(); i.hasNext();) {
             Student student = studentDb.get(i.next());
             FullName fullName = student.getFullName();
-            if (fullName.equalsPartOfIgnoreCase(name)) { // TODO
+            if (fullName.containsName(name)) {
             	students.add(student);
             }
         }
@@ -146,7 +161,7 @@ public class SectionManager {
     	}
     }
     
-    private List<Student> getActiveStudents() {
+    public List<Student> getActiveStudents() {
     	List<Student> students = new ArrayList<Student>();
     	for (Student student : studentDb) {
     		if (student.isActive()) {
@@ -158,8 +173,8 @@ public class SectionManager {
     
     /**
      * 
-     * @param personalID
-     * @param pGrade
+     * @param personalID Student PID
+     * @param pGrade Percentage grade
      * @return
      */
     public Student updatePercentageGrade(long personalID, int pGrade) {
@@ -177,7 +192,7 @@ public class SectionManager {
     
     /**
      * 
-     * @param personalID
+     * @param personalID Student PID
      * @return
      */
     public Student remove(long personalID) {
@@ -195,7 +210,7 @@ public class SectionManager {
     
     /**
      * 
-     * @param fullName
+     * @param fullName Student full name
      * @return
      */
     public Student remove(FullName fullName) {
@@ -220,26 +235,40 @@ public class SectionManager {
     	idIndexDb.clear();
         fnIndexDb.clear();
         pgIndexDb.clear();
-        // studentDb TODO
+        studentDb.clear(); // TODO
         section.setModifiable(true);
     }
     
-    public void printStudentsByPersonalID() {
-    	printStudents(idIndexDb.iterator());
+    /**
+     * 
+     * @return
+     */
+    public List<Student> listInPersonalIDOrder() {
+    	return listInOrder(idIndexDb.iterator());
     }
     
-    public void printStudentsByFullName() {
-    	printStudents(fnIndexDb.iterator());
+    /**
+     * 
+     * @return
+     */
+    public List<Student> listInFullNameOrder() {
+    	return listInOrder(fnIndexDb.iterator());
     }
     
-    public void printStudentsByPercentageGrade() {
-    	printStudents(pgIndexDb.iterator());
+    /**
+     * 
+     * @return
+     */
+    public List<Student> listInPercentageGradeOrder() {
+    	return listInOrder(pgIndexDb.iterator());
     }
     
-    public void printStudents(Iterator<Integer> i) {
+    private List<Student> listInOrder(Iterator<Integer> i) {
+    	List<Student> students = new ArrayList<Student>();
     	while (i.hasNext()) {
-    		System.out.println(studentDb.get(i.next()));
+    		students.add(studentDb.get(i.next()));
     	}
+    	return students;
     }
     
     /**
@@ -252,14 +281,14 @@ public class SectionManager {
     
     /**
      * 
-     * @param lGradeLevel Letter grade level
+     * @param lGrade Letter grade
      * @return
      */
-    public List<Student> listStudentsIn(String lGradeLevel) {
+    public List<Student> listInGradeLevel(String lGrade) {
         List<Student> students = new ArrayList<Student>();
-        int lower = Grader.getPercentageGradeLB(lGradeLevel);
-        int upper = Grader.getPercentageGradeUB(lGradeLevel);
-        for (Integer index : pgIndexDb.findRange(lower, upper)) {
+        int lBound = Grader.getPercentageGradeLB(lGrade);
+        int uBound = Grader.getPercentageGradeUB(lGrade);
+        for (Integer index : pgIndexDb.findRange(lBound, uBound)) {
         	students.add(studentDb.get(index));
         }
         return students;
@@ -267,7 +296,7 @@ public class SectionManager {
     
     /**
      * 
-     * @param pGradeDiff
+     * @param pGradeDiff Percentage grade difference
      * @return
      */
     public List<String> listStudentPairsWithin(int pGradeDiff) {

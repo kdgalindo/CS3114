@@ -3,10 +3,12 @@ package identity;
 /**
  * FullName Class
  * 
+ * 
+ * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-25
+ * @version 2020-12-10
  */
-public class FullName implements Comparable<FullName> {
+public final class FullName implements Comparable<FullName> {
     private final String firstName;
     private final String middleName;
     private final String lastName;
@@ -35,21 +37,40 @@ public class FullName implements Comparable<FullName> {
         return lastName;
     }
     
-    public boolean equalsPartOfIgnoreCase(String name) {
+    /**
+     * 
+     * @param name Name
+     * @return
+     */
+    public boolean containsName(String name) {
     	return firstName.equalsIgnoreCase(name) || lastName.equalsIgnoreCase(name);
     }
 
+    /**
+     * 
+     * @param fullName Full name
+     * @return
+     */
     @Override
     public int compareTo(FullName fullName) {
-        int result = lastName.toLowerCase().compareTo(fullName.getLastName().toLowerCase());
-        if (result == 0) {
-            return firstName.toLowerCase().compareTo(fullName.getFirstName().toLowerCase());
-        }
-        return result;
+        int result = getLCLastName().compareTo(fullName.getLCLastName());
+        return (result != 0) ? result : getLCFirstName().compareTo(fullName.getLCFirstName());
+    }
+    
+    private String getLCFirstName() {
+    	return firstName.toLowerCase();
+    }
+    
+    private String getLCLastName() {
+    	return lastName.toLowerCase();
     }
 
+    /**
+     * 
+     * @return
+     */
     @Override
     public String toString() {
-        return firstName + " " + lastName;
+        return String.format("%s %s", firstName, lastName);
     }
 }
