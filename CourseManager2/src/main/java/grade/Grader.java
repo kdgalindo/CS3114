@@ -29,7 +29,7 @@ public final class Grader {
 	private final static HashMap<String, Range> GRADE_RANGES;
 	
 	private Grader() {
-		
+		// Empty
 	}
 	
 	private static class Range {

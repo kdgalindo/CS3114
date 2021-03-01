@@ -7,12 +7,12 @@ import java.util.List;
 import util.BST;
 
 /**
- * StudentManager Class
+ * IdentityManager Class
  * 
  * 
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-12-16
+ * @version 2021-01-05
  */
 public class IdentityManager {
     private BST<Long, Identity> idIdentityDb;
@@ -22,6 +22,14 @@ public class IdentityManager {
      */
     public IdentityManager() {
     	idIdentityDb = new BST<Long, Identity>();
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public boolean isEmpty() {
+    	return idIdentityDb.isEmpty();
     }
     
     /**

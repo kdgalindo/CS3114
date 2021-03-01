@@ -5,6 +5,7 @@ import java.util.List;
 import course.CourseManager;
 import course.enrollment.CourseEnrollment;
 import course.enrollment.file.EnrollmentFile;
+import course.section.Section;
 import course.section.SectionEnrollment;
 import grade.*;
 import identity.*;
@@ -15,17 +16,21 @@ import student.*;
  * CmdEvaluator Class
  * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-08-19
+ * @version 2021-01-05
  */
 public class CmdEvaluator {
-    private IdentityManager iManager;
-    private CourseManager cManager;
-    private boolean isStudentDataLoaded;
+    private final IdentityManager iManager;
+    private final CourseManager cManager;
+    
+    private Student gradableStudent;
+    private boolean isStudentGradable;
 
     public CmdEvaluator() {
         iManager = new IdentityManager();
         cManager = new CourseManager();
-        isStudentDataLoaded = false;
+        
+        gradableStudent = null;
+        isStudentGradable = false;
     }
 
     /**
@@ -33,12 +38,15 @@ public class CmdEvaluator {
      * @param filename
      */
     public void loadStudentData(String filename) {
+    	makeStudentUngradable();
     	for (Identity studentIdentity : IdentityFile.readFrom(filename)) {
     		iManager.insert(studentIdentity);
     	}
-    	isStudentDataLoaded = true;
-        cManager.makeStudentUngradable();
         System.out.println(filename + " successfully loaded");
+    }
+    
+    private void makeStudentUngradable() {
+    	isStudentGradable = false;
     }
     
     /**
@@ -46,7 +54,8 @@ public class CmdEvaluator {
      * @param filename
      */
     public void loadCourseData(String filename) {
-    	if (!isStudentDataLoaded) { // TODO iManager.isEmpty
+    	makeStudentUngradable();
+    	if (iManager.isEmpty()) {
             System.out.println(
             	"Course Load Failed." +
             	" You have to load Student Information file first."
@@ -57,7 +66,9 @@ public class CmdEvaluator {
     	String file = filename.substring(0, filename.lastIndexOf('.'));
     	System.out.println(file + " Course has been successfully loaded.");
     	
+    	Section current = cManager.getCmdSection(); // TODO
         loadCourseData(EnrollmentFile.readFrom(filename));
+        cManager.setCmdSection(current.getNumber());
     }
     
     private void loadCourseData(CourseEnrollment cEnrollment) {
@@ -93,17 +104,25 @@ public class CmdEvaluator {
             return;
         }
         
-        Student sStudent = cManager.insert(student, sectionNum);
-        if (sStudent == null) {
+        Integer eSectionNumber = cManager.findEnrollment(student.getPersonalID());
+        if ((eSectionNumber != null) && (eSectionNumber != sectionNum)) {
             System.out.println(
-            	"Warning: Student " +
-            	fullName +
-            	" is not loaded to section " +
-            	sectionNum +
-            	" since he/she is already enrolled in section " +
-            	cManager.findEnrollment(student.getPersonalID())
+                	"Warning: Student " +
+                	fullName +
+                	" is not loaded to section " +
+                	sectionNum +
+                	" since he/she is already enrolled in section " +
+                	eSectionNumber
             );
             return;
+        }
+        
+        cManager.setCmdSection(sectionNum);
+        if (eSectionNumber == null) {
+        	cManager.insert(student);
+        }
+        else {
+        	cManager.updateGrade(student.getPersonalID(), student.getGrade());
         }
     }
     
@@ -112,15 +131,20 @@ public class CmdEvaluator {
      * @param sectionNum
      */
     public void section(int sectionNum) {
-    	if (!cManager.isValidSectionNum(sectionNum)) {
+    	makeStudentUngradable();
+    	if (!cManager.isValidSectionNumber(sectionNum)) {
     		return;
     	}
     	
         cManager.setCmdSection(sectionNum);
         System.out.println(
         	"switch to section " +
-            cManager.getSectionNum(cManager.getCmdSection()) // TODO
+            getNumber(cManager.getCmdSection())
         );
+    }
+    
+    private int getNumber(Section section) {
+    	return section.getNumber();
     }
     
     /**
@@ -130,6 +154,7 @@ public class CmdEvaluator {
      * @param lastName
      */
     public void insert(long personalID, String firstName, String lastName) {
+    	makeStudentUngradable();
         if (!cManager.isModifiable(cManager.getCmdSection())) {
         	System.out.println("Command insert is not valid for merged sections");
         	return;
@@ -158,11 +183,11 @@ public class CmdEvaluator {
         
         Integer sNumber = cManager.findEnrollment(personalID);
         if (sNumber != null) {
-        	if (sNumber == cManager.getSectionNum(cManager.getCmdSection())) { // TODO
+        	if (sNumber == getNumber(cManager.getCmdSection())) {
                 System.out.println(
                 	fullName +
                 	" is already in section " +
-                    cManager.getSectionNum(cManager.getCmdSection()) // TODO
+                    getNumber(cManager.getCmdSection())
                 );
         	}
         	else {
@@ -174,9 +199,17 @@ public class CmdEvaluator {
         	return;
         }
         
+        // TODO maybe // Cleanup
         Identity identity = new Identity(personalID, fullName);
-        Student student = cManager.insert(new Student(identity, new Grade()));
+        Student student = new Student(identity, new Grade());
+        cManager.insert(student);
         System.out.println(student.getFullName() + " inserted.");
+        makeStudentGradable(student);
+    }
+    
+    private void makeStudentGradable(Student student) {
+    	gradableStudent = student;
+    	isStudentGradable = true;
     }
     
     /**
@@ -184,7 +217,8 @@ public class CmdEvaluator {
      * @param personalID
      */
     public void searchID(long personalID) {
-        if (!cManager.isModifiable(cManager.getCmdSection())) { // TODO
+    	makeStudentUngradable();
+        if (!isModifiable(cManager.getCmdSection())) {
         	System.out.println("Command searchid is not valid for merged sections");
         	return;
         }
@@ -199,6 +233,11 @@ public class CmdEvaluator {
         }
         
         System.out.println("Found " + student);
+        makeStudentGradable(student);
+    }
+    
+    private boolean isModifiable(Section section) {
+    	return section.isModifiable();
     }
     
     /**
@@ -207,6 +246,7 @@ public class CmdEvaluator {
      * @param lastName
      */
     public void search(String firstName, String lastName) {
+    	makeStudentUngradable();
         if (!cManager.isModifiable(cManager.getCmdSection())) {
         	System.out.println("Command search is not valid for merged sections");
         	return;
@@ -223,8 +263,11 @@ public class CmdEvaluator {
         	" was found in " +
         	students.size() +
         	" records in section " +
-        	cManager.getSectionNum(cManager.getCmdSection())
+        	getNumber(cManager.getCmdSection())
         );
+        if (students.size() == 1) {
+        	makeStudentGradable(students.get(0));
+        }
     }
     
     /**
@@ -232,6 +275,7 @@ public class CmdEvaluator {
      * @param name
      */
     public void search(String name) {
+    	makeStudentUngradable();
         if (!cManager.isModifiable(cManager.getCmdSection())) {
         	System.out.println("Command search is not valid for merged sections");
         	return;
@@ -247,8 +291,11 @@ public class CmdEvaluator {
         	" was found in " +
         	students.size() +
         	" records in section " +
-        	cManager.getSectionNum(cManager.getCmdSection())
+        	getNumber(cManager.getCmdSection())
         );
+        if (students.size() == 1) {
+        	makeStudentGradable(students.get(0));
+        }
     }
     
     /**
@@ -261,7 +308,7 @@ public class CmdEvaluator {
             return;
         }
         
-        if (!cManager.isStudentGradable()) {
+        if (!isStudentGradable) {
             System.out.println(
             	"score command can only be called after an insert command" +
                 " or a successful search command with one exact output."
@@ -274,13 +321,14 @@ public class CmdEvaluator {
             return;
         }
         
-        Student student = cManager.updatePercentageGrade(percentageGrade);
+        Student student = cManager.updatePercentageGrade(gradableStudent.getPersonalID(), percentageGrade);
         System.out.println(
         	"Update " +
         	student.getFullName() +
         	" record, score = " +
         	student.getPercentageGrade()
         );
+        makeStudentUngradable();
     }
     
     /**
@@ -288,13 +336,14 @@ public class CmdEvaluator {
      * @param personalID
      */
     public void remove(long personalID) {
+    	makeStudentUngradable();
         if (!cManager.isModifiable(cManager.getCmdSection())) {
         	System.out.println("Command remove is not valid for merged sections");
         	return;
         }
         
-        Identity sIdentity = iManager.find(personalID);
-        if (sIdentity == null) {
+        // TODO // Condense if statements
+        if (iManager.find(personalID) == null) {
         	System.out.println(
         		"Remove failed: couldn't find any student with id " +
         		personalID
@@ -315,7 +364,7 @@ public class CmdEvaluator {
         	"Student " +
         	student.getFullName() +
         	" get removed from section " +
-        	cManager.getSectionNum(cManager.getCmdSection())
+        	getNumber(cManager.getCmdSection())
         );
     }
     
@@ -325,6 +374,7 @@ public class CmdEvaluator {
      * @param lastName
      */
     public void remove(String firstName, String lastName) {
+    	makeStudentUngradable();
         if (!cManager.isModifiable(cManager.getCmdSection())) {
         	System.out.println("Command remove is not valid for merged sections");
         	return;
@@ -337,7 +387,7 @@ public class CmdEvaluator {
             	"Remove failed. Student " +
             	fullName +
                 " doesn't exist in section " +
-            	cManager.getSectionNum(cManager.getCmdSection())
+            	getNumber(cManager.getCmdSection())
             );
             return;
         }
@@ -346,7 +396,7 @@ public class CmdEvaluator {
         	"Student " +
         	fullName +
         	" get removed from section " +
-            cManager.getSectionNum(cManager.getCmdSection())
+            getNumber(cManager.getCmdSection())
         );
     }
     
@@ -354,11 +404,12 @@ public class CmdEvaluator {
      * 
      */
     public void clearSection() {
+    	makeStudentUngradable();
         cManager.clear();
         
         System.out.println(
         	"Section " +
-            cManager.getSectionNum(cManager.getCmdSection()) +
+            getNumber(cManager.getCmdSection()) +
             " cleared"
         );
     }
@@ -367,9 +418,10 @@ public class CmdEvaluator {
      * 
      */
     public void dumpSection() {
+    	makeStudentUngradable();
         System.out.println(
         	"section " +
-        	cManager.getSectionNum(cManager.getCmdSection()) +
+        	getNumber(cManager.getCmdSection()) +
         	" dump:"
         );
         
@@ -393,7 +445,8 @@ public class CmdEvaluator {
      * 
      */
     public void grade() {
-        cManager.updateGrades();
+    	makeStudentUngradable();
+        cManager.updateLetterGrades();
         System.out.println("grading completed");
     }
     
@@ -401,9 +454,10 @@ public class CmdEvaluator {
      * 
      */
     public void stat() {
+    	makeStudentUngradable();
         System.out.println(
         	"Statistics of section " +
-        	cManager.getSectionNum(cManager.getCmdSection()) +
+        	getNumber(cManager.getCmdSection()) +
         	":"
         );
         
@@ -417,6 +471,7 @@ public class CmdEvaluator {
      * @param letter
      */
     public void list(String letter) {
+    	makeStudentUngradable();
         System.out.println("Students with grade " + letter + " are:");
         List<Student> students = cManager.listInGradeLevel(letter);
         for (Student student : students) {
@@ -435,6 +490,7 @@ public class CmdEvaluator {
      * @param percentageDiff
      */
     public void findPair(int percentageDiff) {
+    	makeStudentUngradable();
         System.out.println(
         	"Students with score difference less than or equal " +
         	percentageDiff +
@@ -453,25 +509,26 @@ public class CmdEvaluator {
      * 
      */
     public void merge() {
+    	makeStudentUngradable();
         if (cManager.mergeSections()) {
             System.out.println(
             	"All sections merged at section " +
-            	cManager.getSectionNum(cManager.getCmdSection())
+            	getNumber(cManager.getCmdSection())
             );
         }
         else {
             System.out.println(
                 "Sections could only be merged to an empty section. Section " +
-                cManager.getSectionNum(cManager.getCmdSection()) +
+                getNumber(cManager.getCmdSection()) +
                 " is not empty."
             );
         }
     }
 
     public void saveStudentData(String filename) {
+    	makeStudentUngradable();
     	IdentityFile.writeTo(iManager.list(), filename);
         System.out.println("Saved all Students data to " + filename);
-        cManager.makeStudentUngradable();
     }
 
     /**
@@ -479,6 +536,7 @@ public class CmdEvaluator {
      * @param filename
      */
     public void saveCourseData(String filename) {
+    	makeStudentUngradable();
         EnrollmentFile.writeTo(cManager.getEnrollment(), filename);
         System.out.println("Saved all course data to " + filename);
     }
@@ -487,6 +545,7 @@ public class CmdEvaluator {
      * 
      */
     public void clearCourseData() {
+    	makeStudentUngradable();
     	cManager.clearSections();
         System.out.println("All course data cleared.");
     }

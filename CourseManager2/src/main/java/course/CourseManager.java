@@ -4,6 +4,7 @@ import java.util.List;
 
 import course.enrollment.*;
 import course.section.*;
+import grade.Grade;
 import identity.FullName;
 import student.*;
 
@@ -11,57 +12,45 @@ import student.*;
  * CourseManager Class
  *
  * @author kyleg997 Kyle Galindo
- * @version 2020-12-08
+ * @version 2021-01-05
  */
 public class CourseManager {
-	private final int MAX_SECTION_NUM = 21;
-    private SectionManager[] sManagers;
+	private final int MAX_SECTION_NUMBER = 21;
+	private final Section[] sections;
+    private final SectionManager[] sManagers;
+    private final EnrollmentManager eManager;
+    
+    private Section section;
     private SectionManager sManager;
-    private EnrollmentManager eManager;
-    private Student currentStudent;
-    private boolean isStudentGradable;
 
     public CourseManager() {
-        sManagers = new SectionManager[MAX_SECTION_NUM];
-        for (int i = 0; i < sManagers.length; ++i) {
-            sManagers[i] = new SectionManager(new Section(i + 1));
+    	sections = new Section[MAX_SECTION_NUMBER];
+        sManagers = new SectionManager[MAX_SECTION_NUMBER];
+        for (int i = 0; i < MAX_SECTION_NUMBER; ++i) {
+        	sections[i] = new Section(i + 1);
+            sManagers[i] = new SectionManager(sections[i]);
         }
-        sManager = sManagers[0];
         eManager = new EnrollmentManager();
-        currentStudent = null;
-        isStudentGradable = false;
+        
+        section = sections[0];
+        sManager = sManagers[0];
     }
     
-    /**
-     * 
-     * @return
-     */
     public Section getCmdSection() {
-    	return sManager.getSection();
+    	return section;
     }
     
-    /**
-     * 
-     * @param sectionNum Section number
-     */
-    public void setCmdSection(int sectionNum) {
-    	makeStudentUngradable();
-        if (isValidSectionNum(sectionNum)) {
-        	sManager = sManagers[sectionNum - 1];
+    public void setCmdSection(int sectionNumber) {
+        if (!isValidSectionNumber(sectionNumber)) {
+        	throw new IllegalArgumentException("Message"); // TODO
         }
+        
+        section = sections[sectionNumber - 1];
+    	sManager = sManagers[sectionNumber - 1];
     }
     
-    public void makeStudentUngradable() {
-    	isStudentGradable = false;
-    }
-    
-    /**
-     * 
-     * @param sectionNum
-     * @return
-     */
-    public boolean isValidSectionNum(int sectionNum) {
-    	return (sectionNum > 0) && (sectionNum < MAX_SECTION_NUM + 1);
+    public boolean isValidSectionNumber(int sNumber) {
+    	return (sNumber >= 1) && (sNumber <= MAX_SECTION_NUMBER);
     }
     
     public CourseEnrollment getEnrollment() { // TODO
@@ -74,256 +63,184 @@ public class CourseManager {
     }
     
     private int getNumberOfActiveSections() {
-    	int i = 0;
-    	while ((i < sManagers.length) && sManagers[i].hasEnrollment()) {
-    		++i;
+    	int i;
+    	for (i = 0; i < MAX_SECTION_NUMBER; ++i) {
+    		if (!sections[i].isModifiable() || sManagers[i].isSectionEmpty()) {
+    			break;
+    		}
     	}
     	return i;
     }
     
     /**
+     * Returns the student associated with the specified personal identifier
+     * (PID) if the student is enrolled in the current section.
      * 
-     * @param personalID Student PID
-     * @return
+     * @param pIdentifier a student's PID
+     * @return the student associated with the PID, or null if the student is
+     * not enrolled in the current section.
      */
-    public Student find(long personalID) {
-    	makeStudentUngradable();
-        Student student = sManager.find(personalID);
-        if (student != null) {
-        	makeStudentGradable(student);
-        }
-        return student;
+    public Student find(long pIdentifier) {
+        return sManager.find(pIdentifier);
     }
     
     /**
+     * Returns a list of all students associated with the specified full name
+     * enrolled in the current section.
      * 
-     * @param fullName Student full name
-     * @return
+     * @param fName a student's full name
+     * @return a list of all students associated with the full name enrolled
+     * in the current section.
      */
-    public List<Student> find(FullName fullName) {
-    	makeStudentUngradable();
-        List<Student> students = sManager.find(fullName);
-        if (students.size() == 1) {
-        	makeStudentGradable(students.get(0));
-        }
-        return students;
+    public List<Student> find(FullName fName) {
+        return sManager.find(fName);
     }
     
     /**
+     * Returns a list of all students containing the specified name enrolled
+     * in the current section.
      * 
-     * @param name
-     * @return
+     * @param name a name
+     * @return a list of all students containing the name enrolled in the
+     * current section.
      */
     public List<Student> find(String name) {
-    	makeStudentUngradable();
-    	List<Student> students = sManager.find(name);
-        if (students.size() == 1) {
-        	makeStudentGradable(students.get(0));
-        }
-        return students;
+        return sManager.find(name);
     }
     
     /**
+     * Enrolls the given student into the current section.
      * 
-     * @param student Student
-     * @return
+     * @param student A student
+     * @exception IllegalArgumentException if student is already enrolled in
+     * the course.
      */
-    public Student insert(Student student) {
-    	makeStudentUngradable();
+    public void insert(Student student) {
         if (eManager.isEnrolled(student.getPersonalID())) {
-        	return null;
+        	// TODO // Keep/fix message or change
+        	throw new IllegalArgumentException("Message");
         }
         
-        insertIntoModifiableSection(student);
-        makeStudentGradable(student);
-        return student;
+        sManager.insert(student);
+    	eManager.enroll(student.getPersonalID(), section.getNumber());
     }
     
-    private void insertIntoModifiableSection(Student student) {
-    	sManager.insert(student);
-    	eManager.enroll(student.getPersonalID(), getCmdSection().getNumber());
-    }
-    
-    public int getSectionNum(Section section) {
-    	return section.getNumber();
-    }
-    
-    private void makeStudentGradable(Student student) { // TODO
-    	currentStudent = student;
-    	isStudentGradable = true;
-    }
-    
-    /**
-     * 
-     * @param student Student
-     * @param sectionNum Section number
-     * @return
-     */
-    public Student insert(Student student, int sectionNum) {
-    	makeStudentUngradable();
-        Integer eSectionNum = eManager.findEnrollment(student.getPersonalID());
-        if (eSectionNum == null) {
-        	insertIntoModifiableSection(student, sectionNum);
-        }
-        else if (eSectionNum == sectionNum) {
-        	updateInModifiableSection(student, sectionNum);
-        }
-        else {
-        	return null;
-        }
-        return student;
-    }
-    
-    /**
-     * 
-     * @param personalID
-     * @return
-     */
     public Integer findEnrollment(long personalID) {
     	return eManager.findEnrollment(personalID);
     }
     
-    private void insertIntoModifiableSection(Student student, int sectionNum) {
-    	sManagers[sectionNum - 1].insert(student);
-    	eManager.enroll(student.getPersonalID(), sectionNum);
-    }
-    
-    private void updateInModifiableSection(Student student, int sectionNum) {
-    	sManagers[sectionNum - 1].updateGrade(student.getPersonalID(), student.getGrade());
+    /**
+     * Updates the course grade of the student (associated with the specified
+     * personal identifier (PID)) with the specified grade if the student is
+     * enrolled in the current section.
+     * 
+     * @param pIdentifier a student's PID
+     * @param grade a grade for the course
+     * @return the student associated with the PID, or null if the student is
+     * not enrolled in the current section.
+     */
+    public Student updateGrade(long pIdentifier, Grade grade) {
+    	return sManager.updateGrade(pIdentifier, grade);
     }
     
     /**
+     * Updates the percentage grade of the student (associated with the
+     * specified personal identifier (PID)) with the specified percentage
+     * grade if the student is enrolled in the current section.
      * 
-     * @param pGrade Percentage grade
-     * @return
+     * @param pIdentifier a student's PID
+     * @param pGrade a percentage grade for the course
+     * @return the student associated with the PID, or null if the student is
+     * not enrolled in the current section.
      */
-    public Student updatePercentageGrade(int pGrade) {
-        if (isStudentGradable()) {
-        	sManager.updatePercentageGrade(currentStudent.getPersonalID(), pGrade);
-        }
-        makeStudentUngradable();
-        return currentStudent;
-    }
-    
-    public boolean isStudentGradable() {
-    	return isStudentGradable;
+    public Student updatePercentageGrade(long pIdentifier, int pGrade) {
+    	return sManager.updatePercentageGrade(pIdentifier, pGrade);
     }
     
     /**
-     * 
+     * Updates the letter grades of all students in the current section to
+     * correspond with their percentage grades.
      */
-    public void updateGrades() {
-        makeStudentUngradable();
-        sManager.updateGrades();
+    public void updateLetterGrades() {
+        sManager.updateLetterGrades();
     }
     
     /**
+     * Unenrolls the student associated with the specified personal
+     * identifier (PID) from the current section if the student is enrolled in
+     * the section.
      * 
-     * @param personalID Student PID
-     * @return
+     * @param pIdentifier a student's PID
+     * @return the student associated with the PID, or null if the student is
+     * not enrolled in the section.
      */
-    public Student remove(long personalID) {
-    	makeStudentUngradable();
-        Integer eSectionNum = eManager.findEnrollment(personalID);
-        // TODO
-        if ((eSectionNum == null) || (eSectionNum != getCmdSection().getNumber())) {
-        	return null;
-        }
-        
-        return sManager.remove(personalID);
+    public Student remove(long pIdentifier) {
+    	Student student = sManager.remove(pIdentifier);
+    	if (student != null) {
+    		eManager.unenroll(pIdentifier);
+    	}
+        return student;
     }
     
     /**
+     * Unenrolls the student associated with the specified full name from the
+     * current section if only one such student is enrolled in the current
+     * section.
      * 
-     * @param fullName Student full name
-     * @return
+     * @param fName a student's full name
+     * @return the student associated with the full name, or null if the
+     * student is not enrolled in the current section or more than one student
+     * associated with the full name is in the current section.
      */
-    public Student remove(FullName fullName) {
-    	makeStudentUngradable();
-        
-        return sManager.remove(fullName);
+    public Student remove(FullName fName) {
+    	Student student = sManager.remove(fName);
+    	if (student != null) {
+    		eManager.unenroll(student.getPersonalID());
+    	}
+        return student;
     }
 
     /**
-     * 
+     * Unenrolls all students from the current section.
      */
     public void clear() {
-    	makeStudentUngradable();
         sManager.clear();
     }
     
-    /**
-     * 
-     * @return
-     */
     public List<Student> listInPersonalIDOrder() {
-    	makeStudentUngradable();
     	return sManager.listInPersonalIDOrder();
     }
     
-    /**
-     * 
-     * @return
-     */
     public List<Student> listInFullNameOrder() {
-    	makeStudentUngradable();
     	return sManager.listInFullNameOrder();
     }
-    
-    /**
-     * 
-     * @return
-     */
+
     public List<Student> listInPercentageGradeOrder() {
-    	makeStudentUngradable();
     	return sManager.listInPercentageGradeOrder();
     }
-    
-    /**
-     * 
-     * @return
-     */
+
     public List<String> listGradeLevelStats() {
-        makeStudentUngradable();
         return sManager.listGradeLevelStats();
     }
-    
-    /**
-     * 
-     * @param lGrade Letter grade
-     * @return
-     */
+
     public List<Student> listInGradeLevel(String lGrade) {
-    	makeStudentUngradable();
         return sManager.listInGradeLevel(lGrade);
     }
-    
-    /**
-     * 
-     * @param pGradeDiff Percentage grade difference
-     * @return
-     */
+
     public List<String> listStudentPairsWithin(int pGradeDiff) {
-    	makeStudentUngradable();
     	return sManager.listStudentPairsWithin(pGradeDiff);
     }
-    
-    /**
-     * 
-     * @return
-     */
+
     public boolean mergeSections() {
-        makeStudentUngradable();
-        
-        if (!sManager.isEmpty()) {
+        if (!sManager.isSectionEmpty()) {
         	return false;
         }
         
-        setUnmodifiable(sManager.getSection());
-        for (int i = 0; i < sManagers.length; ++i) {
-        	if (isModifiable(sManagers[i].getSection())) {
-        		for (Student student : sManagers[i].getActiveStudents()) {
-        			this.sManager.insert(student); // TODO
+        section.setModifiable(false);
+        for (int i = 0; i < MAX_SECTION_NUMBER; ++i) {
+        	if (sections[i].isModifiable()) {
+        		for (Student student : sManagers[i].getStudents()) {
+        			sManager.insert(student);
         		}
         	}
         }
@@ -331,20 +248,12 @@ public class CourseManager {
         return true;
     }
     
-    private void setUnmodifiable(Section section) {
-    	section.setModifiable(false);
-    }
-    
     public boolean isModifiable(Section section) {
     	return section.isModifiable();
     }
-    
-    /**
-     * 
-     */
+
     public void clearSections() {
-        makeStudentUngradable();
-        for (int i = 0; i < sManagers.length; ++i) {
+        for (int i = 0; i < MAX_SECTION_NUMBER; ++i) {
             sManagers[i].clear();
         }
         eManager.clear();

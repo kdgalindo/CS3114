@@ -16,11 +16,11 @@ public class BST<K extends Comparable<? super K>, V extends Comparable<? super V
 		private BSTNode left;
 		private BSTNode right;
 		
-		private BSTNode(K key, V val) {
+		public BSTNode(K key, V val) {
 			this(key, val, null, null);
 		}
 		
-		private BSTNode(K key, V val, BSTNode lt, BSTNode rt) {
+		public BSTNode(K key, V val, BSTNode lt, BSTNode rt) {
 			this.key = key;
 			this.value = val;
 			this.left = lt;

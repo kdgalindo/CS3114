@@ -13,13 +13,24 @@ import student.*;
 /**
  * EnrollmentBinaryFile Class
  * 
+ * 
+ * 
  * @author kyleg997 Kyle Galindo
- * @version 2020-11-05
+ * @version 2021-01-05
  */
-public class EnrollmentBinaryFile {
+public final class EnrollmentBinaryFile {
 	private final static String HEADER = "CS3114atVT";
-	private final static String DELIMITER = "GOHOKIES";	
+	private final static String DELIMITER = "GOHOKIES";
 	
+	private EnrollmentBinaryFile() {
+		// Empty
+	}
+	
+	/**
+	 * 
+	 * @param filename
+	 * @return
+	 */
     public static CourseEnrollment readFrom(String filename) {
     	CourseEnrollment enrollment = null;
     	try {
@@ -82,6 +93,11 @@ public class EnrollmentBinaryFile {
 		return new String(letterGrade);
 	}
 	
+	/**
+	 * 
+	 * @param enrollment
+	 * @param filename
+	 */
 	public static void writeTo(CourseEnrollment enrollment, String filename) {
 		try {
 			RandomAccessFile raf = new RandomAccessFile(filename, "rw");
